@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.productdetails.data.mapper
 
 import androidx.core.text.HtmlCompat
+import com.iti.pocketshop.shopify.GetProductByIdQuery
 import com.iti.pocketshop.features.productdetails.data.model.OptionDto
 import com.iti.pocketshop.features.productdetails.data.model.ProductDto
 import com.iti.pocketshop.features.productdetails.data.model.VariantDto
@@ -13,6 +14,57 @@ import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 import java.util.Locale
 
 private const val TEMPORARY_CURRENCY_CODE = "USD"
+
+fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
+    return ProductDetails(
+        id = id,
+        vendor = vendor,
+        title = title,
+        description = HtmlCompat.fromHtml(descriptionHtml.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
+        images = images.edges.map { edge ->
+            val node = edge.node
+            ProductImage(
+                id = node.id ?: "",
+                url = node.url.toString(),
+                altText = node.altText,
+            )
+        },
+        options = options.map { option ->
+            val isColour = option.name.equals("color", ignoreCase = true) ||
+                    option.name.equals("colour", ignoreCase = true)
+            ProductOption(
+                id = option.id,
+                name = option.name,
+                values = option.values.map { value ->
+                    ProductOptionValue(
+                        id = optionValueId(option.id, value),
+                        label = value,
+                        swatchArgb = if (isColour) colourArgb(value) else null,
+                    )
+                },
+            )
+        },
+        variants = variants.edges.map { edge ->
+            val variant = edge.node
+            ProductVariant(
+                id = variant.id,
+                selectedOptionValueIds = variant.selectedOptions.mapNotNull { selectedOption ->
+                    val option = options.find { it.name == selectedOption.name }
+                    option?.let { optionValueId(it.id, selectedOption.value) }
+                }.toSet(),
+                price = Money(
+                    amount = variant.price.amount.toString().toDoubleOrNull() ?: 0.0,
+                    currencyCode = variant.price.currencyCode.toString(),
+                ),
+                availableForSale = variant.availableForSale,
+            )
+        },
+        rating = 0.0,
+        reviewCount = 0,
+        reviews = emptyList(),
+        isFavorite = false,
+    )
+}
 
 fun ProductDto.toDomain(): ProductDetails {
     val sortedOptions = options.sortedBy(OptionDto::position)
@@ -70,7 +122,7 @@ private fun VariantDto.toDomain(options: List<OptionDto>): ProductVariant {
     )
 }
 
-private fun optionValueId(optionId: Long, value: String): String =
+private fun optionValueId(optionId: Any, value: String): String =
     "$optionId:${value.trim().lowercase(Locale.ROOT)}"
 
 private fun colourArgb(value: String): Long = when (value.trim().lowercase(Locale.ROOT)) {
