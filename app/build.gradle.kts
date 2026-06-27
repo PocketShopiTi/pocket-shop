@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.secrets)
 }
 
 android {
@@ -21,17 +22,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField(
-            "String",
-            "STORE_FRONT_TOKEN",
-            "\"${properties["STORE_FRONT_TOKEN"]}\""
-        )
-
-        buildConfigField(
-            "String",
-            "ADMIN_TOKEN",
-            "\"${properties["ADMIN_TOKEN"]}\""
-        )
     }
 
     buildTypes {
