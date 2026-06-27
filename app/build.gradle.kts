@@ -20,6 +20,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "STORE_FRONT_TOKEN",
+            "\"${properties["STORE_FRONT_TOKEN"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "ADMIN_TOKEN",
+            "\"${properties["ADMIN_TOKEN"]}\""
+        )
     }
 
     buildTypes {
