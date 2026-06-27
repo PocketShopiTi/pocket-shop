@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Surfaces -->
+    <color name="background">#1A1714</color>
+    <color name="surface">#24201B</color>
+    <color name="surface_variant">#2D2823</color>
+
+    <!-- Text -->
+    <color name="text_primary">#F2EBDF</color>
+    <color name="text_secondary">#A89F90</color>
+
+    <!-- Brand -->
+    <color name="primary">#D97A4E</color>      <!-- lifted terracotta -->
+    <color name="on_primary">#1A1714</color>   <!-- dark ink ON accent -->
+    <color name="secondary">#939B76</color>
+    <color name="outline">#3A332B</color>
+
+    <!-- Semantic -->
+    <color name="success">#4ADE80</color>
+    <color name="error">#F87171</color>
+    <color name="warning">#FBBF24</color>
+    <color name="info">#60A5FA</color>
+</resources>
