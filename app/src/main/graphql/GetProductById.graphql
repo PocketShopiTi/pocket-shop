@@ -1,0 +1,62 @@
+query GetProductById($id: ID!) {
+    product(id: $id) {
+        id
+        title
+        handle
+        vendor
+        productType
+        description
+        descriptionHtml
+        availableForSale
+        featuredImage {
+            url
+            altText
+        }
+        images(first: 10) {
+            edges {
+                node {
+                    id
+                    url
+                    altText
+                }
+            }
+        }
+        priceRange {
+            minVariantPrice {
+                amount
+                currencyCode
+            }
+            maxVariantPrice {
+                amount
+                currencyCode
+            }
+        }
+        variants(first: 20) {
+            edges {
+                node {
+                    id
+                    title
+                    availableForSale
+                    quantityAvailable
+                    price {
+                        amount
+                        currencyCode
+                    }
+                    selectedOptions {
+                        name
+                        value
+                    }
+                    image {
+                        url
+                        altText
+                    }
+                }
+            }
+        }
+        options {
+            id
+            name
+            values
+        }
+    }
+}
