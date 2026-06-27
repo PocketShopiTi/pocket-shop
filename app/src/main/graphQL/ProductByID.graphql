@@ -1,0 +1,13 @@
+query ProductById($id: ID!) {
+  product(id: $id) {
+    id
+    title
+    handle
+    descriptionHtml
+    availableForSale
+    featuredImage { url altText }
+    variants(first: 25) {
+      edges { node { id title sku availableForSale price { amount currencyCode } selectedOptions { name value } } }
+    }
+  }
+}

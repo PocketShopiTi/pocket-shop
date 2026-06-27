@@ -1,0 +1,19 @@
+package com.iti.pocketshop.features.productdetails.presentation.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.R
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductOption
+import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction
+import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsState
+import com.iti.pocketshop.features.productdetails.presentation.SectionLabelStyle
+import java.util.Locale

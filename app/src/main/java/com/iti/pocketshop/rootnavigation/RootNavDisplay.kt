@@ -17,7 +17,7 @@ import com.iti.pocketshop.features.login.LoginRoot
 import com.iti.pocketshop.features.onboarding.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
-import com.iti.pocketshop.features.productdetails.ProductDetailsRoot
+import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.register.RegisterRoot
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
@@ -45,7 +45,7 @@ fun RootNavDisplay() {
                 }
             }
         },
-        Route.Onboarding
+        Route.ProductDetails("gid://shopify/Product/8628586741933")
     )
 
     NavDisplay(
