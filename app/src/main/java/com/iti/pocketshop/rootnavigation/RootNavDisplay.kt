@@ -18,7 +18,7 @@ import com.iti.pocketshop.features.onboarding.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.ProductDetailsRoot
-import com.iti.pocketshop.features.register.RegisterRoot
+import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
