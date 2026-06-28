@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="280dp"
+    android:viewportWidth="320"
+    android:viewportHeight="280">
+
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFF4EFE6"
+        android:pathData="M160,140 m-120,0 a120,120 0 1,0 240,0 a120,120 0 1,0 -240,0" />
+
+    <!-- Chat bubble main -->
+    <path
+        android:fillColor="#FFC0653B"
+        android:pathData="M90,90 Q90,75 105,75 L230,75 Q245,75 245,90 L245,145 Q245,160 230,160 L170,160 L155,180 L150,160 L105,160 Q90,160 90,145 Z" />
+
+    <!-- Chat bubble dots -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M140,117 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M168,117 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M196,117 m-10,0 a10,10 0 1,0 20,0 a10,10 0 1,0 -20,0" />
+
+    <!-- Sparkle -->
+    <path
+        android:fillColor="#FFFFDDB9"
+        android:pathData="M75,60 L77,66 L83,66 L78,70 L80,76 L75,72 L70,76 L72,70 L67,66 L73,66 Z" />
+    <path
+        android:fillColor="#FFC0653B"
+        android:pathData="M248,55 L250,61 L256,61 L251,65 L253,71 L248,67 L243,71 L245,65 L240,61 L246,61 Z" />
+</vector>
