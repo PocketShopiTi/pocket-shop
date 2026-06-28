@@ -106,6 +106,8 @@ fun SplashScreen(
             targetValue = 0f,
             animationSpec = tween(durationMillis = 400, easing = EaseOutExpo)
         )
+
+        onAction(SplashAction.NavigateToLogin)
     }
 
     Box(
