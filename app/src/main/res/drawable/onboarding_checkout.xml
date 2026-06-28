@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="280dp"
+    android:viewportWidth="320"
+    android:viewportHeight="280">
+
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFF4EFE6"
+        android:pathData="M160,140 m-120,0 a120,120 0 1,0 240,0 a120,120 0 1,0 -240,0" />
+
+    <!-- Card 1 (back) -->
+    <path
+        android:fillColor="#FFFFDDB9"
+        android:pathData="M90,105 Q90,95 100,95 L235,95 Q245,95 245,105 L245,180 Q245,190 235,190 L100,190 Q90,190 90,180 Z" />
+
+    <!-- Card 2 (front) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M85,115 Q85,105 95,105 L230,105 Q240,105 240,115 L240,185 Q240,195 230,195 L95,195 Q85,195 85,185 Z" />
+
+    <!-- Checkmark circle -->
+    <path
+        android:fillColor="#FF16A34A"
+        android:pathData="M120,145 m-16,0 a16,16 0 1,0 32,0 a16,16 0 1,0 -32,0" />
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M111,145 L118,152 L130,138"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:fillAlpha="0" />
+
+    <!-- Text lines -->
+    <path
+        android:fillColor="#FFE6E0D4"
+        android:pathData="M145,138 L220,138 Q222,138 222,141 L222,141 Q222,144 220,144 L145,144 Q143,144 143,141 L143,141 Q143,138 145,138 Z" />
+    <path
+        android:fillColor="#FFE6E0D4"
+        android:pathData="M145,150 L200,150 Q202,150 202,153 L202,153 Q202,156 200,156 L145,156 Q143,156 143,153 L143,153 Q143,150 145,150 Z" />
+
+    <!-- Sparkle -->
+    <path
+        android:fillColor="#FFC0653B"
+        android:pathData="M255,95 L257,101 L263,101 L258,105 L260,111 L255,107 L250,111 L252,105 L247,101 L253,101 Z" />
+</vector>
