@@ -128,7 +128,7 @@ dependencies {
 
     //Apollo
     implementation(libs.apollo.runtime)
-    
+
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
