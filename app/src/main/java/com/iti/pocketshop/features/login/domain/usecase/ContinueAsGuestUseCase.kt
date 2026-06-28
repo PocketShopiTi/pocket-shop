@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.login.domain.usecase
 
-import com.iti.pocketshop.features.login.domain.mapper.LoginResult
+import com.iti.pocketshop.features.login.domain.model.LoginResult
 import com.iti.pocketshop.features.login.domain.repository.LoginRepository
 
 import javax.inject.Inject

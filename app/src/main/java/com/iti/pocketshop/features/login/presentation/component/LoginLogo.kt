@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.view.component
+package com.iti.pocketshop.features.login.presentation.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,11 +11,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 
 @Composable
 fun LoginLogo(
     modifier: Modifier = Modifier,
-    letter: String = "P",
+    letter: String = stringResource(id = R.string.login_logo_letter),
 ) {
     Box(
         modifier = modifier

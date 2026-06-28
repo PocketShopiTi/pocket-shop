@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.domain.mapper
+package com.iti.pocketshop.features.login.domain.model
 
 data class User(
     val id: String,

@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.login.domain.repository
 
-import com.iti.pocketshop.features.login.domain.mapper.LoginResult
+import com.iti.pocketshop.features.login.domain.model.LoginResult
 
 interface LoginRepository {
     suspend fun loginWithEmail(email: String, password: String): LoginResult

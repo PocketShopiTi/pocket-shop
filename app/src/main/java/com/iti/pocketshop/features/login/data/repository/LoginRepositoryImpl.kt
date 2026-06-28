@@ -5,8 +5,10 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.iti.pocketshop.features.login.domain.repository.LoginRepository
-import com.iti.pocketshop.features.login.domain.mapper.LoginResult
-import com.iti.pocketshop.features.login.domain.mapper.User
+import com.iti.pocketshop.features.login.domain.model.LoginResult
+import com.iti.pocketshop.features.login.domain.model.LoginError
+import com.iti.pocketshop.features.login.domain.model.User
+import com.google.firebase.FirebaseNetworkException
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -18,7 +20,7 @@ class LoginRepositoryImpl @Inject constructor(
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             val firebaseUser = result.user
-                ?: return LoginResult.Error("Login failed. Please try again.")
+                ?: return LoginResult.Error(LoginError.UNKNOWN)
             LoginResult.Success(
                 User(
                     id = firebaseUser.uid,
@@ -28,11 +30,13 @@ class LoginRepositoryImpl @Inject constructor(
                 )
             )
         } catch (e: FirebaseAuthInvalidCredentialsException) {
-            LoginResult.Error("Incorrect email or password.")
+            LoginResult.Error(LoginError.WRONG_PASSWORD)
         } catch (e: FirebaseAuthInvalidUserException) {
-            LoginResult.Error("No account found with this email.")
+            LoginResult.Error(LoginError.USER_NOT_FOUND)
+        } catch (e: FirebaseNetworkException) {
+            LoginResult.Error(LoginError.NETWORK_ERROR)
         } catch (e: Exception) {
-            LoginResult.Error(e.message ?: "An unexpected error occurred.")
+            LoginResult.Error(LoginError.UNKNOWN)
         }
     }
 
@@ -41,7 +45,7 @@ class LoginRepositoryImpl @Inject constructor(
             val credential = GoogleAuthProvider.getCredential(idToken, null)
             val result = firebaseAuth.signInWithCredential(credential).await()
             val firebaseUser = result.user
-                ?: return LoginResult.Error("Google Sign-In failed. Please try again.")
+                ?: return LoginResult.Error(LoginError.GOOGLE_SIGN_IN_FAILED)
             LoginResult.Success(
                 User(
                     id = firebaseUser.uid,
@@ -50,8 +54,10 @@ class LoginRepositoryImpl @Inject constructor(
                     avatarUrl = firebaseUser.photoUrl?.toString()
                 )
             )
+        } catch (e: FirebaseNetworkException) {
+            LoginResult.Error(LoginError.NETWORK_ERROR)
         } catch (e: Exception) {
-            LoginResult.Error(e.message ?: "An unexpected error occurred.")
+            LoginResult.Error(LoginError.UNKNOWN)
         }
     }
 
@@ -59,7 +65,7 @@ class LoginRepositoryImpl @Inject constructor(
         return try {
             val result = firebaseAuth.signInAnonymously().await()
             val firebaseUser = result.user
-                ?: return LoginResult.Error("Guest login failed. Please try again.")
+                ?: return LoginResult.Error(LoginError.UNKNOWN)
             LoginResult.Success(
                 User(
                     id = firebaseUser.uid,
@@ -68,8 +74,10 @@ class LoginRepositoryImpl @Inject constructor(
                     avatarUrl = null
                 )
             )
+        } catch (e: FirebaseNetworkException) {
+            LoginResult.Error(LoginError.NETWORK_ERROR)
         } catch (e: Exception) {
-            LoginResult.Error(e.message ?: "An unexpected error occurred.")
+            LoginResult.Error(LoginError.UNKNOWN)
         }
     }
 }

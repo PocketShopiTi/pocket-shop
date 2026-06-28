@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.action
+package com.iti.pocketshop.features.login.presentation
 
 sealed class LoginAction {
     data class EmailChanged(val value: String) : LoginAction()
@@ -6,5 +6,6 @@ sealed class LoginAction {
     object TogglePasswordVisibility : LoginAction()
     object LoginClicked : LoginAction()
     data class GoogleLoginSubmitted(val idToken: String) : LoginAction()
+    object GoogleSignInFailed : LoginAction()
     object ContinueAsGuestClicked : LoginAction()
 }

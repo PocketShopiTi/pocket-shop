@@ -13,7 +13,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.iti.pocketshop.features.aichat.AiChatRoot
-import com.iti.pocketshop.features.login.presentation.view.LoginRoot
+import com.iti.pocketshop.features.login.presentation.LoginRoot
 import com.iti.pocketshop.features.onboarding.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot

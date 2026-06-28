@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.view.component
+package com.iti.pocketshop.features.login.presentation.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
@@ -7,7 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 
 @Composable
 fun LoginFooter(
@@ -16,12 +17,12 @@ fun LoginFooter(
 ) {
     Row(modifier = modifier) {
         Text(
-            text = "New here? ",
+            text = stringResource(id = R.string.login_footer_new_here),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
-            text = "Create account",
+            text = stringResource(id = R.string.login_footer_create_account),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable(onClick = onCreateAccountClick)

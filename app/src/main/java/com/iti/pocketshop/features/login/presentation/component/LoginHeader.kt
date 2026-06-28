@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.view.component
+package com.iti.pocketshop.features.login.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,11 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
+
 @Composable
 fun LoginHeader(
     modifier: Modifier = Modifier,
-    title: String = "Welcome back",
-    subtitle: String = "Sign in to your account",
+    title: String = stringResource(id = R.string.login_header_title),
+    subtitle: String = stringResource(id = R.string.login_header_subtitle),
 ) {
     Column(
         modifier = modifier.padding(top = 16.dp),

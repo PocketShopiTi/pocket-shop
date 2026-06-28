@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.view.component
+package com.iti.pocketshop.features.login.presentation.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 
 @Composable
 fun LoginActionButton(
@@ -41,5 +43,5 @@ fun LoginActionButton(
 @Preview
 @Composable
 private fun LoginActionButtonPreview() {
-    LoginActionButton(text = "Log in", onClick = {})
+    LoginActionButton(text = stringResource(id = R.string.login_button_login), onClick = {})
 }

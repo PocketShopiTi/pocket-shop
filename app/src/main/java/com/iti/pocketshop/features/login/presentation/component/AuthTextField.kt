@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.view.component
+package com.iti.pocketshop.features.login.presentation.component
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Email
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -21,8 +21,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.Icon
+import androidx.compose.material3.Icon
 
 @Composable
 fun AuthTextField(
@@ -74,7 +76,7 @@ fun AuthTextField(
             singleLine = true,
             isError = isError,
             shape = RoundedCornerShape(28.dp),
-            keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+            keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),
             visualTransformation = visualTransformation,
@@ -101,12 +103,12 @@ fun AuthTextField(
 @Composable
 private fun AuthTextFieldPreview() {
     AuthTextField(
-        label = "Email",
+        label = stringResource(id = R.string.login_label_email),
         value = "",
         onValueChange = {},
-        placeholder = "sofia@example.com",
+        placeholder = stringResource(id = R.string.login_placeholder_email),
         isError = true,
-        errorMessage = "Incorrect email or password.",
-        leadingIcon = { Icon(imageVector = Icons.Outlined.Email, contentDescription = null) }
+        errorMessage = stringResource(id = R.string.error_invalid_email),
+        leadingIcon = { Icon(painter = painterResource(id = R.drawable.ic_email), contentDescription = null) }
     )
 }

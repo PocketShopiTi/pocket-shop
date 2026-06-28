@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.login.presentation.view.component
+package com.iti.pocketshop.features.login.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -9,6 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 
 @Composable
 fun ForgotPasswordLink(
@@ -20,7 +22,7 @@ fun ForgotPasswordLink(
         horizontalArrangement = Arrangement.End
     ) {
         Text(
-            text = "Forgot password?",
+            text = stringResource(id = R.string.login_forgot_password),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             textDecoration = TextDecoration.None,

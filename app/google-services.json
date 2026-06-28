@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "925942644827-i54bkqrksgrtbeq7576dg5hi01n86098.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iti.pocketshop",
+            "certificate_hash": "584df0a340eaf5b7f5ad6df99864fddef8a2ee9c"
+          }
+        },
+        {
           "client_id": "925942644827-uqntj66b74dgabpab8hcvii9ijq9bhqp.apps.googleusercontent.com",
           "client_type": 3
         }
