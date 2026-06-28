@@ -27,6 +27,15 @@ apollo {
             )
             schemaFile.set(file("src/main/graphql/schema.graphqls"))
         }
+        mapScalar(
+            "Decimal",
+            "kotlin.Double"
+        )
+
+        mapScalar(
+            "URL",
+            "kotlin.String"
+        )
     }
 }
 
@@ -128,6 +137,7 @@ dependencies {
 
     //Apollo
     implementation(libs.apollo.runtime)
+    implementation(libs.logging.interceptor)
     
     // nav3
     implementation(libs.androidx.navigation3)

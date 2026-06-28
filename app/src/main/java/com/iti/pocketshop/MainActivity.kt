@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.iti.pocketshop.core.components.ErrorDialogListener
 import com.iti.pocketshop.rootnavigation.RootNavDisplay
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,6 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PocketShopTheme {
                 RootNavDisplay()
+                ErrorDialogListener()
             }
         }
     }
