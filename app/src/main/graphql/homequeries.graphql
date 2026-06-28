@@ -1,0 +1,67 @@
+query HomeQuery(
+    $featuredCount: Int!
+    $bestSellerCount: Int!
+    $newArrivalCount: Int!
+    $categoryCount: Int!
+) {
+    # 1. Categories
+    categories: collections(first: $categoryCount) {
+        nodes {
+            id
+            title
+            handle
+            image {
+                url(transform: { maxWidth: 300, maxHeight: 300 }) # Explicitly size images
+                altText
+            }
+        }
+    }
+
+    # 2. Featured Products
+    featuredProducts: products(first: $featuredCount) {
+        nodes {
+            ...ProductFields
+        }
+    }
+
+    # 3. Best Sellers
+    bestSellers: products(first: $bestSellerCount, sortKey: BEST_SELLING) {
+        nodes {
+            ...ProductFields
+        }
+    }
+
+    # 4. New Arrivals
+    newArrivals: products(first: $newArrivalCount, sortKey: CREATED_AT, reverse: true) {
+        nodes {
+            ...ProductFields
+        }
+    }
+}
+
+fragment ProductFields on Product {
+    id
+    title
+    handle
+    vendor
+    availableForSale
+
+    priceRange {
+        minVariantPrice {
+            amount
+            currencyCode
+        }
+    }
+
+    compareAtPriceRange {
+        maxVariantPrice {
+            amount
+            currencyCode
+        }
+    }
+
+    featuredImage {
+        url(transform: { maxWidth: 400, maxHeight: 400 })
+        altText
+    }
+}
