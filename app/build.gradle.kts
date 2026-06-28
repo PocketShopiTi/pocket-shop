@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,6 +7,27 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt.android)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.apollo)
+}
+
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+apollo {
+    service("shopify") {
+        packageName.set("com.iti.pocketshop.shopify")
+
+        introspection {
+            endpointUrl.set("https://mad46-and4.myshopify.com/api/2026-04/graphql.json")
+            headers.put(
+                "X-Shopify-Storefront-Access-Token",
+                localProperties["STORE_FRONT_TOKEN"].toString()
+            )
+            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+        }
+    }
 }
 
 android {
@@ -103,6 +126,9 @@ dependencies {
     // ktor
     implementation(libs.bundles.ktor)
 
+    //Apollo
+    implementation(libs.apollo.runtime)
+    
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
