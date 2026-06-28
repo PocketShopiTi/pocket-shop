@@ -26,7 +26,7 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
             add(
                 ProductImage(
                     id = "$id:featured",
-                    url = image.url.toString(),
+                    url = image.url,
                     altText = image.altText,
                 ),
             )
@@ -35,8 +35,8 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
         this@toDomain.images.edges.forEachIndexed { index, edge ->
             add(
                 ProductImage(
-                    id = edge.node.url.toString().ifBlank { "$id:image:$index" },
-                    url = edge.node.url.toString(),
+                    id = edge.node.url.ifBlank { "$id:image:$index" },
+                    url = edge.node.url,
                     altText = edge.node.altText,
                 ),
             )
@@ -47,7 +47,7 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
             add(
                 ProductImage(
                     id = node.id.ifBlank { "$id:media:$index" },
-                    url = previewImage.url.toString(),
+                    url = previewImage.url,
                     altText = previewImage.altText ?: node.alt,
                 ),
             )
@@ -83,7 +83,7 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
                         swatchImage = swatch?.image?.previewImage?.let { preview ->
                             ProductImage(
                                 id = "${option.id}:${value.name}:swatch",
-                                url = preview.url.toString(),
+                                url = preview.url,
                                 altText = preview.altText ?: swatch.image.alt,
                             )
                         },

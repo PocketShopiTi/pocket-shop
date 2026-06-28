@@ -19,7 +19,7 @@ import com.iti.pocketshop.ui.theme.PocketShopTheme
 @Composable
 fun ProductDetailsRoot(
     productId: String,
-    onBack: () -> Unit = {},
+    onBack: () -> Unit,
     onSeeAllReviews: (productId: String) -> Unit = {},
     viewModel: ProductDetailsViewModel = hiltViewModel(),
 ) {
