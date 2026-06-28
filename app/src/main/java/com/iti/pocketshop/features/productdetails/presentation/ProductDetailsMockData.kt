@@ -27,6 +27,7 @@ internal object ProductDetailsMockData {
                     id = "$productId-${colour.id}-${size.id}",
                     selectedOptionValueIds = setOf(colour.id, size.id),
                     price = price,
+                    compareAtPrice = null,
                     availableForSale = true,
                 )
             }

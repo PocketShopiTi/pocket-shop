@@ -1,45 +1,81 @@
 package com.iti.pocketshop.features.productdetails.data.mapper
 
-import androidx.core.text.HtmlCompat
-import com.iti.pocketshop.shopify.GetProductByIdQuery
-import com.iti.pocketshop.features.productdetails.data.model.OptionDto
-import com.iti.pocketshop.features.productdetails.data.model.ProductDto
-import com.iti.pocketshop.features.productdetails.data.model.VariantDto
+import androidx.core.graphics.toColorInt
 import com.iti.pocketshop.features.productdetails.domain.entity.Money
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOption
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionValue
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
+import com.iti.pocketshop.shopify.GetProductByIdQuery
 import java.util.Locale
 
-private const val TEMPORARY_CURRENCY_CODE = "USD"
-
 fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
+    val optionLookup = options.associateBy { it.name.lowercase(Locale.ROOT) }
+
+    val images = buildList {
+        featuredImage?.let { image ->
+            add(
+                ProductImage(
+                    id = "$id:featured",
+                    url = image.url.toString(),
+                    altText = image.altText,
+                ),
+            )
+        }
+
+        this@toDomain.images.edges.forEachIndexed { index, edge ->
+            add(
+                ProductImage(
+                    id = edge.node.url.toString().ifBlank { "$id:image:$index" },
+                    url = edge.node.url.toString(),
+                    altText = edge.node.altText,
+                ),
+            )
+        }
+
+        media.nodes.forEachIndexed { index, node ->
+            val previewImage = node.previewImage ?: return@forEachIndexed
+            add(
+                ProductImage(
+                    id = node.id.ifBlank { "$id:media:$index" },
+                    url = previewImage.url.toString(),
+                    altText = previewImage.altText ?: node.alt,
+                ),
+            )
+        }
+    }.distinctBy { it.url }
+
     return ProductDetails(
         id = id,
         vendor = vendor,
         title = title,
-        description = HtmlCompat.fromHtml(descriptionHtml.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
-        images = images.edges.map { edge ->
-            val node = edge.node
-            ProductImage(
-                id = node.id ?: "",
-                url = node.url.toString(),
-                altText = node.altText,
-            )
-        },
+        description = description,
+        images = images,
         options = options.map { option ->
-            val isColour = option.name.equals("color", ignoreCase = true) ||
-                    option.name.equals("colour", ignoreCase = true)
+            val optionName = option.name
+            val isColour = optionName.equals("color", ignoreCase = true) ||
+                    optionName.equals("colour", ignoreCase = true)
             ProductOption(
                 id = option.id,
-                name = option.name,
-                values = option.values.map { value ->
+                name = optionName,
+                values = option.optionValues.map { value ->
+                    val swatch = value.swatch
                     ProductOptionValue(
-                        id = optionValueId(option.id, value),
-                        label = value,
-                        swatchArgb = if (isColour) colourArgb(value) else null,
+                        id = optionValueId(option.id, value.name),
+                        label = value.name,
+                        swatchArgb = when {
+                            swatch?.color != null -> parseColour(swatch.color)
+                            isColour -> colourArgb(value.name)
+                            else -> null
+                        },
+                        swatchImage = swatch?.image?.previewImage?.let { preview ->
+                            ProductImage(
+                                id = "${option.id}:${value.name}:swatch",
+                                url = preview.url.toString(),
+                                altText = preview.altText ?: swatch.image.alt,
+                            )
+                        },
                     )
                 },
             )
@@ -49,13 +85,20 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
             ProductVariant(
                 id = variant.id,
                 selectedOptionValueIds = variant.selectedOptions.mapNotNull { selectedOption ->
-                    val option = options.find { it.name == selectedOption.name }
-                    option?.let { optionValueId(it.id, selectedOption.value) }
+                    optionLookup[selectedOption.name.lowercase(Locale.ROOT)]?.let { option ->
+                        optionValueId(option.id, selectedOption.value)
+                    }
                 }.toSet(),
                 price = Money(
                     amount = variant.price.amount.toString().toDoubleOrNull() ?: 0.0,
-                    currencyCode = variant.price.currencyCode.toString(),
+                    currencyCode = variant.price.currencyCode.name,
                 ),
+                compareAtPrice = variant.compareAtPrice?.let {
+                    Money(
+                        amount = it.amount.toString().toDoubleOrNull() ?: 0.0,
+                        currencyCode = it.currencyCode.name,
+                    )
+                },
                 availableForSale = variant.availableForSale,
             )
         },
@@ -66,64 +109,18 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
     )
 }
 
-fun ProductDto.toDomain(): ProductDetails {
-    val sortedOptions = options.sortedBy(OptionDto::position)
-
-    return ProductDetails(
-        id = adminGraphqlApiId,
-        vendor = vendor,
-        title = title,
-        description = "",
-        images = images.sortedBy { it.position }.map { image ->
-            ProductImage(
-                id = image.id.toString(),
-                url = image.src,
-                altText = image.alt,
-            )
-        },
-        options = sortedOptions.map(OptionDto::toDomain),
-        variants = variants.map { it.toDomain(sortedOptions) },
-        rating = 0.0,
-        reviewCount = 0,
-        reviews = emptyList(),
-        isFavorite = false,
-    )
-}
-
-private fun OptionDto.toDomain(): ProductOption {
-    val isColour = name.equals("color", ignoreCase = true) ||
-        name.equals("colour", ignoreCase = true)
-    return ProductOption(
-        id = id.toString(),
-        name = name,
-        values = values.map { value ->
-            ProductOptionValue(
-                id = optionValueId(id, value),
-                label = value,
-                swatchArgb = if (isColour) colourArgb(value) else null,
-            )
-        },
-    )
-}
-
-private fun VariantDto.toDomain(options: List<OptionDto>): ProductVariant {
-    val variantOptions = listOf(option1, option2, option3)
-    return ProductVariant(
-        id = adminGraphqlApiId,
-        selectedOptionValueIds = options.mapIndexedNotNull { index, option ->
-            variantOptions.getOrNull(index)?.let { value -> optionValueId(option.id, value) }
-        }.toSet(),
-        price = Money(
-            amount = price.toDoubleOrNull() ?: 0.0,
-            currencyCode = TEMPORARY_CURRENCY_CODE,
-        ),
-        availableForSale = inventoryQuantity > 0 ||
-            inventoryPolicy.equals("continue", ignoreCase = true),
-    )
-}
-
-private fun optionValueId(optionId: Any, value: String): String =
+private fun optionValueId(optionId: String, value: String): String =
     "$optionId:${value.trim().lowercase(Locale.ROOT)}"
+
+private fun parseColour(value: Any): Long? {
+    val text = value.toString().trim()
+    if (text.isBlank()) return null
+    return runCatching {
+        text.toColorInt().toLong()
+    }.getOrElse {
+        colourArgb(text)
+    }
+}
 
 private fun colourArgb(value: String): Long = when (value.trim().lowercase(Locale.ROOT)) {
     "black" -> 0xFF2C2826

@@ -52,6 +52,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -193,10 +194,9 @@ private fun ProductContent(
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     RatingSummary(product.rating, product.reviewCount)
-                    Text(
-                        text = formatMoney(state.selectedVariant?.price),
-                        color = MaterialTheme.colorScheme.onBackground,
-                        style = MaterialTheme.typography.headlineSmall.copy(fontSize = 22.sp),
+                    PriceColumn(
+                        price = state.selectedVariant?.price,
+                        compareAtPrice = state.selectedVariant?.compareAtPrice,
                     )
                 }
                 SectionDivider()
@@ -217,6 +217,33 @@ private fun ProductContent(
 }
 
 @Composable
+private fun PriceColumn(
+    price: Money?,
+    compareAtPrice: Money?,
+) {
+    Column(horizontalAlignment = Alignment.End) {
+        val showCompareAtPrice = price != null &&
+            compareAtPrice != null &&
+            compareAtPrice.amount > price.amount
+        if (showCompareAtPrice) {
+            Text(
+                text = formatMoney(compareAtPrice),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontSize = 12.sp,
+                    textDecoration = TextDecoration.LineThrough,
+                ),
+            )
+        }
+        Text(
+            text = formatMoney(price),
+            color = MaterialTheme.colorScheme.onBackground,
+            style = MaterialTheme.typography.headlineSmall.copy(fontSize = 22.sp),
+        )
+    }
+}
+
+@Composable
 private fun ProductOptionSelector(
     option: ProductOption,
     state: ProductDetailsState,
@@ -224,7 +251,7 @@ private fun ProductOptionSelector(
 ) {
     val selectedId = state.selectedOptionValueIds[option.id]
     val selectedLabel = option.values.firstOrNull { it.id == selectedId }?.label.orEmpty()
-    val isColourOption = option.values.any { it.swatchArgb != null }
+    val isColourOption = option.values.any { it.swatchArgb != null || it.swatchImage != null }
 
     Column(modifier = Modifier.padding(top = 16.dp)) {
         Text(
@@ -244,7 +271,8 @@ private fun ProductOptionSelector(
                 val isAvailable = state.isOptionValueAvailable(option.id, value.id)
                 if (isColourOption) {
                     ColourSwatch(
-                        colour = Color(requireNotNull(value.swatchArgb)),
+                        colour = value.swatchArgb?.let(::Color),
+                        imageUrl = value.swatchImage?.url,
                         label = value.label,
                         selected = isSelected,
                         enabled = isAvailable,
@@ -351,7 +379,8 @@ private fun ProductImageGallery(
 
 @Composable
 fun ColourSwatch(
-    colour: Color,
+    colour: Color?,
+    imageUrl: String?,
     label: String,
     selected: Boolean,
     enabled: Boolean,
@@ -370,9 +399,27 @@ fun ColourSwatch(
             )
             .padding(3.dp)
             .clip(CircleShape)
-            .background(colour.copy(alpha = if (enabled) 1f else 0.35f))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable(enabled = enabled, onClick = onClick),
-    )
+        contentAlignment = Alignment.Center,
+    ) {
+        when {
+            imageUrl != null -> AsyncImage(
+                model = imageUrl,
+                contentDescription = label,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape),
+            )
+            colour != null -> Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .background(colour.copy(alpha = if (enabled) 1f else 0.35f)),
+            )
+        }
+    }
 }
 
 @Composable

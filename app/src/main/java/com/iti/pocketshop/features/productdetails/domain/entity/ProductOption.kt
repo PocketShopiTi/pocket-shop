@@ -10,4 +10,5 @@ data class ProductOptionValue(
     val id: String,
     val label: String,
     val swatchArgb: Long? = null,
+    val swatchImage: ProductImage? = null,
 )
