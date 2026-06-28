@@ -61,7 +61,8 @@ fun AuthTextField(
             text = label.uppercase(),
             style = MaterialTheme.typography.labelMedium,
             color = if (isError) MaterialTheme.colorScheme.error
-                    else MaterialTheme.colorScheme.onSurfaceVariant
+                    else MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = 8.dp)
         )
         OutlinedTextField(
             value = value,

@@ -8,5 +8,6 @@ data class LoginState(
     val emailError: String? = null,
     val passwordError: String? = null,
     val generalError: String? = null,
-    val isLoginEnabled: Boolean = false
+    val isLoginEnabled: Boolean = false,
+    val isLoginSuccessful: Boolean = false
 )

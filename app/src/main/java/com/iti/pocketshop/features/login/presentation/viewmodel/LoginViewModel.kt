@@ -34,9 +34,6 @@ class LoginViewModel @Inject constructor(
 
             is LoginAction.ContinueAsGuestClicked -> continueAsGuest()
 
-            is LoginAction.ForgotPasswordClicked -> forgotPassword()
-
-            is LoginAction.CreateAccountClicked -> createAccount()
 
              is LoginAction.EmailChanged -> _state.update { it.copy(email = action.value, emailError = null) }
 
@@ -49,24 +46,38 @@ class LoginViewModel @Inject constructor(
 
      private fun login() {
          viewModelScope.launch {
-             _state.update { it.copy(isLoading = true, generalError = null, passwordError = null) }
+             val email = _state.value.email
+             val password = _state.value.password
+
+             if (email.isBlank() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                 _state.update { it.copy(emailError = "Invalid email format") }
+                 return@launch
+             }
+
+             if (password.isBlank() || password.length < 6) {
+                 _state.update { it.copy(passwordError = "Password must be at least 6 characters") }
+                 return@launch
+             }
+
+             _state.update { it.copy(isLoading = true, generalError = null, passwordError = null, emailError = null) }
 
              val result = loginWithEmailUseCase(
-                email = _state.value.email,
-                password = _state.value.password
+                email = email,
+                password = password
             )
 
              _state.update {
                 when (result) {
-                    is LoginResult.Success -> it.copy(isLoading = false, generalError = null)
+                    is LoginResult.Success -> it.copy(isLoading = false, generalError = null, isLoginSuccessful = true)
 
                     is LoginResult.Error -> {
-
-                         if (result.message.contains("Password", ignoreCase = true))
+                         if (result.message.contains("password", ignoreCase = true)) {
                              it.copy(isLoading = false, passwordError = result.message)
-
-                         else it.copy(isLoading = false, generalError = result.message)
-
+                         } else if (result.message.contains("email", ignoreCase = true) || result.message.contains("user", ignoreCase = true)) {
+                             it.copy(isLoading = false, emailError = result.message)
+                         } else {
+                             it.copy(isLoading = false, generalError = result.message)
+                         }
                     }
                 }
             }
@@ -81,7 +92,7 @@ class LoginViewModel @Inject constructor(
 
             _state.update { currentState ->
                 when (result) {
-                    is LoginResult.Success -> currentState.copy(isLoading = false)
+                    is LoginResult.Success -> currentState.copy(isLoading = false, isLoginSuccessful = true)
                     is LoginResult.Error -> currentState.copy(isLoading = false, generalError = result.message)
                 }
             }
@@ -98,7 +109,7 @@ class LoginViewModel @Inject constructor(
 
             _state.update {
                 when (result) {
-                    is LoginResult.Success -> it.copy(isLoading = false)
+                    is LoginResult.Success -> it.copy(isLoading = false, isLoginSuccessful = true)
 
                     is LoginResult.Error -> it.copy(isLoading = false, generalError = result.message)
                 }
@@ -106,11 +117,4 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun forgotPassword() {
-        // Nav
-     }
-
-    private fun createAccount() {
-        // Nav
-     }
 }

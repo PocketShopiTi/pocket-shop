@@ -76,6 +76,12 @@ fun RootNavDisplay() {
             }
             entry<Route.Login> {
                 LoginRoot(
+                    openHome = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.NestedNav)
+                        }
+                    },
                     openOTP = {
                         rootBackStack.apply {
                             navigateSingleTop(Route.OTP)
@@ -85,6 +91,9 @@ fun RootNavDisplay() {
                         rootBackStack.apply {
                             navigateSingleTop(Route.Register)
                         }
+                    },
+                    openForgotPassword = {
+                        // TODO: Navigate to Forgot Password Route when implemented
                     }
                 )
             }

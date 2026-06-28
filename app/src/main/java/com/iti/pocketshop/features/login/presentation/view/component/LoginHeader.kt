@@ -20,9 +20,9 @@ fun LoginHeader(
     Column(
         modifier = modifier.padding(top = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        LoginLogo(modifier = Modifier.padding(bottom = 12.dp))
+        LoginLogo(modifier = Modifier.padding(bottom = 16.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.headlineSmall,

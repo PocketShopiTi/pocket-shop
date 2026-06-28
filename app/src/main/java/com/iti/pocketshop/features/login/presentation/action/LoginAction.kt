@@ -7,6 +7,4 @@ sealed class LoginAction {
     object LoginClicked : LoginAction()
     object GoogleLoginClicked : LoginAction()
     object ContinueAsGuestClicked : LoginAction()
-    object ForgotPasswordClicked : LoginAction()
-    object CreateAccountClicked : LoginAction()
 }

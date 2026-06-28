@@ -37,14 +37,24 @@ import com.iti.pocketshop.features.login.presentation.viewmodel.LoginViewModel
 
 @Composable
 fun LoginRoot(
+    openHome: () -> Unit,
     openOTP: () -> Unit,
     openRegister: () -> Unit,
+    openForgotPassword: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    androidx.compose.runtime.LaunchedEffect(state.isLoginSuccessful) {
+        if (state.isLoginSuccessful) {
+            openHome()
+        }
+    }
+
     LoginScreen(
         openOTP = openOTP,
         openRegister = openRegister,
+        openForgotPassword = openForgotPassword,
         state = state,
         onAction = viewModel::onAction
     )
@@ -54,6 +64,7 @@ fun LoginRoot(
 fun LoginScreen(
     openOTP: () -> Unit,
     openRegister: () -> Unit,
+    openForgotPassword: () -> Unit,
     state: LoginState,
     onAction: (LoginAction) -> Unit,
 ) {
@@ -91,7 +102,7 @@ fun LoginScreen(
                     value = state.email,
                     onValueChange = { onAction(LoginAction.EmailChanged(it)) },
                     placeholder = "sofia@example.com",
-                    modifier = Modifier.padding(top = 32.dp),
+                    modifier = Modifier.padding(top = 24.dp),
                     isError = state.emailError != null || state.generalError != null,
                     errorMessage = state.emailError,
                     leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) }
@@ -106,7 +117,7 @@ fun LoginScreen(
                 )
 
                 ForgotPasswordLink(
-                    onClick = { onAction(LoginAction.ForgotPasswordClicked) },
+                    onClick = openForgotPassword,
                     modifier = Modifier.padding(top = 8.dp)
                 )
 
@@ -114,7 +125,7 @@ fun LoginScreen(
                     text = "Log in",
                     onClick = { onAction(LoginAction.LoginClicked) },
                     enabled = !state.isLoading,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 24.dp)
                 )
 
                 DividerWithText(
