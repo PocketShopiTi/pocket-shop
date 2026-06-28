@@ -1,6 +1,8 @@
 package com.iti.pocketshop.features.login.presentation.view
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,11 +38,13 @@ import com.iti.pocketshop.features.login.presentation.viewmodel.LoginViewModel
 @Composable
 fun LoginRoot(
     openOTP: () -> Unit,
+    openRegister: () -> Unit,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LoginScreen(
         openOTP = openOTP,
+        openRegister = openRegister,
         state = state,
         onAction = viewModel::onAction
     )
@@ -49,76 +53,86 @@ fun LoginRoot(
 @Composable
 fun LoginScreen(
     openOTP: () -> Unit,
+    openRegister: () -> Unit,
     state: LoginState,
     onAction: (LoginAction) -> Unit,
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState())
-                .imePadding(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .imePadding()
         ) {
-            Text(
+             Text(
                 text = "Continue as guest",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .align(Alignment.TopEnd)
                     .padding(top = 16.dp)
-                    .clickable { onAction(LoginAction.ContinueAsGuestClicked) },
-                textAlign = androidx.compose.ui.text.style.TextAlign.End
+                    .clickable { onAction(LoginAction.ContinueAsGuestClicked) }
             )
 
-            LoginHeader()
+             Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LoginHeader()
 
-            AuthTextField(
-                label = "Email",
-                value = state.email,
-                onValueChange = { onAction(LoginAction.EmailChanged(it)) },
-                placeholder = "sofia@example.com",
-                modifier = Modifier.padding(top = 32.dp),
-                leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) }
-            )
+                AuthTextField(
+                    label = "Email",
+                    value = state.email,
+                    onValueChange = { onAction(LoginAction.EmailChanged(it)) },
+                    placeholder = "sofia@example.com",
+                    modifier = Modifier.padding(top = 32.dp),
+                    isError = state.emailError != null || state.generalError != null,
+                    errorMessage = state.emailError,
+                    leadingIcon = { Icon(Icons.Outlined.Email, contentDescription = null) }
+                )
 
-            PasswordField(
-                value = state.password,
-                onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
-                modifier = Modifier.padding(top = 16.dp)
-            )
+                PasswordField(
+                    value = state.password,
+                    onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
+                    modifier = Modifier.padding(top = 16.dp),
+                    isError = state.passwordError != null || state.generalError != null,
+                    errorMessage = state.passwordError ?: state.generalError
+                )
 
-            ForgotPasswordLink(
-                onClick = { onAction(LoginAction.ForgotPasswordClicked) },
-                modifier = Modifier.padding(top = 8.dp)
-            )
+                ForgotPasswordLink(
+                    onClick = { onAction(LoginAction.ForgotPasswordClicked) },
+                    modifier = Modifier.padding(top = 8.dp)
+                )
 
-            LoginActionButton(
-                text = "Log in",
-                onClick = { onAction(LoginAction.LoginClicked) },
-                enabled = !state.isLoading,
-                modifier = Modifier.padding(top = 16.dp)
-            )
+                LoginActionButton(
+                    text = "Log in",
+                    onClick = { onAction(LoginAction.LoginClicked) },
+                    enabled = !state.isLoading,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
 
-            DividerWithText(
-                text = "or continue with",
-                modifier = Modifier.padding(vertical = 24.dp)
-            )
+                DividerWithText(
+                    text = "or continue with",
+                    modifier = Modifier.padding(vertical = 24.dp)
+                )
 
-            SocialSignInButton(
-                text = "Continue with Google",
-                onClick = { onAction(LoginAction.GoogleLoginClicked) },
-            )
+                SocialSignInButton(
+                    text = "Continue with Google",
+                    onClick = { onAction(LoginAction.GoogleLoginClicked) },
+                )
 
-            LoginFooter(
-                onCreateAccountClick = { onAction(LoginAction.CreateAccountClicked) },
-                modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
-            )
+                LoginFooter(
+                    onCreateAccountClick = openRegister,
+                    modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)
+                )
+            }
         }
     }
 }
+

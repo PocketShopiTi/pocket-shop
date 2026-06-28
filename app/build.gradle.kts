@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt.android)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.tv.material)
+    implementation("com.google.firebase:firebase-auth")
     testImplementation(libs.junit)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -121,4 +123,8 @@ dependencies {
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
+
+    // firebase auth
+    implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
+    implementation("com.google.firebase:firebase-analytics")
 }

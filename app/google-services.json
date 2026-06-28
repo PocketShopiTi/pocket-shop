@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "11339396968",
-    "project_id": "pocket-shop-123",
-    "storage_bucket": "pocket-shop-123.firebasestorage.app"
+    "project_number": "925942644827",
+    "project_id": "pocketshop-baa80",
+    "storage_bucket": "pocketshop-baa80.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:11339396968:android:0c2b79bceaca92bc2fc8dd",
+        "mobilesdk_app_id": "1:925942644827:android:442fd98082545093193f7e",
         "android_client_info": {
-          "package_name": "com.company.pocketshop"
+          "package_name": "com.iti.pocketshop"
         }
       },
       "oauth_client": [
         {
-          "client_id": "11339396968-4o2kptgmtt51ts1gnka9fk88pdc2l9h7.apps.googleusercontent.com",
+          "client_id": "925942644827-uqntj66b74dgabpab8hcvii9ijq9bhqp.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDuO8T2xhrWRooAyADNnnCUmiVYSeF0gr0"
+          "current_key": "AIzaSyA2hVCnwf7Y4rXu2R8h9G3xBpM-mkoDRTI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "11339396968-4o2kptgmtt51ts1gnka9fk88pdc2l9h7.apps.googleusercontent.com",
+              "client_id": "925942644827-uqntj66b74dgabpab8hcvii9ijq9bhqp.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

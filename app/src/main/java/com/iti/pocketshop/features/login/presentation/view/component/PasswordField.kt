@@ -24,6 +24,8 @@ fun PasswordField(
     modifier: Modifier = Modifier,
     label: String = "Password",
     placeholder: String = "••••••••",
+    isError: Boolean = false,
+    errorMessage: String? = null,
 ) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
@@ -33,6 +35,8 @@ fun PasswordField(
         onValueChange = onValueChange,
         placeholder = placeholder,
         modifier = modifier,
+        isError = isError,
+        errorMessage = errorMessage,
         keyboardType = KeyboardType.Password,
         leadingIcon = {
             Icon(
@@ -58,4 +62,4 @@ fun PasswordField(
 @Composable
 private fun PasswordFieldPreview() {
     PasswordField(value = "", onValueChange = {})
-}
+}
