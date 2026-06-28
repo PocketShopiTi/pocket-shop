@@ -6,5 +6,5 @@ import com.iti.pocketshop.features.login.domain.repository.LoginRepository
 import javax.inject.Inject
 
 class LoginWithGoogleUseCase @Inject constructor(private val repository: LoginRepository) {
-    suspend operator fun invoke(): LoginResult = repository.loginWithGoogle()
+    suspend operator fun invoke(idToken: String): LoginResult = repository.loginWithGoogle(idToken)
 }

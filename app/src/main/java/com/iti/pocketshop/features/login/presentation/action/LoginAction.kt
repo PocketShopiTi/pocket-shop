@@ -5,6 +5,6 @@ sealed class LoginAction {
     data class PasswordChanged(val value: String) : LoginAction()
     object TogglePasswordVisibility : LoginAction()
     object LoginClicked : LoginAction()
-    object GoogleLoginClicked : LoginAction()
+    data class GoogleLoginSubmitted(val idToken: String) : LoginAction()
     object ContinueAsGuestClicked : LoginAction()
 }

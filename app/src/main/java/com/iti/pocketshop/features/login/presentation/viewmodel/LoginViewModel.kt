@@ -30,7 +30,7 @@ class LoginViewModel @Inject constructor(
         when (action) {
             is LoginAction.LoginClicked -> login()
 
-            is LoginAction.GoogleLoginClicked -> googleLogin()
+            is LoginAction.GoogleLoginSubmitted -> googleLogin(action.idToken)
 
             is LoginAction.ContinueAsGuestClicked -> continueAsGuest()
 
@@ -84,11 +84,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun googleLogin() {
+    private fun googleLogin(idToken: String) {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, generalError = null) }
 
-            val result = loginWithGoogleUseCase()
+            val result = loginWithGoogleUseCase(idToken)
 
             _state.update { currentState ->
                 when (result) {
