@@ -55,3 +55,16 @@ fun SizeOption(
         )
     }
 }
+
+@Composable
+fun GenericOption(
+    label: String,
+    selected: Boolean,
+    enabled: Boolean,
+    onClick: () -> Unit,
+) = SizeOption(
+    label = label,
+    selected = selected,
+    enabled = enabled,
+    onClick = onClick,
+)

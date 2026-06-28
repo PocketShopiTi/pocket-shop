@@ -17,10 +17,13 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
+import coil3.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @Composable
 fun ColourSwatch(
-    colour: Color,
+    colour: Color?,
+    imageUrl: String?,
     label: String,
     selected: Boolean,
     enabled: Boolean,
@@ -39,7 +42,24 @@ fun ColourSwatch(
             )
             .padding(3.dp)
             .clip(CircleShape)
-            .background(colour.copy(alpha = if (enabled) 1f else 0.35f))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable(enabled = enabled, onClick = onClick),
-    )
+    ) {
+        when {
+            imageUrl != null -> AsyncImage(
+                model = imageUrl,
+                contentDescription = label,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape),
+            )
+            colour != null -> Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .clip(CircleShape)
+                    .background(colour.copy(alpha = if (enabled) 1f else 0.35f)),
+            )
+        }
+    }
 }

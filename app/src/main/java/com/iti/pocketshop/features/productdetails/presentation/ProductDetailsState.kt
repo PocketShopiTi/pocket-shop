@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.productdetails.presentation
 
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
+import com.iti.pocketshop.features.productdetails.domain.entity.Money
 
 data class ProductDetailsState(
     val productId: String = "",
@@ -11,6 +12,7 @@ data class ProductDetailsState(
     val quantity: Int = 1,
     val isDescriptionExpanded: Boolean = false,
     val isFavorite: Boolean = false,
+    val isAddedToCart: Boolean = false,
     val isLoading: Boolean = true,
     val errorMessage: String? = null,
 ) {
@@ -20,6 +22,11 @@ data class ProductDetailsState(
             return product?.variants?.firstOrNull { variant ->
                 variant.selectedOptionValueIds == selectedValues
             }
+        }
+
+    val totalPrice: Money?
+        get() = selectedVariant?.price?.let { price ->
+            price.copy(amount = price.amount * quantity)
         }
 
     fun isOptionValueAvailable(optionId: String, valueId: String): Boolean {

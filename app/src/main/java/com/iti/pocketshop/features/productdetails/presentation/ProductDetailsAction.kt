@@ -12,4 +12,5 @@ sealed interface ProductDetailsAction {
     data object BackClicked : ProductDetailsAction
     data object SeeAllReviewsClicked : ProductDetailsAction
     data object AddToCartClicked : ProductDetailsAction
+    data object CartFeedbackFinished : ProductDetailsAction
 }

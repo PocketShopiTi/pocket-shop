@@ -4,6 +4,7 @@ import com.iti.pocketshop.features.productdetails.domain.entity.Money
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOption
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionType
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionValue
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
@@ -56,8 +57,8 @@ internal object ProductDetailsMockData {
                 ),
             ),
             options = listOf(
-                ProductOption("colour", "Colour", colours),
-                ProductOption("size", "Size", sizes),
+                ProductOption("colour", "Colour", ProductOptionType.COLOR, colours),
+                ProductOption("size", "Size", ProductOptionType.SIZE, sizes),
             ),
             variants = variants,
             rating = 4.3,

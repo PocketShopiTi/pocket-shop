@@ -6,6 +6,7 @@ import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -19,7 +20,9 @@ class ProductDetailsViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(ProductDetailsState())
     val state = _state.asStateFlow()
+
     private var loadJob: Job? = null
+    private var cartFeedbackJob: Job? = null
 
     private fun loadProduct(productId: String, force: Boolean = false) {
         if (!force && _state.value.productId == productId && _state.value.product != null) return
@@ -31,6 +34,7 @@ class ProductDetailsViewModel @Inject constructor(
                 errorMessage = null,
             )
         }
+
         loadJob?.cancel()
         loadJob = viewModelScope.launch {
             getProductDetails(productId)
@@ -50,12 +54,11 @@ class ProductDetailsViewModel @Inject constructor(
     }
 
     private fun showProduct(product: ProductDetails) {
-        val defaultVariant = product.variants.firstOrNull { it.availableForSale }
-            ?: product.variants.firstOrNull()
         val selectedOptions = product.options.mapNotNull { option ->
             val selectedValue = option.values.firstOrNull { value ->
-                value.id in defaultVariant?.selectedOptionValueIds.orEmpty()
+                value.id in product.defaultVariant?.selectedOptionValueIds.orEmpty()
             } ?: option.values.firstOrNull()
+
             selectedValue?.let { option.id to it.id }
         }.toMap()
 
@@ -72,7 +75,27 @@ class ProductDetailsViewModel @Inject constructor(
         when (action) {
             is ProductDetailsAction.ProductChanged -> loadProduct(action.productId)
             ProductDetailsAction.Retry -> loadProduct(_state.value.productId, force = true)
+            ProductDetailsAction.AddToCartClicked -> showAddToCartFeedback()
             else -> _state.update { current -> reduceProductDetails(current, action) }
         }
+    }
+
+    private fun showAddToCartFeedback() {
+        if (_state.value.selectedVariant?.availableForSale != true) return
+
+        _state.update { current ->
+            reduceProductDetails(current, ProductDetailsAction.AddToCartClicked)
+        }
+        cartFeedbackJob?.cancel()
+        cartFeedbackJob = viewModelScope.launch {
+            delay(CART_FEEDBACK_DURATION_MILLIS)
+            _state.update { current ->
+                reduceProductDetails(current, ProductDetailsAction.CartFeedbackFinished)
+            }
+        }
+    }
+
+    private companion object {
+        const val CART_FEEDBACK_DURATION_MILLIS = 1_200L
     }
 }

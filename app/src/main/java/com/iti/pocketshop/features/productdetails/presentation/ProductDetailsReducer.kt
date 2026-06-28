@@ -30,5 +30,13 @@ internal fun reduceProductDetails(
     ProductDetailsAction.IncreaseQuantity -> state.copy(
         quantity = (state.quantity + 1).coerceAtMost(99),
     )
+    ProductDetailsAction.AddToCartClicked -> if (
+        state.selectedVariant?.availableForSale == true
+    ) {
+        state.copy(isAddedToCart = true)
+    } else {
+        state
+    }
+    ProductDetailsAction.CartFeedbackFinished -> state.copy(isAddedToCart = false)
     else -> state
 }

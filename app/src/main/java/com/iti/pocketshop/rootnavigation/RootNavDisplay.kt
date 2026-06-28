@@ -45,7 +45,7 @@ fun RootNavDisplay() {
                 }
             }
         },
-        Route.ProductDetails("gid://shopify/Product/8628586741933")
+        Route.Onboarding
     )
 
     NavDisplay(
