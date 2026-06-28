@@ -14,14 +14,14 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.iti.pocketshop.features.aichat.AiChatRoot
 import com.iti.pocketshop.features.login.LoginRoot
-import com.iti.pocketshop.features.onboarding.presentation.view.OnboardingRoot
+import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.ProductDetailsRoot
 import com.iti.pocketshop.features.register.RegisterRoot
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
-import com.iti.pocketshop.features.splash.presention.view.SplashRoot
+import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic

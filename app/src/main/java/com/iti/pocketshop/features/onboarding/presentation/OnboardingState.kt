@@ -1,8 +1,7 @@
-package com.iti.pocketshop.features.onboarding.data.state
+package com.iti.pocketshop.features.onboarding.presentation
 
 import com.iti.pocketshop.features.onboarding.data.datasource.defaultPages
 import com.iti.pocketshop.features.onboarding.domain.model.OnboardingPage
-import kotlin.collections.lastIndex
 
 data class OnboardingState(
     val pages: List<OnboardingPage> = defaultPages,

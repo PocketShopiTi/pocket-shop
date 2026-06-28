@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.onboarding.presentation.view.components
+package com.iti.pocketshop.features.onboarding.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -75,7 +76,7 @@ fun OnboardingPage3Hero(
                 iconRes = R.drawable.onboarding_checkout,
                 iconTint = Color(0xFF2E9E6B),
                 iconBgColor = Color(0xFFE8F5F0),
-                iconBgShape = androidx.compose.foundation.shape.CircleShape,
+                iconBgShape = CircleShape,
                 title = stringResource(R.string.onboarding_order_confirmed),
                 subtitle = stringResource(R.string.onboarding_order_id),
                 scale = 1f, alpha = 1f, translationY = 0f,

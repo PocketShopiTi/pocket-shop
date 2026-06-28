@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.onboarding.presentation.view.components
+package com.iti.pocketshop.features.onboarding.presentation.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -71,7 +72,7 @@ fun ProductSuggestionCard(
                 Text(
                     text = title,
                     fontSize = 13.sp,
-                    fontFamily = androidx.compose.ui.text.font.FontFamily.Serif,
+                    fontFamily = FontFamily.Serif,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFF1A1A1A)
                 )

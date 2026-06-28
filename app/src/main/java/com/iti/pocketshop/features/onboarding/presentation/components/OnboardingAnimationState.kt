@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.onboarding.presentation.view.components
+package com.iti.pocketshop.features.onboarding.presentation.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationSpec
