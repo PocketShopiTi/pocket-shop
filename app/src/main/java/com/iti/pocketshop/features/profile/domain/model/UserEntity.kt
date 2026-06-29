@@ -5,4 +5,5 @@ data class UserEntity(
     val name: String,
     val email: String,
     val imageUrl: String?,
+    val memberSinceEpochMillis: Long?,
 )

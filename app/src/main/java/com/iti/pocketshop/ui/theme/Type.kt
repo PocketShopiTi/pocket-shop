@@ -49,3 +49,11 @@ val Typography = Typography(
     labelMedium = baseline.labelMedium.copy(fontFamily = InterFontFamily),
     labelSmall = baseline.labelSmall.copy(fontFamily = InterFontFamily),
 )
+
+val FrauncesFontFamily = FontFamily(
+    Font(resId = R.font.fraunces),
+)
+
+val PlusJakartaSansFontFamily = FontFamily(
+    Font(resId = R.font.plus_jakarta_sans),
+)

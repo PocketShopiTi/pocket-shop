@@ -32,6 +32,8 @@ fun NestedNavDisplay(
     logout: () -> Unit,
     openServiceOrder: (String) -> Unit,
     openSettings: () -> Unit,
+    openLogin: () -> Unit,
+    openRegister: () -> Unit,
 ) {
 
     val nestedBackStack = rememberNavBackStack(
@@ -103,7 +105,12 @@ fun NestedNavDisplay(
                 }
                 entry<Route.NestedNav.Profile> {
                     ProfileRoot(
+                        openLogin = openLogin,
+                        openRegister = openRegister,
                         openSettings = openSettings,
+                        openWishList = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
+                        },
                         logout = logout,
                     )
                 }

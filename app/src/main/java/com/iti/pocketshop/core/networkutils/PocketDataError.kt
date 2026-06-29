@@ -12,6 +12,17 @@ sealed interface PocketDataError : Error {
         SERIALIZATION,
         UNKNOWN
     }
+
+    enum class Auth : PocketDataError {
+        INVALID_CREDENTIALS,
+        EMAIL_ALREADY_IN_USE,
+        WEAK_PASSWORD,
+        USER_NOT_FOUND,
+        NO_INTERNET,
+        USER_DISABLED,
+        EMAIL_NOT_VERIFIED,
+        UNKNOWN,
+    }
 }
 
 fun PocketDataError.toUserMessage(context: Context): String = when (this) {
@@ -21,4 +32,12 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.SERVER -> context.getString(R.string.server_error)
     PocketDataError.Remote.SERIALIZATION -> context.getString(R.string.failed_to_process_response)
     PocketDataError.Remote.UNKNOWN -> context.getString(R.string.something_went_wrong)
+    PocketDataError.Auth.INVALID_CREDENTIALS -> context.getString(R.string.error_invalid_credentials)
+    PocketDataError.Auth.EMAIL_ALREADY_IN_USE -> context.getString(R.string.error_email_already_in_use)
+    PocketDataError.Auth.WEAK_PASSWORD -> context.getString(R.string.error_weak_password)
+    PocketDataError.Auth.USER_NOT_FOUND -> context.getString(R.string.error_user_not_found)
+    PocketDataError.Auth.NO_INTERNET -> context.getString(R.string.error_network)
+    PocketDataError.Auth.USER_DISABLED -> context.getString(R.string.error_user_disabled)
+    PocketDataError.Auth.EMAIL_NOT_VERIFIED -> context.getString(R.string.error_email_not_verified)
+    PocketDataError.Auth.UNKNOWN -> context.getString(R.string.error_unknown)
 }

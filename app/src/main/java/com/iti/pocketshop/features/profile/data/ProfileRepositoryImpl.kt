@@ -1,28 +1,31 @@
 package com.iti.pocketshop.features.profile.data
 
-import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.core.networkutils.safeFirebaseCall
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
+import com.iti.pocketshop.features.profile.domain.model.ProfileSession
 import com.iti.pocketshop.features.profile.domain.model.ProfileStats
-import com.iti.pocketshop.features.profile.domain.model.UserEntity
 import com.iti.pocketshop.features.profile.domain.repository.ProfileRepository
-import jakarta.inject.Inject
-import java.util.Date
+import javax.inject.Inject
 
-class ProfileRepositoryImpl @Inject constructor() : ProfileRepository {
-    override suspend fun getUserData(): PocketResult<UserEntity, PocketDataError.Remote> {
-        Log.i("ProfileRepositoryImpl", "Fetching user data")
-        return PocketResult.Success(
-            UserEntity(
-                id = "1",
-                name = "Mahmoud ELDemerdash",
-                email = "mahmoudeldemerdash5@gmail.com",
-                imageUrl = "",
-            )
-        )
-    }
+class ProfileRepositoryImpl @Inject constructor(
+    private val firebaseAuth: FirebaseAuth,
+) : ProfileRepository {
+
+    override suspend fun getUserSession(): PocketResult<ProfileSession, PocketDataError.Auth> =
+        safeFirebaseCall {
+            val currentUser = firebaseAuth.currentUser
+            if (currentUser == null || currentUser.isAnonymous) {
+                return@safeFirebaseCall ProfileSession.Guest
+            } else {
+                return@safeFirebaseCall ProfileSession.Authenticated(
+                    currentUser.toUserEntity()
+                )
+            }
+        }
 
     override suspend fun getProfileStats(userId: String): PocketResult<ProfileStats, PocketDataError.Remote> {
         return PocketResult.Success(
@@ -41,27 +44,30 @@ class ProfileRepositoryImpl @Inject constructor() : ProfileRepository {
         return PocketResult.Success(
             listOf(
                 OrderEntity(
-                    id = "1",
-                    status = OrderStatus.SHIPPED,
-                    price = 100.0,
-                    date = Date(),
-                    imageUrl = null
-                ),
-                OrderEntity(
-                    id = "2",
-                    status = OrderStatus.PROCESSING,
-                    price = 100.0,
-                    date = Date(),
-                    imageUrl = null
-                ),
-                OrderEntity(
-                    id = "3",
+                    id = "PK-2026-0847",
                     status = OrderStatus.DELIVERED,
-                    price = 100.0,
-                    date = Date(),
-                    imageUrl = null
+                    total = 778.50,
+                    currencyCode = "USD",
+                    imageUrl = null,
                 ),
-            )
+                OrderEntity(
+                    id = "PK-2026-0612",
+                    status = OrderStatus.PROCESSING,
+                    total = 249.00,
+                    currencyCode = "USD",
+                    imageUrl = null,
+                ),
+                OrderEntity(
+                    id = "PK-2026-0481",
+                    status = OrderStatus.DELIVERED,
+                    total = 437.25,
+                    currencyCode = "USD",
+                    imageUrl = null,
+                ),
+            ).take(count)
         )
     }
+
+    override suspend fun signOut(): PocketResult<Unit, PocketDataError.Auth> =
+        safeFirebaseCall { firebaseAuth.signOut() }
 }

@@ -19,20 +19,24 @@ import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
 
 @Composable
-internal fun LoadingContent(modifier: Modifier = Modifier) {
-    val loadingDescription = stringResource(R.string.product_details_loading)
+fun ProfileLoadingContent(modifier: Modifier = Modifier) {
+    val description = stringResource(R.string.profile_loading)
     Box(
         modifier = modifier
             .fillMaxSize()
-            .semantics { contentDescription = loadingDescription },
+            .semantics { contentDescription = description },
         contentAlignment = Alignment.Center,
     ) {
-        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+        CircularProgressIndicator()
     }
 }
 
 @Composable
-internal fun ErrorContent(modifier: Modifier = Modifier, onRetry: () -> Unit) {
+fun ProfileErrorContent(
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -41,12 +45,12 @@ internal fun ErrorContent(modifier: Modifier = Modifier, onRetry: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = stringResource(R.string.profile_error),
+            text = message,
             color = MaterialTheme.colorScheme.onBackground,
             style = MaterialTheme.typography.bodyLarge,
         )
         Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) {
-            Text(stringResource(R.string.product_details_retry))
+            Text(stringResource(R.string.profile_retry))
         }
     }
 }

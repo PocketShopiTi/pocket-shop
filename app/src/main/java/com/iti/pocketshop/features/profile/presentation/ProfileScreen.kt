@@ -1,159 +1,138 @@
 package com.iti.pocketshop.features.profile.presentation
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.compose.AsyncImage
+import com.iti.pocketshop.core.components.ObserveEvent
+import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.features.profile.domain.model.OrderEntity
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus
+import com.iti.pocketshop.features.profile.domain.model.ProfileData
+import com.iti.pocketshop.features.profile.domain.model.ProfileStats
 import com.iti.pocketshop.features.profile.domain.model.UserEntity
-import com.iti.pocketshop.features.profile.presentation.components.ErrorContent
-import com.iti.pocketshop.features.profile.presentation.components.LoadingContent
+import com.iti.pocketshop.features.profile.presentation.components.GuestProfileScreen
+import com.iti.pocketshop.features.profile.presentation.components.LoggedInProfileScreen
+import com.iti.pocketshop.features.profile.presentation.components.ProfileErrorContent
+import com.iti.pocketshop.ui.theme.PocketShopTheme
 
 @Composable
 fun ProfileRoot(
-    openSettings: () -> Unit,
+    openLogin: () -> Unit,
+    openRegister: () -> Unit,
     openOrders: () -> Unit = {},
+    openSettings: () -> Unit,
     openAddresses: () -> Unit = {},
     openWishList: () -> Unit = {},
     logout: () -> Unit,
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-
-    when {
-        state.isLoading -> LoadingContent()
-        state.errorMessage != null || state.user == null -> ErrorContent(
-            onRetry = {
-                viewModel.onAction(ProfileAction.Retry)
-            }
-        )
-
-        else -> ProfileScreen(
-            openSettings = openSettings,
-            openOrders = openOrders,
-            openAddresses = openAddresses,
-            openWishList = openWishList,
-            logout = logout,
-            state = state,
-            onAction = viewModel::onAction
-        )
+    ObserveEvent(viewModel.events) { event ->
+        when (event) {
+            ProfileEvent.LoggedOut -> logout()
+        }
     }
+
+    ProfileScreen(
+        state = state,
+        onAction = { viewModel.onAction(action = it) },
+        openLogin = openLogin,
+        openRegister = openRegister,
+        openSettings = openSettings,
+        openOrders = openOrders,
+        openAddresses = openAddresses,
+        openWishList = openWishList,
+    )
 }
 
 @Composable
 fun ProfileScreen(
+    state: ProfileState,
+    onAction: (ProfileAction) -> Unit,
+    openLogin: () -> Unit,
+    openRegister: () -> Unit,
     openSettings: () -> Unit,
     openOrders: () -> Unit = {},
     openAddresses: () -> Unit = {},
     openWishList: () -> Unit = {},
-    logout: () -> Unit,
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(
-            modifier = Modifier.size(12.5.dp)
+    val context = LocalContext.current
+    when {
+        state.error != null -> ProfileErrorContent(
+            message = state.error.toUserMessage(context),
+            onRetry = { onAction(ProfileAction.Retry) },
         )
-        UserInfoRow(state.user!!)
 
-        Box(
+        state.profile is ProfileData.Authenticated -> LoggedInProfileScreen(
+            profile = state.profile,
+            state = state,
+            onLogoutRequested = { onAction(ProfileAction.LogoutRequested) },
+            onLogoutConfirmed = { onAction(ProfileAction.LogoutConfirmed) },
+            onLogoutDismissed = { onAction(ProfileAction.LogoutDismissed) },
+            openOrders = openOrders,
+            openAddresses = openAddresses,
+            openWishList = openWishList,
+            openSettings = openSettings,
+        )
 
-        ) {
-            Row() {
-                Column() {
-                }
-            }
-        }
+        else -> GuestProfileScreen(
+            openLogin = openLogin,
+            openRegister = openRegister,
+            openSettings = openSettings,
+        )
     }
 }
 
-@Composable
-fun UserInfoRow(user: UserEntity) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .border(
-                    1.67.dp,
-                    MaterialTheme.colorScheme.inversePrimary.copy(alpha = 0.3f),
-                    CircleShape
-                )
-        ) {
-            if (user.imageUrl != null) {
-                AsyncImage(
-                    model = user.imageUrl,
-                    contentDescription = "User Image",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape)
 
-                )
-            } else {
-                Text(
-                    text = user.name.take(1).uppercase(),
-                    modifier = Modifier.align(Alignment.Center),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-        Spacer(modifier = Modifier.size(16.dp))
-        Column() {
-            Text(text = "Welcome")
-            Text(text = user.name)
-            Text(text = user.email)
-        }
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun GuestProfilePreview() {
+    PocketShopTheme {
+        ProfileScreen(
+            state = ProfileState(isLoading = false, profile = ProfileData.Guest),
+            onAction = {},
+            openLogin = {},
+            openRegister = {},
+            openSettings = {},
+        )
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(
-        openSettings = {},
-        logout = {},
-        state = ProfileState(
-            isLoading = false,
-            user = UserEntity(
-                id = "1",
-                name = "Mahmoud ELDemerdash",
-                email = "mahmoudeldemerdash5@gmail.com",
-                imageUrl = null
-            )
-        ),
-        onAction = {}
-    )
+private fun LoggedInProfilePreview() {
+    PocketShopTheme {
+        ProfileScreen(
+            state = ProfileState(
+                isLoading = false,
+                profile = ProfileData.Authenticated(
+                    user = UserEntity(
+                        id = "preview-user",
+                        name = "Sofia Chen",
+                        email = "sofia@example.com",
+                        imageUrl = null,
+                        memberSinceEpochMillis = 1_709_251_200_000,
+                    ),
+                    stats = ProfileStats(ordersCount = 12, wishListCount = 4, addressesCount = 2),
+                    recentOrders = listOf(
+                        OrderEntity(
+                            id = "PK-2026-0847",
+                            status = OrderStatus.DELIVERED,
+                            total = 778.50,
+                            currencyCode = "USD",
+                            imageUrl = null,
+                        )
+                    ),
+                ),
+            ),
+            onAction = {},
+            openLogin = {},
+            openRegister = {},
+            openSettings = {},
+        )
+    }
 }

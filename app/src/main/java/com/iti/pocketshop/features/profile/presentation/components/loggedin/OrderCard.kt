@@ -1,0 +1,124 @@
+package com.iti.pocketshop.features.profile.presentation.components.loggedin
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import com.iti.pocketshop.R
+import com.iti.pocketshop.features.profile.domain.model.OrderEntity
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus
+import com.iti.pocketshop.ui.theme.FrauncesFontFamily
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
+import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
+import java.text.NumberFormat
+import java.util.Currency
+
+
+@Composable
+fun RecentOrderCard(order: OrderEntity) {
+    Surface(
+        modifier = Modifier
+            .width(148.dp)
+            .heightIn(min = 188.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+    ) {
+        Column {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(88.dp)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center,
+            ) {
+                if (order.imageUrl.isNullOrBlank()) {
+                    Icon(
+                        imageVector = Icons.Outlined.Inventory2,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                } else {
+                    AsyncImage(
+                        model = order.imageUrl,
+                        contentDescription = stringResource(R.string.profile_order_image, order.id),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+            }
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = order.id,
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontFamily = PlusJakartaSansFontFamily,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                OrderStatusChip(order.status, Modifier.padding(top = 6.dp))
+                Text(
+                    text = remember(order.total, order.currencyCode) {
+                        NumberFormat.getCurrencyInstance().apply {
+                            currency = Currency.getInstance(order.currencyCode)
+                        }.format(order.total)
+                    },
+                    modifier = Modifier.padding(top = 6.dp),
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = FrauncesFontFamily,
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OrderStatusChip(status: OrderStatus, modifier: Modifier = Modifier) {
+    val extendedColors = LocalExtendedColors.current
+    val (label, color) = when (status) {
+        OrderStatus.PENDING -> stringResource(R.string.profile_status_pending) to extendedColors.info
+        OrderStatus.PROCESSING -> stringResource(R.string.profile_status_processing) to extendedColors.warning
+        OrderStatus.SHIPPED -> stringResource(R.string.profile_status_shipped) to extendedColors.info
+        OrderStatus.DELIVERED -> stringResource(R.string.profile_status_delivered) to extendedColors.success
+        OrderStatus.CANCELLED -> stringResource(R.string.profile_status_cancelled) to extendedColors.error
+    }
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(50),
+        color = color.copy(alpha = 0.1f),
+    ) {
+        Text(
+            text = label,
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
+            style = MaterialTheme.typography.labelSmall.copy(
+                fontFamily = PlusJakartaSansFontFamily,
+                fontWeight = FontWeight.Medium,
+            ),
+            color = color,
+        )
+    }
+}
