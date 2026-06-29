@@ -22,45 +22,38 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.iti.pocketshop.features.splash.presention.components.SplashAppIcon
 import com.iti.pocketshop.features.splash.presention.components.SplashSubtitle
 import com.iti.pocketshop.features.splash.presention.components.SplashTitle
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SplashRoot(
-    openLogin: () -> Unit,
-    viewModel: SplashViewModel = hiltViewModel()
+    showNextScreen: () -> Unit
 ) {
 
-    LaunchedEffect(Unit) {
-        viewModel.events.collectLatest { event ->
-            when (event) {
-                SplashAction.NavigateToLogin -> {
-                    delay(2_000L.milliseconds)
-                    openLogin()
-                }
-            }
+    val scope = rememberCoroutineScope()
+
+    SplashScreen {
+        scope.launch {
+            delay(1_000L.milliseconds)
+            showNextScreen()
         }
     }
-
-    SplashScreen(
-         onAction = viewModel::onAction,
-    )
 }
 
 @Composable
 fun SplashScreen(
-     `onAction`: (SplashAction) -> Unit,
+    onFinished: () -> Unit,
 ) {
     val iconScale = remember { Animatable(0f) }
     val titleAlpha = remember { Animatable(0f) }
@@ -107,7 +100,7 @@ fun SplashScreen(
             animationSpec = tween(durationMillis = 400, easing = EaseOutExpo)
         )
 
-        onAction(SplashAction.NavigateToLogin)
+        onFinished()
     }
 
     Box(

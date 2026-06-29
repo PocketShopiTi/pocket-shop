@@ -1,7 +1,8 @@
-package com.iti.pocketshop.features.onboarding.data.datasource
+package com.iti.pocketshop.features.onboarding.presentation.model
+
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.onboarding.domain.model.OnboardingPage
-  val defaultPages = listOf(
+
+val defaultPages = listOf(
     OnboardingPage(
         imageRes = R.drawable.onboarding_shop,
         titleRes = R.string.onboarding_page1_title,

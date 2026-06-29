@@ -68,7 +68,7 @@ fun RootNavDisplay() {
         entryProvider = entryProvider {
             entry<Route.Splash> {
                 SplashRoot(
-                    openLogin = {
+                    showNextScreen = {
                         rootBackStack.apply {
                             clear()
                             navigateSingleTop(Route.Onboarding)

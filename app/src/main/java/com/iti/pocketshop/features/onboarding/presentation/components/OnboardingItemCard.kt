@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 
 sealed class OnboardingCardTrailing {
     data class FavouriteIcon(
-        @DrawableRes val iconRes: Int,
+        @param:DrawableRes val iconRes: Int,
         val tint: Color,
     ) : OnboardingCardTrailing()
 
@@ -46,9 +46,6 @@ sealed class OnboardingCardTrailing {
 fun OnboardingItemCard(
     title: String,
     subtitle: String,
-    scale: Float = 1f,
-    alpha: Float = 1f,
-    translationY: Float = 0f,
     modifier: Modifier = Modifier,
     @DrawableRes imageRes: Int? = null,
     @DrawableRes iconRes: Int? = null,
@@ -80,6 +77,7 @@ fun OnboardingItemCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
                 )
+
                 iconRes != null -> Icon(
                     painter = painterResource(id = iconRes),
                     contentDescription = null,
@@ -113,6 +111,7 @@ fun OnboardingItemCard(
                 tint = t.tint,
                 modifier = Modifier.size(20.dp),
             )
+
             is OnboardingCardTrailing.QuantityStepper -> QuantityControl(qty = t.quantity)
             OnboardingCardTrailing.None -> Unit
         }
@@ -128,8 +127,8 @@ private fun QuantityControl(qty: Int) {
             .border(1.dp, Color(0xFFE0DAD5), RoundedCornerShape(20.dp))
             .padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
-        Text("−", fontSize = 14.sp, fontWeight = FontWeight.Bold,    color = Color(0xFF555555))
+        Text("−", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF555555))
         Text("$qty", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1A1A1A))
-        Text("+", fontSize = 14.sp, fontWeight = FontWeight.Bold,    color = Color(0xFFB5673A))
+        Text("+", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFFB5673A))
     }
 }

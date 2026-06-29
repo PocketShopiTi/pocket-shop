@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.onboarding.presentation
 
-import com.iti.pocketshop.features.onboarding.data.datasource.defaultPages
-import com.iti.pocketshop.features.onboarding.domain.model.OnboardingPage
+import com.iti.pocketshop.features.onboarding.presentation.model.OnboardingPage
+import com.iti.pocketshop.features.onboarding.presentation.model.defaultPages
 
 data class OnboardingState(
     val pages: List<OnboardingPage> = defaultPages,

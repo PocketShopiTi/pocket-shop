@@ -13,9 +13,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,9 +29,9 @@ fun OnboardingPage3Hero(
     val anim = rememberOnboardingAnimState(itemCount = 3, staggerMs = 180L)
 
     fun animModifier(i: Int) = Modifier.graphicsLayer {
-        scaleX      = anim.scales[i].value
-        scaleY      = anim.scales[i].value
-        alpha       = anim.alphas[i].value
+        scaleX = anim.scales[i].value
+        scaleY = anim.scales[i].value
+        alpha = anim.alphas[i].value
         translationY = anim.offsetYs[i].value
     }
 
@@ -55,7 +55,6 @@ fun OnboardingPage3Hero(
                 title = stringResource(R.string.onboarding_product1_title),
                 subtitle = stringResource(R.string.onboarding_product1_price),
                 subtitleColor = Color(0xFFB5673A),
-                scale = 1f, alpha = 1f, translationY = 0f,
                 trailing = OnboardingCardTrailing.FavouriteIcon(
                     iconRes = R.drawable.ic_favorites_filled,
                     tint = Color(0xFFB5673A),
@@ -67,7 +66,6 @@ fun OnboardingPage3Hero(
                 imageRes = R.drawable.image6,
                 title = stringResource(R.string.onboarding_product2_title),
                 subtitle = stringResource(R.string.onboarding_product2_price),
-                scale = 1f, alpha = 1f, translationY = 0f,
                 trailing = OnboardingCardTrailing.QuantityStepper(quantity = 2),
             )
 
@@ -79,7 +77,6 @@ fun OnboardingPage3Hero(
                 iconBgShape = CircleShape,
                 title = stringResource(R.string.onboarding_order_confirmed),
                 subtitle = stringResource(R.string.onboarding_order_id),
-                scale = 1f, alpha = 1f, translationY = 0f,
             )
         }
 
@@ -91,7 +88,7 @@ fun OnboardingPage3Hero(
                     Brush.verticalGradient(
                         colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
                         startY = 500f,
-                        endY   = 900f,
+                        endY = 900f,
                     )
                 )
         )
