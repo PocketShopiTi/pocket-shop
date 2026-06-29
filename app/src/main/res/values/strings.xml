@@ -118,4 +118,7 @@
     <string name="error_user_not_found">No account found with this email</string>
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
+    
+    <string name="profile_error">We couldn’t load user info.</string>
+
 </resources>

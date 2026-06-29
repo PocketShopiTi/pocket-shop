@@ -47,7 +47,7 @@ fun RootNavDisplay() {
                 }
             }
         },
-        Route.Splash
+        Route.NestedNav
     )
 
     NavDisplay(
