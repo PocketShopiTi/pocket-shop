@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp"
+    android:height="280dp"
+    android:viewportWidth="320"
+    android:viewportHeight="280">
+
+    <!-- Background circle -->
+    <path
+        android:fillColor="#FFF4EFE6"
+        android:pathData="M160,140 m-120,0 a120,120 0 1,0 240,0 a120,120 0 1,0 -240,0" />
+
+    <!-- Shopping bag body -->
+    <path
+        android:fillColor="#FFC0653B"
+        android:pathData="M120,120 L200,120 L215,210 L105,210 Z" />
+
+    <!-- Bag handle left -->
+    <path
+        android:fillColor="#FF663E00"
+        android:pathData="M135,120 Q130,95 145,90 Q160,85 160,100 L160,120"
+        android:strokeWidth="8"
+        android:strokeColor="#FF663E00"
+        android:fillAlpha="0" />
+
+    <!-- Bag handle right -->
+    <path
+        android:fillColor="#FF663E00"
+        android:pathData="M185,120 Q190,95 175,90 Q160,85 160,100 L160,120"
+        android:strokeWidth="8"
+        android:strokeColor="#FF663E00"
+        android:fillAlpha="0" />
+
+    <!-- Stars / sparkle -->
+    <path
+        android:fillColor="#FFC0653B"
+        android:pathData="M240,80 L243,88 L251,88 L245,93 L247,101 L240,96 L233,101 L235,93 L229,88 L237,88 Z" />
+    <path
+        android:fillColor="#FFFFDDB9"
+        android:pathData="M80,90 L82,96 L88,96 L83,100 L85,106 L80,102 L75,106 L77,100 L72,96 L78,96 Z" />
+</vector>

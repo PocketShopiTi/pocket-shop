@@ -13,14 +13,15 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.iti.pocketshop.features.aichat.AiChatRoot
-import com.iti.pocketshop.features.login.LoginRoot
-import com.iti.pocketshop.features.onboarding.OnboardingRoot
+import com.iti.pocketshop.features.login.presentation.LoginRoot
+import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
-import com.iti.pocketshop.features.register.RegisterRoot
+import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
+import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -32,6 +33,7 @@ fun RootNavDisplay() {
         configuration = SavedStateConfiguration {
             serializersModule = SerializersModule {
                 polymorphic(NavKey::class) {
+                    subclass(Route.Splash::class, Route.Splash.serializer())
                     subclass(Route.Onboarding::class, Route.Onboarding.serializer())
                     subclass(Route.Login::class, Route.Login.serializer())
                     subclass(Route.OTP::class, Route.OTP.serializer())
@@ -45,7 +47,7 @@ fun RootNavDisplay() {
                 }
             }
         },
-        Route.Onboarding
+        Route.Splash
     )
 
     NavDisplay(
@@ -64,6 +66,16 @@ fun RootNavDisplay() {
             )
         },
         entryProvider = entryProvider {
+            entry<Route.Splash> {
+                SplashRoot(
+                    showNextScreen = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.Onboarding)
+                        }
+                    }
+                )
+            }
             entry<Route.Onboarding> {
                 OnboardingRoot(
                     openLogin = {
@@ -76,11 +88,25 @@ fun RootNavDisplay() {
             }
             entry<Route.Login> {
                 LoginRoot(
+                    openHome = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.NestedNav)
+                        }
+                    },
                     openOTP = {
                         rootBackStack.apply {
                             navigateSingleTop(Route.OTP)
                         }
                     },
+                    openRegister = {
+                        rootBackStack.apply {
+                            navigateSingleTop(Route.Register)
+                        }
+                    },
+                    openForgotPassword = {
+                        // TODO: Navigate to Forgot Password Route when implemented
+                    }
                 )
             }
             entry<Route.OTP> {
