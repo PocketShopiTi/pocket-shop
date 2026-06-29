@@ -4,6 +4,45 @@
     <string name="wishlist">Wishlist</string>
     <string name="cart">Cart</string>
     <string name="profile">Profile</string>
+
+    <string name="splash_title">Pocket Shop</string>
+    <string name="splash_subtitle">Boutique, in your pocket</string>
+    <string name="splash_icon_letter">P</string>
+
+    <string name="onboarding_page1_title">Everything you need,\nin one shop</string>
+    <string name="onboarding_page1_subtitle">Browse thousands of products across every category — all in one place.</string>
+    <string name="onboarding_page2_title">Meet your\nshopping assistant</string>
+    <string name="onboarding_page2_subtitle">Tell our AI what you\'re looking for and get picks made just for you.</string>
+    <string name="onboarding_page3_title">Wishlist, cart,\ncheckout — made simple</string>
+    <string name="onboarding_page3_subtitle">Save favorites, track orders, and check out in seconds.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_have_account">I already have an account</string>
+    <string name="onboarding_guest">Continue as guest</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <string name="onboarding_category_women">Women</string>
+    <string name="onboarding_category_men">Men</string>
+    <string name="onboarding_category_shoes">Shoes</string>
+    <string name="onboarding_category_bags">Bags</string>
+    <string name="onboarding_category_beauty">Beauty</string>
+
+    <string name="onboarding_ai_prompt">\"Find me a dress for a wedding\"</string>
+    <string name="onboarding_ai_response">Here are 3 picks made for you ✨</string>
+
+    <string name="onboarding_product1_title">Structured tote, sand</string>
+    <string name="onboarding_product1_price">$329</string>
+    <string name="onboarding_product2_title">Canvas sneaker</string>
+    <string name="onboarding_product2_price">$40.42</string>
+    <string name="onboarding_product3_title">Silk midi dress</string>
+    <string name="onboarding_product3_price">$329</string>
+    <string name="onboarding_product4_title">Wrap dress</string>
+    <string name="onboarding_product4_price">$189</string>
+    <string name="onboarding_product5_title">Linen blazer</string>
+    <string name="onboarding_product5_price">$249</string>
+
+    <string name="onboarding_order_confirmed">Order confirmed!</string>
+    <string name="onboarding_order_id">PK-2026-1024 · $778.50</string>
     <string name="product_details_back">Back</string>
     <string name="product_details_add_favorite">Add to favourites</string>
     <string name="product_details_remove_favorite">Remove from favourites</string>
