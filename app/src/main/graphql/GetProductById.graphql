@@ -3,60 +3,73 @@ query GetProductById($id: ID!) {
         id
         title
         handle
-        vendor
-        productType
-        description
         descriptionHtml
+        description
+        tags
         availableForSale
+        productType
+        vendor
+        category {
+            id
+            name
+        }
+        media(first: 10)  {
+            nodes {
+                id
+                alt
+                mediaContentType
+                previewImage {
+                    altText
+                    url
+                }
+            }
+        }
         featuredImage {
             url
             altText
         }
-        images(first: 10) {
-            edges {
-                node {
-                    id
-                    url
-                    altText
+        images(first: 10) { edges { node { url altText width height } } }
+        options {
+            id
+            name
+            optionValues {
+                name
+                swatch {
+                    color
+                    image {
+                        alt
+                        previewImage {
+                            altText
+                            url
+                        }
+                    }
                 }
             }
+
         }
-        priceRange {
-            minVariantPrice {
-                amount
-                currencyCode
-            }
-            maxVariantPrice {
-                amount
-                currencyCode
-            }
-        }
-        variants(first: 20) {
+        variants(first: 25) {
             edges {
                 node {
                     id
                     title
+                    sku
                     availableForSale
                     quantityAvailable
-                    price {
-                        amount
-                        currencyCode
-                    }
-                    selectedOptions {
-                        name
-                        value
-                    }
-                    image {
-                        url
-                        altText
+                    requiresShipping
+                    selectedOptions { name value }
+                    price { amount currencyCode }
+                    compareAtPrice { amount currencyCode }
+                    image { url altText }
+                    product {
+                        id
                     }
                 }
             }
         }
-        options {
-            id
-            name
-            values
+        priceRange {
+            minVariantPrice { amount currencyCode }
+            maxVariantPrice { amount currencyCode }
         }
+        seo { title description }
     }
 }
