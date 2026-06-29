@@ -42,7 +42,7 @@
     <string name="onboarding_product5_price">$249</string>
 
     <string name="onboarding_order_confirmed">Order confirmed!</string>
-    <string name="onboarding_order_id">PK-2026-1024 · $778.50</string>
+    <string name="onboarding_order_id">PK–2026–1024 · $778.50</string>
     <string name="product_details_back">Back</string>
     <string name="product_details_add_favorite">Add to favourites</string>
     <string name="product_details_remove_favorite">Remove from favourites</string>
