@@ -5,8 +5,6 @@
     <string name="cart">Cart</string>
     <string name="profile">Profile</string>
 
-    <string name="default_web_client_id">925942644827-uqntj66b74dgabpab8hcvii9ijq9bhqp.apps.googleusercontent.com</string>
-
 
     <string name="login_continue_as_guest">Continue as guest</string>
     <string name="login_label_email">Email</string>

@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.login.presentation
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.ui.res.painterResource
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -17,16 +17,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.MainActivity
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.login.presentation.component.AuthTextField
 import com.iti.pocketshop.features.login.presentation.component.DividerWithText
@@ -36,7 +35,6 @@ import com.iti.pocketshop.features.login.presentation.component.LoginFooter
 import com.iti.pocketshop.features.login.presentation.component.LoginHeader
 import com.iti.pocketshop.features.login.presentation.component.PasswordField
 import com.iti.pocketshop.features.login.presentation.component.SocialSignInButton
-import kotlinx.coroutines.launch
 
 @Composable
 fun LoginRoot(
@@ -47,15 +45,14 @@ fun LoginRoot(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val webClientId = stringResource(id = R.string.default_web_client_id)
 
     LaunchedEffect(state.isLoginSuccessful) {
         if (state.isLoginSuccessful) {
             openHome()
         }
     }
+
+    val activity = LocalActivity.current as MainActivity
 
     LoginScreen(
         openOTP = openOTP,
@@ -64,18 +61,14 @@ fun LoginRoot(
         state = state,
         onAction = viewModel::onAction,
         onGoogleSignInClick = {
-            coroutineScope.launch {
-                launchGoogleSignIn(
-                    context = context,
-                    webClientId = webClientId,
-                    onTokenReceived = { idToken ->
-                        viewModel.onAction(LoginAction.GoogleLoginSubmitted(idToken))
-                    },
-                    onError = {
-                        viewModel.onAction(LoginAction.GoogleSignInFailed)
-                    }
-                )
-            }
+            activity.launchGoogleSignIn(
+                onTokenReceived = { idToken ->
+                    viewModel.onAction(LoginAction.GoogleLoginSubmitted(idToken))
+                },
+                onError = {
+                    viewModel.onAction(LoginAction.GoogleSignInFailed)
+                }
+            )
         }
     )
 }
@@ -121,12 +114,17 @@ fun LoginScreen(
                 AuthTextField(
                     label = stringResource(R.string.login_label_email),
                     value = state.email,
-                    onValueChange = { onAction(LoginAction.EmailChanged(it)) }  ,
+                    onValueChange = { onAction(LoginAction.EmailChanged(it)) },
                     placeholder = stringResource(R.string.login_placeholder_email),
                     modifier = Modifier.padding(top = 24.dp),
                     isError = state.emailError != null || state.generalError != null,
                     errorMessage = state.emailError?.resId?.let { stringResource(it) },
-                    leadingIcon = { Icon(painter = painterResource(id = R.drawable.ic_email), contentDescription = null) }
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_email),
+                            contentDescription = null
+                        )
+                    }
                 )
 
                 PasswordField(
