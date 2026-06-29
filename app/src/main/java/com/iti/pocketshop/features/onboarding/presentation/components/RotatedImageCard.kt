@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.onboarding.presentation.view.components
+package com.iti.pocketshop.features.onboarding.presentation.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize

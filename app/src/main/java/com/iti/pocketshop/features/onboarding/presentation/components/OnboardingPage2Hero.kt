@@ -1,9 +1,10 @@
-package com.iti.pocketshop.features.onboarding.presentation.view.components
+package com.iti.pocketshop.features.onboarding.presentation.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -122,7 +123,7 @@ fun OnboardingPage2Hero(
                         .background(Color(0xFFF2E4D8), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.foundation.Image(
+                    Image(
                         painter = painterResource(id = R.drawable.image10),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp)

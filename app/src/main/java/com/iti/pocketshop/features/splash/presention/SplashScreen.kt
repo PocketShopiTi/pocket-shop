@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.splash.presention.view
+package com.iti.pocketshop.features.splash.presention
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseOutCubic
@@ -29,13 +29,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.iti.pocketshop.features.splash.presention.action.SplashAction
-import com.iti.pocketshop.features.splash.presention.action.SplashState
-import com.iti.pocketshop.features.splash.presention.view.components.SplashAppIcon
-import com.iti.pocketshop.features.splash.presention.view.components.SplashSubtitle
-import com.iti.pocketshop.features.splash.presention.view.components.SplashTitle
-import com.iti.pocketshop.features.splash.presention.viewmodel.SplashViewModel
+import com.iti.pocketshop.features.splash.presention.components.SplashAppIcon
+import com.iti.pocketshop.features.splash.presention.components.SplashSubtitle
+import com.iti.pocketshop.features.splash.presention.components.SplashTitle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.time.Duration.Companion.milliseconds
@@ -45,7 +41,6 @@ fun SplashRoot(
     openLogin: () -> Unit,
     viewModel: SplashViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.events.collectLatest { event ->
@@ -59,15 +54,13 @@ fun SplashRoot(
     }
 
     SplashScreen(
-        state = state,
-        onAction = viewModel::onAction,
+         onAction = viewModel::onAction,
     )
 }
 
 @Composable
 fun SplashScreen(
-    state: SplashState,
-    `onAction`: (SplashAction) -> Unit,
+     `onAction`: (SplashAction) -> Unit,
 ) {
     val iconScale = remember { Animatable(0f) }
     val titleAlpha = remember { Animatable(0f) }
@@ -113,6 +106,8 @@ fun SplashScreen(
             targetValue = 0f,
             animationSpec = tween(durationMillis = 400, easing = EaseOutExpo)
         )
+
+        onAction(SplashAction.NavigateToLogin)
     }
 
     Box(

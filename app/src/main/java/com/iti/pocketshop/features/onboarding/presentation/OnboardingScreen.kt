@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.onboarding.presentation.view
+package com.iti.pocketshop.features.onboarding.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -36,15 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.onboarding.data.state.OnboardingState
-import com.iti.pocketshop.features.onboarding.presentation.action.OnboardingAction
-import com.iti.pocketshop.features.onboarding.presentation.viewmodel.OnboardingEvent
-import com.iti.pocketshop.features.onboarding.presentation.viewmodel.OnboardingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import com.iti.pocketshop.features.onboarding.presentation.view.components.OnboardingActionButtons
-import com.iti.pocketshop.features.onboarding.presentation.view.components.OnboardingDotsIndicator
-import com.iti.pocketshop.features.onboarding.presentation.view.components.OnboardingHeroImage
+import com.iti.pocketshop.features.onboarding.presentation.components.OnboardingActionButtons
+import com.iti.pocketshop.features.onboarding.presentation.components.OnboardingDotsIndicator
+import com.iti.pocketshop.features.onboarding.presentation.components.OnboardingHeroImage
 import kotlin.time.Duration.Companion.milliseconds
 
 

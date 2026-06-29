@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.splash.presention.view.components
+package com.iti.pocketshop.features.splash.presention.components
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

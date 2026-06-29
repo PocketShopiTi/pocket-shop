@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.splash.presention.view.components
+package com.iti.pocketshop.features.splash.presention.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
