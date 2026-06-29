@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt.android)
+    id("com.google.gms.google-services")
     alias(libs.plugins.secrets)
     alias(libs.plugins.apollo)
 }
@@ -90,6 +91,12 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    //todo: remove these
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.material3.lint)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.tv.material)
+
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
 
@@ -142,4 +149,14 @@ dependencies {
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
+
+    // firebase auth
+    implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Credential Manager for Google Sign-In
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
 }
