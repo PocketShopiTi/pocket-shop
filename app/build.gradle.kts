@@ -149,6 +149,7 @@ dependencies {
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     // firebase auth
     implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
