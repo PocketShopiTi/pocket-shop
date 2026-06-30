@@ -11,19 +11,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.home.presentation.components.CategoryRow
 import com.iti.pocketshop.features.home.presentation.components.EmptyHome
 import com.iti.pocketshop.features.home.presentation.components.HeroBanner
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
 import com.iti.pocketshop.features.home.presentation.components.ProductRow
 import com.iti.pocketshop.features.home.presentation.components.SectionHeader
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoot(
@@ -51,6 +55,9 @@ private fun HomeScreen(
     val isEmptyState =
         state.categories.isEmpty() &&
                 state.featuredProducts.isEmpty()
+    val user = LocalUser.current
+    val scope = rememberCoroutineScope()
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -120,7 +127,16 @@ private fun HomeScreen(
                     item {
                         ProductRow(
                             products = state.featuredProducts,
-                            onProductClick = openProductDetails
+                            onProductClick = openProductDetails,
+                            onWishlistClick = { id ->
+                                if (user?.isAnonymous == true) {
+                                    scope.launch {
+                                        SignInDialogController.sendEvent(true)
+                                    }
+                                } else {
+
+                                }
+                            }
                         )
                     }
                 }
@@ -142,7 +158,16 @@ private fun HomeScreen(
                     item {
                         ProductRow(
                             products = state.bestSellers,
-                            onProductClick = openProductDetails
+                            onProductClick = openProductDetails,
+                            onWishlistClick = { id ->
+                                if (user?.isAnonymous == true) {
+                                    scope.launch {
+                                        SignInDialogController.sendEvent(true)
+                                    }
+                                } else {
+
+                                }
+                            }
                         )
                     }
                 }
@@ -165,7 +190,16 @@ private fun HomeScreen(
                         ProductRow(
                             products = state.newArrivals,
                             onProductClick = openProductDetails,
-                            cardWidth = 160.dp
+                            cardWidth = 160.dp,
+                            onWishlistClick = { id ->
+                                if (user?.isAnonymous == true) {
+                                    scope.launch {
+                                        SignInDialogController.sendEvent(true)
+                                    }
+                                } else {
+                                    //todo
+                                }
+                            }
                         )
                     }
                 }

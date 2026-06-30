@@ -51,8 +51,7 @@ fun NestedNavDisplay(
                         onClick = {
                             if (currentUser?.isAnonymous == true && (
                                         destination.route == Route.NestedNav.Wishlist ||
-                                        destination.route == Route.NestedNav.Cart ||
-                                        destination.route == Route.NestedNav.Profile
+                                        destination.route == Route.NestedNav.Cart
                                     )) {
                                 scope.launch {
                                     SignInDialogController.sendEvent(true)
