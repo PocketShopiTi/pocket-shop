@@ -45,6 +45,15 @@ fun RootNavDisplay() {
                 animationSpec = tween(350)
             )
         },
+        popTransitionSpec = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(350)
+            ) togetherWith slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(350)
+            )
+        },
         entryProvider = entryProvider {
             entry<Route.Splash> {
                 SplashRoot(
@@ -115,9 +124,12 @@ fun RootNavDisplay() {
                     },
                     openLogin = {
                         rootBackStack.apply {
-                            clear()
                             navigateSingleTop(Route.Login)
+                            rootBackStack.remove(Route.Register)
                         }
+                    },
+                    navigateBack = {
+                        rootBackStack.removeLastOrNull()
                     }
                 )
             }
