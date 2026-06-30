@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -16,12 +17,15 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.iti.pocketshop.LocalUser
+import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.profile.ProfileRoot
 import com.iti.pocketshop.features.wishlist.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
+import kotlinx.coroutines.launch
 
 @Composable
 fun NestedNavDisplay(
@@ -35,6 +39,9 @@ fun NestedNavDisplay(
 
     val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
 
+    val currentUser = LocalUser.current
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -42,6 +49,16 @@ fun NestedNavDisplay(
                     val isSelected = nestedBackStack.lastOrNull() == destination.route
                     BottomNavigationButton(
                         onClick = {
+                            if (currentUser?.isAnonymous == true && (
+                                        destination.route == Route.NestedNav.Wishlist ||
+                                        destination.route == Route.NestedNav.Cart ||
+                                        destination.route == Route.NestedNav.Profile
+                                    )) {
+                                scope.launch {
+                                    SignInDialogController.sendEvent(true)
+                                }
+                                return@BottomNavigationButton
+                            }
                             nestedBackStack.apply {
                                 clear()
                                 if (destination.route != Route.NestedNav.Home) {
