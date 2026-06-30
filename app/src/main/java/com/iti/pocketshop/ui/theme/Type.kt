@@ -6,25 +6,46 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.iti.pocketshop.R
 
-private val InterFontFamily = FontFamily(
+// Serif display font used for headings, names, stat values and prices.
+val FrauncesFontFamily = FontFamily(
     Font(
-        resId = R.font.inter_light,
+        resId = R.font.fraunces_light,
         weight = FontWeight.Light,
     ),
     Font(
-        resId = R.font.inter,
+        resId = R.font.fraunces,
         weight = FontWeight.Normal,
     ),
     Font(
-        resId = R.font.inter_medium,
-        weight = FontWeight.Medium,
-    ),
-    Font(
-        resId = R.font.inter_semibold,
+        resId = R.font.fraunces_semibold,
         weight = FontWeight.SemiBold,
     ),
     Font(
-        resId = R.font.inter_bold,
+        resId = R.font.fraunces_bold,
+        weight = FontWeight.Bold,
+    ),
+)
+
+// Sans body font used for labels, descriptions and supporting text.
+val PlusJakartaSansFontFamily = FontFamily(
+    Font(
+        resId = R.font.plus_jakarta_sans_light,
+        weight = FontWeight.Light,
+    ),
+    Font(
+        resId = R.font.plus_jakarta_sans,
+        weight = FontWeight.Normal,
+    ),
+    Font(
+        resId = R.font.plus_jakarta_sans_medium,
+        weight = FontWeight.Medium,
+    ),
+    Font(
+        resId = R.font.plus_jakarta_sans_semibold,
+        weight = FontWeight.SemiBold,
+    ),
+    Font(
+        resId = R.font.plus_jakarta_sans_bold,
         weight = FontWeight.Bold,
     ),
 )
@@ -33,27 +54,21 @@ private val baseline = Typography()
 
 
 val Typography = Typography(
-    displayLarge = baseline.displayLarge.copy(fontFamily = InterFontFamily),
-    displayMedium = baseline.displayMedium.copy(fontFamily = InterFontFamily),
-    displaySmall = baseline.displaySmall.copy(fontFamily = InterFontFamily),
-    headlineLarge = baseline.headlineLarge.copy(fontFamily = InterFontFamily),
-    headlineMedium = baseline.headlineMedium.copy(fontFamily = InterFontFamily),
-    headlineSmall = baseline.headlineSmall.copy(fontFamily = InterFontFamily),
-    titleLarge = baseline.titleLarge.copy(fontFamily = InterFontFamily),
-    titleMedium = baseline.titleMedium.copy(fontFamily = InterFontFamily),
-    titleSmall = baseline.titleSmall.copy(fontFamily = InterFontFamily),
-    bodyLarge = baseline.bodyLarge.copy(fontFamily = InterFontFamily),
-    bodyMedium = baseline.bodyMedium.copy(fontFamily = InterFontFamily),
-    bodySmall = baseline.bodySmall.copy(fontFamily = InterFontFamily),
-    labelLarge = baseline.labelLarge.copy(fontFamily = InterFontFamily),
-    labelMedium = baseline.labelMedium.copy(fontFamily = InterFontFamily),
-    labelSmall = baseline.labelSmall.copy(fontFamily = InterFontFamily),
-)
-
-val FrauncesFontFamily = FontFamily(
-    Font(resId = R.font.fraunces),
-)
-
-val PlusJakartaSansFontFamily = FontFamily(
-    Font(resId = R.font.plus_jakarta_sans),
+    // Display / headline / title -> Fraunces (serif display)
+    displayLarge = baseline.displayLarge.copy(fontFamily = FrauncesFontFamily),
+    displayMedium = baseline.displayMedium.copy(fontFamily = FrauncesFontFamily),
+    displaySmall = baseline.displaySmall.copy(fontFamily = FrauncesFontFamily),
+    headlineLarge = baseline.headlineLarge.copy(fontFamily = FrauncesFontFamily),
+    headlineMedium = baseline.headlineMedium.copy(fontFamily = FrauncesFontFamily),
+    headlineSmall = baseline.headlineSmall.copy(fontFamily = FrauncesFontFamily),
+    titleLarge = baseline.titleLarge.copy(fontFamily = FrauncesFontFamily),
+    titleMedium = baseline.titleMedium.copy(fontFamily = FrauncesFontFamily),
+    titleSmall = baseline.titleSmall.copy(fontFamily = FrauncesFontFamily),
+    // Body / label -> Plus Jakarta Sans (sans body)
+    bodyLarge = baseline.bodyLarge.copy(fontFamily = PlusJakartaSansFontFamily),
+    bodyMedium = baseline.bodyMedium.copy(fontFamily = PlusJakartaSansFontFamily),
+    bodySmall = baseline.bodySmall.copy(fontFamily = PlusJakartaSansFontFamily),
+    labelLarge = baseline.labelLarge.copy(fontFamily = PlusJakartaSansFontFamily),
+    labelMedium = baseline.labelMedium.copy(fontFamily = PlusJakartaSansFontFamily),
+    labelSmall = baseline.labelSmall.copy(fontFamily = PlusJakartaSansFontFamily),
 )
