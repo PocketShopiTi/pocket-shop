@@ -1,11 +1,11 @@
 package com.iti.pocketshop.features.profile.presentation.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,10 +21,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
+import com.iti.pocketshop.R
 
 @Composable
 internal fun ProfileSectionLabel(
@@ -35,7 +36,6 @@ internal fun ProfileSectionLabel(
         text = text.uppercase(),
         modifier = modifier,
         style = MaterialTheme.typography.labelSmall.copy(
-            fontFamily = PlusJakartaSansFontFamily,
             fontWeight = FontWeight.Medium,
         ),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -59,12 +59,12 @@ internal fun ProfileMenuCard(
 @Composable
 internal fun ProfileMenuRow(
     label: String,
-    icon: ImageVector,
+    @DrawableRes icon: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     isDestructive: Boolean = false,
     showDivider: Boolean = true,
-    trailingContent: @Composable RowScope.() -> Unit = {},
+    addedInfo: Int? = null,
 ) {
     val contentColor = if (isDestructive) {
         MaterialTheme.colorScheme.error
@@ -90,7 +90,7 @@ internal fun ProfileMenuRow(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = icon,
+                        painter = painterResource(id = icon),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                         tint = contentColor,
@@ -103,12 +103,20 @@ internal fun ProfileMenuRow(
                     .weight(1f)
                     .padding(start = 14.dp),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    fontFamily = PlusJakartaSansFontFamily,
                     fontWeight = FontWeight.Medium,
                 ),
                 color = contentColor,
             )
-            trailingContent()
+            if (addedInfo != null) Text(
+                text = stringResource(
+                    R.string.profile_saved_count,
+                    addedInfo,
+                ),
+                modifier = Modifier.padding(end = 4.dp),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.KeyboardArrowRight,
                 contentDescription = null,

@@ -4,11 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.CreditCard
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,13 +25,13 @@ fun GuestBenefitCards() {
         GuestBenefitCard(
             title = stringResource(R.string.profile_benefit_favourites_title),
             description = stringResource(R.string.profile_benefit_favourites_description),
-            icon = Icons.Outlined.FavoriteBorder,
+            icon = R.drawable.favorite,
             modifier = Modifier.weight(1f),
         )
         GuestBenefitCard(
             title = stringResource(R.string.profile_benefit_orders_title),
             description = stringResource(R.string.profile_benefit_orders_description),
-            icon = Icons.Outlined.Inventory2,
+            icon = R.drawable.box,
             modifier = Modifier.weight(1f),
         )
     }
@@ -49,13 +44,13 @@ fun GuestBenefitCards() {
         GuestBenefitCard(
             title = stringResource(R.string.profile_benefit_checkout_title),
             description = stringResource(R.string.profile_benefit_checkout_description),
-            icon = Icons.Outlined.CreditCard,
+            icon = R.drawable.bag,
             modifier = Modifier.weight(1f),
         )
         GuestBenefitCard(
             title = stringResource(R.string.profile_benefit_ai_title),
             description = stringResource(R.string.profile_benefit_ai_description),
-            icon = Icons.Outlined.AutoAwesome,
+            icon = R.drawable.ai,
             modifier = Modifier.weight(1f),
         )
     }

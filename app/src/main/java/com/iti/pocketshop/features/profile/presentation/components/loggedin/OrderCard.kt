@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,9 +28,7 @@ import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
-import com.iti.pocketshop.ui.theme.FrauncesFontFamily
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
-import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
 import java.text.NumberFormat
 import java.util.Currency
 
@@ -56,7 +53,7 @@ fun RecentOrderCard(order: OrderEntity) {
             ) {
                 if (order.imageUrl.isNullOrBlank()) {
                     Icon(
-                        imageVector = Icons.Outlined.Inventory2,
+                        painter = painterResource(R.drawable.ic_launcher_foreground),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -73,9 +70,7 @@ fun RecentOrderCard(order: OrderEntity) {
                 Text(
                     text = order.id,
                     maxLines = 1,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontFamily = PlusJakartaSansFontFamily,
-                    ),
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 OrderStatusChip(order.status, Modifier.padding(top = 6.dp))
@@ -86,9 +81,7 @@ fun RecentOrderCard(order: OrderEntity) {
                         }.format(order.total)
                     },
                     modifier = Modifier.padding(top = 6.dp),
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontFamily = FrauncesFontFamily,
-                    ),
+                    style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
             }
@@ -115,7 +108,6 @@ private fun OrderStatusChip(status: OrderStatus, modifier: Modifier = Modifier) 
             text = label,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
             style = MaterialTheme.typography.labelSmall.copy(
-                fontFamily = PlusJakartaSansFontFamily,
                 fontWeight = FontWeight.Medium,
             ),
             color = color,

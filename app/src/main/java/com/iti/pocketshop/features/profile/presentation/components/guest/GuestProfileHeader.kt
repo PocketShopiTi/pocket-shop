@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -15,10 +13,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
-import com.iti.pocketshop.ui.theme.FrauncesFontFamily
 
 
 @Composable
@@ -31,9 +29,7 @@ fun GuestProfileHeader(openSettings: () -> Unit) {
     ) {
         Text(
             text = stringResource(R.string.profile_title),
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontFamily = FrauncesFontFamily,
-            ),
+            style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Surface(
@@ -42,7 +38,7 @@ fun GuestProfileHeader(openSettings: () -> Unit) {
         ) {
             IconButton(onClick = openSettings, modifier = Modifier.size(40.dp)) {
                 Icon(
-                    imageVector = Icons.Outlined.Tune,
+                    painter = painterResource(id = R.drawable.settings),
                     contentDescription = stringResource(R.string.profile_open_settings),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

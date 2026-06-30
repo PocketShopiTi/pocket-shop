@@ -18,8 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
-import com.iti.pocketshop.ui.theme.FrauncesFontFamily
-import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
 
 
 @Composable
@@ -33,17 +31,13 @@ fun RecentOrdersHeader(openOrders: () -> Unit) {
     ) {
         Text(
             text = stringResource(R.string.profile_recent_orders),
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontFamily = FrauncesFontFamily,
-            ),
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
         Text(
             text = stringResource(R.string.see_all),
             modifier = Modifier.clickable(onClick = openOrders),
-            style = MaterialTheme.typography.labelMedium.copy(
-                fontFamily = PlusJakartaSansFontFamily,
-            ),
+            style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.primary,
         )
     }

@@ -1,14 +1,6 @@
 package com.iti.pocketshop.features.profile.presentation.components.loggedin
 
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.LocationOn
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,37 +26,30 @@ fun ProfileActions(
     {
         ProfileMenuRow(
             label = stringResource(R.string.profile_my_orders),
-            icon = Icons.Outlined.Inventory2,
+            icon = R.drawable.box,
             onClick = openOrders,
+            addedInfo = profile.stats.ordersCount
         )
         ProfileMenuRow(
             label = stringResource(R.string.profile_addresses),
-            icon = Icons.Outlined.LocationOn,
+            icon = R.drawable.location,
             onClick = openAddresses,
+            addedInfo = profile.stats.addressesCount
         )
         ProfileMenuRow(
             label = stringResource(R.string.wishlist),
-            icon = Icons.Outlined.FavoriteBorder,
+            icon = R.drawable.favorite,
             onClick = openWishList,
-        ) {
-            Text(
-                text = stringResource(
-                    R.string.profile_saved_count,
-                    profile.stats.wishListCount,
-                ),
-                modifier = Modifier.padding(end = 4.dp),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+            addedInfo = profile.stats.wishListCount
+        )
         ProfileMenuRow(
             label = stringResource(R.string.profile_settings),
-            icon = Icons.Outlined.Settings,
+            icon = R.drawable.settings,
             onClick = openSettings,
         )
         ProfileMenuRow(
             label = stringResource(R.string.profile_log_out),
-            icon = Icons.AutoMirrored.Outlined.Logout,
+            icon = R.drawable.logout,
             onClick = onLogoutRequested,
             isDestructive = true,
             showDivider = false,

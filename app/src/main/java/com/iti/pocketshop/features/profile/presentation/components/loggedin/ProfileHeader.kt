@@ -20,16 +20,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.profile.domain.model.UserEntity
-import com.iti.pocketshop.ui.theme.FrauncesFontFamily
-import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @Composable
 fun ProfileHeader(
@@ -45,6 +39,9 @@ fun ProfileHeader(
             .take(2)
             .joinToString("") { it.take(1).uppercase() }
     }
+
+    var showNameInitials = remember { false }
+
     Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier
@@ -65,12 +62,10 @@ fun ProfileHeader(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            if (user.imageUrl.isNullOrBlank()) {
+            if (user.imageUrl.isNullOrBlank() || showNameInitials) {
                 Text(
                     text = initials,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontFamily = FrauncesFontFamily,
-                    ),
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.primary,
                 )
             } else {
@@ -79,35 +74,25 @@ fun ProfileHeader(
                     contentDescription = stringResource(R.string.profile_user_image),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
+                    onError = { showNameInitials = true },
                 )
             }
         }
         Column(modifier = Modifier.padding(start = 16.dp)) {
             Text(
                 text = stringResource(R.string.profile_welcome_back),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontFamily = PlusJakartaSansFontFamily,
-                ),
+                style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = displayName,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontFamily = FrauncesFontFamily,
-                ),
+                style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground,
             )
-            user.memberSinceEpochMillis?.let { timestamp ->
-                val memberSince = remember(timestamp) {
-                    SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date(timestamp))
-                }
+            user.memberSince?.let { memberSince ->
                 Text(
                     text = stringResource(R.string.profile_member_since, memberSince),
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        fontFamily = PlusJakartaSansFontFamily,
-                    ),
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }

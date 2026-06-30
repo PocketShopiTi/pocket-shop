@@ -1,9 +1,13 @@
 package com.iti.pocketshop.features.profile.domain.model
 
+import com.iti.pocketshop.core.utils.toFormattedDate
+
 data class UserEntity(
     val id: String,
     val name: String,
     val email: String,
     val imageUrl: String?,
-    val memberSinceEpochMillis: Long?,
-)
+    private val memberSinceEpochMillis: Long?,
+) {
+    val memberSince: String? = memberSinceEpochMillis?.toFormattedDate("MMMM yyyy")
+}

@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
-import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
 
 
 @Composable
@@ -39,7 +38,6 @@ fun GuestAuthActions(openRegister: () -> Unit, openLogin: () -> Unit) {
         Text(
             text = stringResource(R.string.profile_create_account),
             modifier = Modifier.padding(start = 8.dp),
-            fontFamily = PlusJakartaSansFontFamily,
         )
     }
     OutlinedButton(
@@ -53,7 +51,6 @@ fun GuestAuthActions(openRegister: () -> Unit, openLogin: () -> Unit) {
     ) {
         Text(
             text = stringResource(R.string.profile_log_in),
-            fontFamily = PlusJakartaSansFontFamily,
             color = MaterialTheme.colorScheme.onSurface,
         )
     }

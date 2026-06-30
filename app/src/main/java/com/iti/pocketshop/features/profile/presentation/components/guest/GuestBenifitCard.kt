@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.profile.presentation.components.guest
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,17 +18,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.iti.pocketshop.ui.theme.PlusJakartaSansFontFamily
 
 
 @Composable
 fun GuestBenefitCard(
     title: String,
     description: String,
-    icon: ImageVector,
+    @DrawableRes icon: Int,
     modifier: Modifier = Modifier,
 ) {
     Surface(
@@ -44,7 +44,7 @@ fun GuestBenefitCard(
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
-                        imageVector = icon,
+                        painter = painterResource(icon),
                         contentDescription = null,
                         modifier = Modifier.size(18.dp),
                         tint = MaterialTheme.colorScheme.primary,
@@ -55,7 +55,6 @@ fun GuestBenefitCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelMedium.copy(
-                    fontFamily = PlusJakartaSansFontFamily,
                     fontWeight = FontWeight.Medium,
                 ),
                 color = MaterialTheme.colorScheme.onSurface,
@@ -63,9 +62,7 @@ fun GuestBenefitCard(
             Text(
                 text = description,
                 modifier = Modifier.padding(top = 2.dp),
-                style = MaterialTheme.typography.labelSmall.copy(
-                    fontFamily = PlusJakartaSansFontFamily,
-                ),
+                style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
