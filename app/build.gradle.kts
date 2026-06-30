@@ -28,15 +28,24 @@ apollo {
             )
             schemaFile.set(file("src/main/graphql/schema.graphqls"))
         }
-        mapScalar(
-            "Decimal",
-            "kotlin.Double"
-        )
+        mapScalar("Decimal", "kotlin.Double")
+        mapScalar("URL", "kotlin.String")
+    }
 
-        mapScalar(
-            "URL",
-            "kotlin.String"
-        )
+    service("shopifyAdmin") {
+        packageName.set("com.iti.pocketshop.shopify.admin")
+        srcDir("src/main/graphql/admin")
+
+        introspection {
+            endpointUrl.set("https://mad46-and4.myshopify.com/admin/api/2026-04/graphql.json")
+            headers.put(
+                "X-Shopify-Access-Token",
+                localProperties["SHOPIFY_ADMIN_TOKEN"].toString()
+            )
+            schemaFile.set(file("src/main/graphql/admin/schema.graphqls"))
+        }
+        mapScalar("Decimal", "kotlin.Double")
+        mapScalar("URL", "kotlin.String")
     }
 }
 
