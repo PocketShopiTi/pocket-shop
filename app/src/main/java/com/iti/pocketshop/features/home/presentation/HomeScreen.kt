@@ -28,6 +28,8 @@ import com.iti.pocketshop.features.home.presentation.components.SectionHeader
 @Composable
 fun HomeRoot(
     openSearch: () -> Unit,
+    openCategories: () -> Unit,
+    openProductList: (String) -> Unit,
     openProductDetails: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -35,6 +37,8 @@ fun HomeRoot(
 
     HomeScreen(
         openSearch = openSearch,
+        openCategories = openCategories,
+        openProductList = openProductList,
         openProductDetails = openProductDetails,
         state = state,
         onAction = viewModel::onAction
@@ -44,6 +48,8 @@ fun HomeRoot(
 @Composable
 private fun HomeScreen(
     openSearch: () -> Unit,
+    openCategories: () -> Unit,
+    openProductList: (String) -> Unit,
     openProductDetails: (String) -> Unit,
     state: HomeState,
     onAction: (HomeAction) -> Unit,
@@ -87,9 +93,7 @@ private fun HomeScreen(
                     item {
                         SectionHeader(
                             title = stringResource(R.string.shop_by_category),
-                            onSeeAllClick = {
-                                //todo
-                            },
+                            onSeeAllClick = openCategories,
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
                     }
@@ -111,7 +115,7 @@ private fun HomeScreen(
                         SectionHeader(
                             title = stringResource(R.string.featured),
                             onSeeAllClick = {
-                                //todo
+                                openProductList("FEATURED")
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
@@ -133,7 +137,7 @@ private fun HomeScreen(
                             title = stringResource(R.string.best_sellers),
                             badge = stringResource(R.string.on_fire_emoji),
                             onSeeAllClick = {
-                                //todo
+                                openProductList("BEST_SELLERS")
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
@@ -155,7 +159,7 @@ private fun HomeScreen(
                             title = stringResource(R.string.new_arrivals),
                             badge = stringResource(R.string.new_items),
                             onSeeAllClick = {
-                                //todo
+                                openProductList("NEW_ARRIVALS")
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )

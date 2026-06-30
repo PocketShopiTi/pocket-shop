@@ -21,6 +21,8 @@ import com.iti.pocketshop.features.productdetails.ProductDetailsRoot
 import com.iti.pocketshop.features.register.RegisterRoot
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
+import com.iti.pocketshop.features.categories.presentation.CategoriesRoot
+import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -42,6 +44,8 @@ fun RootNavDisplay() {
                     subclass(Route.OrderCheckout::class, Route.OrderCheckout.serializer())
                     subclass(Route.Settings::class, Route.Settings.serializer())
                     subclass(Route.Search::class, Route.Search.serializer())
+                    subclass(Route.Categories::class, Route.Categories.serializer())
+                    subclass(Route.ProductList::class, Route.ProductList.serializer())
                 }
             }
         },
@@ -136,6 +140,12 @@ fun RootNavDisplay() {
                     openSearch = {
                         rootBackStack.navigateSingleTop(Route.Search)
                     },
+                    openCategories = {
+                        rootBackStack.navigateSingleTop(Route.Categories)
+                    },
+                    openProductList = { type ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(type = type))
+                    },
                 )
             }
             entry<Route.AiChat> {
@@ -154,6 +164,24 @@ fun RootNavDisplay() {
             }
             entry<Route.Search> {
                 SearchRoot()
+            }
+            entry<Route.Categories> {
+                CategoriesRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
+                )
+            }
+            entry<Route.ProductList> {
+                ProductListRoot(
+                    type = it.type,
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    onProductClick = { id ->
+                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+                    }
+                )
             }
         }
     )
