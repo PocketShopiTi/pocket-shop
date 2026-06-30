@@ -1,0 +1,35 @@
+package com.iti.pocketshop.features.home.presentation.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.features.home.domain.models.Product
+
+@Composable
+fun ProductRow(
+    products: List<Product>,
+    onProductClick: (String) -> Unit,
+    onWishlistClick: (String) -> Unit,
+    cardWidth: androidx.compose.ui.unit.Dp = 170.dp
+) {
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        items(products, key = { it.id }) { product ->
+            ProductCard(
+                product = product,
+                onClick = { onProductClick(product.id) },
+                onWishlistClick = onWishlistClick,
+                modifier = Modifier
+                    .animateItem()
+                    .width(cardWidth)
+            )
+        }
+    }
+}

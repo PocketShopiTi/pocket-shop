@@ -1,0 +1,214 @@
+package com.iti.pocketshop.features.home.presentation
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.LocalUser
+import com.iti.pocketshop.R
+import com.iti.pocketshop.core.components.SignInDialogController
+import com.iti.pocketshop.features.home.presentation.components.CategoryRow
+import com.iti.pocketshop.features.home.presentation.components.EmptyHome
+import com.iti.pocketshop.features.home.presentation.components.HeroBanner
+import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
+import com.iti.pocketshop.features.home.presentation.components.ProductRow
+import com.iti.pocketshop.features.home.presentation.components.SectionHeader
+import kotlinx.coroutines.launch
+
+@Composable
+fun HomeRoot(
+    openSearch: () -> Unit,
+    openProductDetails: (String) -> Unit,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    HomeScreen(
+        openSearch = openSearch,
+        openProductDetails = openProductDetails,
+        state = state,
+        onAction = viewModel::onAction
+    )
+}
+
+@Composable
+private fun HomeScreen(
+    openSearch: () -> Unit,
+    openProductDetails: (String) -> Unit,
+    state: HomeState,
+    onAction: (HomeAction) -> Unit,
+) {
+    val isEmptyState =
+        state.categories.isEmpty() &&
+                state.featuredProducts.isEmpty()
+    val user = LocalUser.current
+    val scope = rememberCoroutineScope()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        HomeTopBar(
+            onSearchClick = openSearch
+        )
+        PullToRefreshBox(
+            isRefreshing = state.isLoading,
+            onRefresh = {
+                onAction(HomeAction.FetchData)
+            }
+        ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(bottom = 32.dp)
+            ) {
+                // Hero banner
+                item {
+                    if (!isEmptyState) {
+                        HeroBanner(
+                            openSales = {
+                                //TODO()
+                            }
+                        )
+                    }
+                }
+
+                // Categories
+                if (state.categories.isNotEmpty()) {
+                    item { Spacer(Modifier.height(24.dp)) }
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.shop_by_category),
+                            onSeeAllClick = {
+                                //todo
+                            },
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                    item {
+                        CategoryRow(
+                            categories = state.categories,
+                            onCategoryClick = {
+
+                            }
+                        )
+                    }
+                }
+
+                // Featured products
+                if (state.featuredProducts.isNotEmpty()) {
+                    item { Spacer(Modifier.height(28.dp)) }
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.featured),
+                            onSeeAllClick = {
+                                //todo
+                            },
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                    item {
+                        ProductRow(
+                            products = state.featuredProducts,
+                            onProductClick = openProductDetails,
+                            onWishlistClick = { id ->
+                                if (user?.isAnonymous == true) {
+                                    scope.launch {
+                                        SignInDialogController.sendEvent(true)
+                                    }
+                                } else {
+
+                                }
+                            }
+                        )
+                    }
+                }
+
+                // Best sellers
+                if (state.bestSellers.isNotEmpty()) {
+                    item { Spacer(Modifier.height(28.dp)) }
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.best_sellers),
+                            badge = stringResource(R.string.on_fire_emoji),
+                            onSeeAllClick = {
+                                //todo
+                            },
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                    item {
+                        ProductRow(
+                            products = state.bestSellers,
+                            onProductClick = openProductDetails,
+                            onWishlistClick = { id ->
+                                if (user?.isAnonymous == true) {
+                                    scope.launch {
+                                        SignInDialogController.sendEvent(true)
+                                    }
+                                } else {
+
+                                }
+                            }
+                        )
+                    }
+                }
+
+                // New arrivals
+                if (state.newArrivals.isNotEmpty()) {
+                    item { Spacer(Modifier.height(28.dp)) }
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.new_arrivals),
+                            badge = stringResource(R.string.new_items),
+                            onSeeAllClick = {
+                                //todo
+                            },
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                    item {
+                        ProductRow(
+                            products = state.newArrivals,
+                            onProductClick = openProductDetails,
+                            cardWidth = 160.dp,
+                            onWishlistClick = { id ->
+                                if (user?.isAnonymous == true) {
+                                    scope.launch {
+                                        SignInDialogController.sendEvent(true)
+                                    }
+                                } else {
+                                    //todo
+                                }
+                            }
+                        )
+                    }
+                }
+
+                // Empty state
+                if (isEmptyState) {
+                    item { EmptyHome(onRefresh = { onAction(HomeAction.FetchData) }) }
+                }
+            }
+        }
+    }
+}

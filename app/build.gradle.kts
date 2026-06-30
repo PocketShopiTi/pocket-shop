@@ -1,9 +1,53 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt.android)
+    id("com.google.gms.google-services")
+    alias(libs.plugins.secrets)
+    alias(libs.plugins.apollo)
+}
+
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+apollo {
+    service("shopify") {
+        packageName.set("com.iti.pocketshop.shopify")
+        srcDir("src/main/graphql/client")
+
+        introspection {
+            endpointUrl.set("https://mad46-and4.myshopify.com/api/2026-04/graphql.json")
+            headers.put(
+                "X-Shopify-Storefront-Access-Token",
+                localProperties["STORE_FRONT_TOKEN"].toString()
+            )
+            schemaFile.set(file("src/main/graphql/client/schema.graphqls"))
+        }
+        mapScalar("Decimal", "kotlin.Double")
+        mapScalar("URL", "kotlin.String")
+    }
+
+    service("shopifyAdmin") {
+        packageName.set("com.iti.pocketshop.shopify.admin")
+        srcDir("src/main/graphql/admin")
+
+        introspection {
+            endpointUrl.set("https://mad46-and4.myshopify.com/admin/api/2026-04/graphql.json")
+            headers.put(
+                "X-Shopify-Access-Token",
+                localProperties["SHOPIFY_ADMIN_TOKEN"].toString()
+            )
+            schemaFile.set(file("src/main/graphql/admin/schema.graphqls"))
+        }
+        mapScalar("Decimal", "kotlin.Double")
+        mapScalar("URL", "kotlin.String")
+    }
 }
 
 android {
@@ -20,6 +64,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
     }
 
     buildTypes {
@@ -55,6 +100,12 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    //todo: remove these
+    implementation(libs.androidx.compose.material)
+    implementation(libs.androidx.compose.material3.lint)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.tv.material)
 
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -101,7 +152,26 @@ dependencies {
     // ktor
     implementation(libs.bundles.ktor)
 
+    //Apollo
+    implementation(libs.apollo.runtime)
+    implementation(libs.logging.interceptor)
+
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
+    // firebase auth
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore)
+
+    // Credential Manager for Google Sign-In
+    //noinspection LoginCredentials
+    implementation(libs.androidx.credentials)
+    //noinspection LoginCredentials
+    implementation(libs.androidx.credentials.play.services.auth)
+    //noinspection LoginCredentials
+    implementation(libs.googleid)
 }

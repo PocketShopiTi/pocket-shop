@@ -1,3 +1,124 @@
 <resources>
     <string name="app_name">Pocket Shop</string>
+    <string name="home">Home</string>
+    <string name="wishlist">Wishlist</string>
+    <string name="cart">Cart</string>
+    <string name="profile">Profile</string>
+
+    <string name="splash_title">Pocket Shop</string>
+    <string name="splash_subtitle">Boutique, in your pocket</string>
+    <string name="splash_icon_letter">P</string>
+
+    <string name="onboarding_page1_title">Everything you need,\nin one shop</string>
+    <string name="onboarding_page1_subtitle">Browse thousands of products across every category — all in one place.</string>
+    <string name="onboarding_page2_title">Meet your\nshopping assistant</string>
+    <string name="onboarding_page2_subtitle">Tell our AI what you\'re looking for and get picks made just for you.</string>
+    <string name="onboarding_page3_title">Wishlist, cart,\ncheckout — made simple</string>
+    <string name="onboarding_page3_subtitle">Save favorites, track orders, and check out in seconds.</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_have_account">I already have an account</string>
+    <string name="onboarding_guest">Continue as guest</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <string name="onboarding_category_women">Women</string>
+    <string name="onboarding_category_men">Men</string>
+    <string name="onboarding_category_shoes">Shoes</string>
+    <string name="onboarding_category_bags">Bags</string>
+    <string name="onboarding_category_beauty">Beauty</string>
+
+    <string name="onboarding_ai_prompt">\"Find me a dress for a wedding\"</string>
+    <string name="onboarding_ai_response">Here are 3 picks made for you ✨</string>
+
+    <string name="onboarding_product1_title">Structured tote, sand</string>
+    <string name="onboarding_product1_price">$329</string>
+    <string name="onboarding_product2_title">Canvas sneaker</string>
+    <string name="onboarding_product2_price">$40.42</string>
+    <string name="onboarding_product3_title">Silk midi dress</string>
+    <string name="onboarding_product3_price">$329</string>
+    <string name="onboarding_product4_title">Wrap dress</string>
+    <string name="onboarding_product4_price">$189</string>
+    <string name="onboarding_product5_title">Linen blazer</string>
+    <string name="onboarding_product5_price">$249</string>
+
+    <string name="onboarding_order_confirmed">Order confirmed!</string>
+    <string name="onboarding_order_id">PK–2026–1024 · $778.50</string>
+    <string name="product_details_back">Back</string>
+    <string name="product_details_add_favorite">Add to favourites</string>
+    <string name="product_details_remove_favorite">Remove from favourites</string>
+    <string name="product_details_colour">Colour — %1$s</string>
+    <string name="product_details_size">Size — %1$s</string>
+    <string name="product_details_generic_option">%1$s — %2$s</string>
+    <string name="product_details_description">Description</string>
+    <string name="product_details_read_more">Read more</string>
+    <string name="product_details_read_less">Read less</string>
+    <string name="product_details_reviews">Reviews</string>
+    <string name="product_details_see_all_reviews">See all reviews</string>
+    <string name="product_details_no_reviews">No reviews yet</string>
+    <string name="product_details_decrease_quantity">Decrease quantity</string>
+    <string name="product_details_increase_quantity">Increase quantity</string>
+    <string name="product_details_quantity">Quantity: %1$d</string>
+    <string name="product_details_add_to_cart">Add to cart · %1$s</string>
+    <string name="product_details_added_to_cart">Added · %1$s</string>
+    <string name="product_details_loading">Loading product details</string>
+    <string name="product_details_error">We couldn’t load this product.</string>
+    <string name="product_details_retry">Retry</string>
+    <string name="product_details_image">Product image %1$d of %2$d</string>
+    <string name="product_details_rating">Rated %1$.1f out of 5 from %2$d reviews</string>
+    <string name="product_details_option_unavailable">%1$s is unavailable</string>
+    <string name="request_timed_out">Request timed out, Please try again</string>
+    <string name="too_many_requests">Too many requests, Please try again later</string>
+    <string name="no_internet_connection">No internet connection, Please check your network</string>
+    <string name="server_error">Server error, Please try again</string>
+    <string name="failed_to_process_response">Bad response, Please try again</string>
+    <string name="something_went_wrong">Something went wrong, Please try again</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="you_re_offline">You are offline!</string>
+    <string name="shop_by_category">Shop by Category</string>
+    <string name="featured">Featured</string>
+    <string name="best_sellers">Best Sellers</string>
+    <string name="on_fire_emoji">🔥</string>
+    <string name="new_arrivals">New Arrivals</string>
+    <string name="new_items">NEW</string>
+    <string name="bag_emoji">🛍️</string>
+    <string name="nothing_to_show_yet">Nothing to show yet</string>
+    <string name="pull_down_to_refresh_or_tap_below">Pull down to refresh or tap below.</string>
+    <string name="refresh">Refresh</string>
+    <string name="big_sale">BIG SALE</string>
+    <string name="up_to_50_off">Up to\n50% Off</string>
+    <string name="shop_now">Shop now</string>
+    <string name="search">Search</string>
+    <string name="sold_out">Sold Out</string>
+    <string name="see_all">See all</string>
+
+
+    <string name="login_continue_as_guest">Continue as guest</string>
+    <string name="login_label_email">Email</string>
+    <string name="login_placeholder_email">enter your email</string>
+    <string name="login_button_login">Log in</string>
+    <string name="login_divider_or_continue">or continue with</string>
+    <string name="login_button_google">Continue with Google</string>
+    <string name="login_google_icon_description">Google Icon</string>
+    <string name="login_label_password">Password</string>
+    <string name="login_placeholder_password">enter your password</string>
+    <string name="login_content_desc_hide_password">Hide password</string>
+    <string name="login_content_desc_show_password">Show password</string>
+    <string name="login_logo_letter">P</string>
+    <string name="login_header_title">Welcome back</string>
+    <string name="login_header_subtitle">Sign in to your account</string>
+    <string name="login_footer_new_here">New here? </string>
+    <string name="login_footer_create_account"> Create account</string>
+    <string name="login_forgot_password">Forgot password?</string>
+
+    <string name="error_invalid_email">Invalid email format</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_google_sign_in_failed">Google Sign-In failed. Please try again.</string>
+    <string name="error_google_sign_in_cancelled">Sign-In was cancelled</string>
+    <string name="error_wrong_password">Incorrect password. Please try again.</string>
+    <string name="error_user_not_found">No account found with this email</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="log_in_to_unlock_all_features_and_sync_your_data_across_devices">Log in to unlock all features and sync your data across devices.</string>
+    <string name="go_to_login">Go to Login</string>
+    <string name="not_now">Not now</string>
 </resources>

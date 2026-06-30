@@ -1,0 +1,75 @@
+query GetProductByHandle($handle: String!) {
+    product(handle: $handle) {
+        id
+        title
+        handle
+        descriptionHtml
+        description
+        tags
+        availableForSale
+        productType
+        vendor
+        category {
+            id
+            name
+        }
+        media(first: 10)  {
+            nodes {
+                id
+                alt
+                mediaContentType
+                previewImage {
+                    altText
+                    url
+                }
+            }
+        }
+        featuredImage {
+            url
+            altText
+        }
+        images(first: 10) { edges { node { url altText width height } } }
+        options {
+            id
+            name
+            optionValues {
+                name
+                swatch {
+                    color
+                    image {
+                        alt
+                        previewImage {
+                            altText
+                            url
+                        }
+                    }
+                }
+            }
+
+        }
+        variants(first: 25) {
+            edges {
+                node {
+                    id
+                    title
+                    sku
+                    availableForSale
+                    quantityAvailable
+                    requiresShipping
+                    selectedOptions { name value }
+                    price { amount currencyCode }
+                    compareAtPrice { amount currencyCode }
+                    image { url altText }
+                    product {
+                        id
+                    }
+                }
+            }
+        }
+        priceRange {
+            minVariantPrice { amount currencyCode }
+            maxVariantPrice { amount currencyCode }
+        }
+        seo { title description }
+    }
+}
