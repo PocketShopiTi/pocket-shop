@@ -19,6 +19,7 @@ val localProperties = Properties().apply {
 apollo {
     service("shopify") {
         packageName.set("com.iti.pocketshop.shopify")
+        srcDir("src/main/graphql/client")
 
         introspection {
             endpointUrl.set("https://mad46-and4.myshopify.com/api/2026-04/graphql.json")
@@ -26,17 +27,26 @@ apollo {
                 "X-Shopify-Storefront-Access-Token",
                 localProperties["STORE_FRONT_TOKEN"].toString()
             )
-            schemaFile.set(file("src/main/graphql/schema.graphqls"))
+            schemaFile.set(file("src/main/graphql/client/schema.graphqls"))
         }
-        mapScalar(
-            "Decimal",
-            "kotlin.Double"
-        )
+        mapScalar("Decimal", "kotlin.Double")
+        mapScalar("URL", "kotlin.String")
+    }
 
-        mapScalar(
-            "URL",
-            "kotlin.String"
-        )
+    service("shopifyAdmin") {
+        packageName.set("com.iti.pocketshop.shopify.admin")
+        srcDir("src/main/graphql/admin")
+
+        introspection {
+            endpointUrl.set("https://mad46-and4.myshopify.com/admin/api/2026-04/graphql.json")
+            headers.put(
+                "X-Shopify-Access-Token",
+                localProperties["SHOPIFY_ADMIN_TOKEN"].toString()
+            )
+            schemaFile.set(file("src/main/graphql/admin/schema.graphqls"))
+        }
+        mapScalar("Decimal", "kotlin.Double")
+        mapScalar("URL", "kotlin.String")
     }
 }
 
@@ -149,14 +159,19 @@ dependencies {
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     // firebase auth
-    implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
-    implementation("com.google.firebase:firebase-auth")
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore)
 
     // Credential Manager for Google Sign-In
-    implementation("androidx.credentials:credentials:1.3.0")
-    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    //noinspection LoginCredentials
+    implementation(libs.androidx.credentials)
+    //noinspection LoginCredentials
+    implementation(libs.androidx.credentials.play.services.auth)
+    //noinspection LoginCredentials
+    implementation(libs.googleid)
 }

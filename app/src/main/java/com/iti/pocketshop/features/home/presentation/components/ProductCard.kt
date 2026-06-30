@@ -41,6 +41,7 @@ import com.iti.pocketshop.features.home.presentation.formatPrice
 fun ProductCard(
     product: Product,
     onClick: () -> Unit,
+    onWishlistClick: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val hasDiscount = product.compareAtPrice != null &&
@@ -96,7 +97,9 @@ fun ProductCard(
                     .size(32.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                    .clickable { /* toggle wishlist */ },
+                    .clickable {
+                        onWishlistClick(product.id)
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

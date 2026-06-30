@@ -29,7 +29,9 @@ loggingInterceptor = "5.4.0"
 composeMaterial = "1.6.2"
 tvMaterial = "1.1.0"
 material3Lint = "1.4.0"
-firebaseAuthKtx = "24.1.0"
+credentials = "1.6.0"
+firebaseBom = "34.15.0"
+googleid = "1.2.0"
 
 
 [libraries]
@@ -87,9 +89,20 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 #nav3
 androidx-navigation3 = { module = "androidx.navigation3:navigation3-runtime", version.ref = "nav3" }
 androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "nav3" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleRuntimeKtx" }
 
 #firebase
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
+firebase-firestore = { module = "com.google.firebase:firebase-firestore" }
+
+#noinspection LoginCredentials
+androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
+#noinspection LoginCredentials
+androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+#noinspection LoginCredentials
+googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 
 # todo: to be removed
 androidx-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "composeMaterial" }
