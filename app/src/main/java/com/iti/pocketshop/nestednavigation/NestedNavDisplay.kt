@@ -14,15 +14,12 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.profile.ProfileRoot
 import com.iti.pocketshop.features.wishlist.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
 @Composable
 fun NestedNavDisplay(
@@ -34,19 +31,7 @@ fun NestedNavDisplay(
     openSettings: () -> Unit,
 ) {
 
-    val nestedBackStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Route.NestedNav.Home::class, Route.NestedNav.Home.serializer())
-                    subclass(Route.NestedNav.Wishlist::class, Route.NestedNav.Wishlist.serializer())
-                    subclass(Route.NestedNav.Cart::class, Route.NestedNav.Cart.serializer())
-                    subclass(Route.NestedNav.Profile::class, Route.NestedNav.Profile.serializer())
-                }
-            }
-        },
-        Route.NestedNav.Home
-    )
+    val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
 
     Scaffold(
         bottomBar = {
