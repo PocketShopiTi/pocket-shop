@@ -10,7 +10,7 @@ interface UserRepo {
 
     fun observeAuthState(): Flow<FirebaseUser?>
 
-    suspend fun getIdToken(forceRefresh: Boolean = false): String?
-
     fun signOut()
+
+    suspend fun isUserLoggedIn(): Boolean
 }

@@ -2,10 +2,10 @@ package com.iti.pocketshop.core.userdata
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.iti.pocketshop.core.components.SignInDialogController
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class UserRepoImpl @Inject constructor(
@@ -18,6 +18,9 @@ class UserRepoImpl @Inject constructor(
     override val isSignedIn: Boolean
         get() = currentUser != null
 
+    val isAnonymous: Boolean
+        get() = currentUser?.isAnonymous ?: false
+
     override fun observeAuthState(): Flow<FirebaseUser?> = callbackFlow {
         val listener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             trySend(firebaseAuth.currentUser)
@@ -26,11 +29,15 @@ class UserRepoImpl @Inject constructor(
         awaitClose { auth.removeAuthStateListener(listener) }
     }
 
-    override suspend fun getIdToken(forceRefresh: Boolean): String? {
-        return currentUser?.getIdToken(forceRefresh)?.await()?.token
-    }
-
     override fun signOut() {
         auth.signOut()
+    }
+
+    override suspend fun isUserLoggedIn(): Boolean {
+        if (isAnonymous) {
+            SignInDialogController.sendEvent(true)
+            return false
+        }
+        return true
     }
 }
