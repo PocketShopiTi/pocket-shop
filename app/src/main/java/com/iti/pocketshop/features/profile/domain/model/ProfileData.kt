@@ -5,7 +5,7 @@ sealed interface ProfileData {
 
     data class Authenticated(
         val user: UserEntity,
-        val stats: ProfileStats,
+        val stats: ProfileStats?,
         val recentOrders: List<OrderEntity>,
     ) : ProfileData
 }

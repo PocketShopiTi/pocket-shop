@@ -123,12 +123,14 @@
 
     <string name="error_user_disabled">This account has been disabled.</string>
     <string name="error_invalid_credentials">The supplied credentials are invalid.</string>
+    <string name="error_unauthorized">You are not authorized to perform this action.</string>
     <string name="error_email_already_in_use">An account already uses this email address.</string>
     <string name="error_weak_password">Please choose a stronger password.</string>
     <string name="error_email_not_verified">Verify your email address before continuing.</string>
     <string name="profile_title">Profile</string>
     <string name="profile_loading">Loading profile</string>
     <string name="profile_retry">Retry</string>
+    <string name="profile_reload">Reload</string>
     <string name="profile_open_settings">Open settings</string>
     <string name="profile_browsing_as_guest">Browsing as guest</string>
     <string name="profile_guest_heading">Sign in to unlock\nyour full wardrobe</string>
@@ -168,8 +170,7 @@
     <string name="profile_order_image">Image for order %1$s</string>
     <string name="profile_status_pending">Pending</string>
     <string name="profile_status_processing">Processing</string>
-    <string name="profile_status_shipped">Shipped</string>
-    <string name="profile_status_delivered">Delivered</string>
+    <string name="profile_status_fulfilled">Fulfilled</string>
     <string name="profile_status_cancelled">Cancelled</string>
 
 </resources>

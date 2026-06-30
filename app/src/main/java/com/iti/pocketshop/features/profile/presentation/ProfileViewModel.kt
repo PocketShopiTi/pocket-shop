@@ -3,9 +3,11 @@ package com.iti.pocketshop.features.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
 import com.iti.pocketshop.features.profile.domain.usecase.GetProfileUseCase
-import com.iti.pocketshop.features.profile.domain.usecase.ProfileSignOutUseCase
+import com.iti.pocketshop.features.profile.domain.usecase.ProfileLogOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,10 +21,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getProfile: GetProfileUseCase,
-    private val signOutUseCase: ProfileSignOutUseCase,
+    private val signOutUseCase: ProfileLogOutUseCase,
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
+    private var profileLoadJob: Job? = null
     private val _state = MutableStateFlow(ProfileState())
     val state = _state
         .onStart {
@@ -42,7 +45,7 @@ class ProfileViewModel @Inject constructor(
 
     fun onAction(action: ProfileAction) {
         when (action) {
-            ProfileAction.Retry -> loadProfile()
+            ProfileAction.Refresh -> loadProfile()
             ProfileAction.LogoutRequested -> _state.update {
                 it.copy(showLogoutConfirmation = true, logoutError = null)
             }
@@ -56,17 +59,33 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun loadProfile() {
+        if (profileLoadJob?.isActive == true) return
 
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-            when (val result = getProfile()) {
-                is PocketResult.Success -> _state.update {
-                    it.copy(isLoading = false, profile = result.data, error = null)
-                }
+        profileLoadJob = viewModelScope.launch {
+            _state.update { it.copy(isRefreshing = true, error = null) }
 
-                is PocketResult.Error -> _state.update {
-                    it.copy(isLoading = false, error = result.error)
+            try {
+                getProfile().collect { profileResult ->
+                    when (profileResult) {
+
+                        is ProfileLoadUpdate.Cached -> _state.update { current ->
+                            current.copy(
+                                profile = profileResult.profile,
+                                error = null,
+                            )
+                        }
+
+                        is ProfileLoadUpdate.Fresh -> _state.update {
+                            it.copy(profile = profileResult.profile, error = null)
+                        }
+
+                        is ProfileLoadUpdate.Failed -> _state.update {
+                            it.copy(error = profileResult.error)
+                        }
+                    }
                 }
+            } finally {
+                _state.update { it.copy(isRefreshing = false) }
             }
         }
     }

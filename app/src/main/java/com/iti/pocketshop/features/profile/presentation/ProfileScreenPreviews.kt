@@ -15,7 +15,7 @@ import com.iti.pocketshop.ui.theme.PocketShopTheme
 private fun GuestProfilePreview() {
     PocketShopTheme {
         ProfileScreen(
-            state = ProfileState(isLoading = false, profile = ProfileData.Guest),
+            state = ProfileState(isRefreshing = false, profile = ProfileData.Guest),
             onAction = {},
             openLogin = {},
             openRegister = {},
@@ -30,7 +30,7 @@ private fun LoggedInProfilePreview() {
     PocketShopTheme {
         ProfileScreen(
             state = ProfileState(
-                isLoading = false,
+                isRefreshing = false,
                 profile = ProfileData.Authenticated(
                     user = UserEntity(
                         id = "preview-user",
@@ -43,7 +43,7 @@ private fun LoggedInProfilePreview() {
                     recentOrders = listOf(
                         OrderEntity(
                             id = "PK-2026-0847",
-                            status = OrderStatus.DELIVERED,
+                            status = OrderStatus.FULFILLED,
                             total = 778.50,
                             currencyCode = "USD",
                             imageUrl = null,

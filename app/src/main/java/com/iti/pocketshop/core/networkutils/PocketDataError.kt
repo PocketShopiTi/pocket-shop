@@ -15,6 +15,7 @@ sealed interface PocketDataError : Error {
 
     enum class Auth : PocketDataError {
         INVALID_CREDENTIALS,
+        UnAuthorized,
         EMAIL_ALREADY_IN_USE,
         WEAK_PASSWORD,
         USER_NOT_FOUND,
@@ -33,6 +34,7 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.SERIALIZATION -> context.getString(R.string.failed_to_process_response)
     PocketDataError.Remote.UNKNOWN -> context.getString(R.string.something_went_wrong)
     PocketDataError.Auth.INVALID_CREDENTIALS -> context.getString(R.string.error_invalid_credentials)
+    PocketDataError.Auth.UnAuthorized -> context.getString(R.string.error_unauthorized)
     PocketDataError.Auth.EMAIL_ALREADY_IN_USE -> context.getString(R.string.error_email_already_in_use)
     PocketDataError.Auth.WEAK_PASSWORD -> context.getString(R.string.error_weak_password)
     PocketDataError.Auth.USER_NOT_FOUND -> context.getString(R.string.error_user_not_found)

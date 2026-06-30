@@ -1,73 +1,78 @@
 package com.iti.pocketshop.features.profile.data
 
-import com.google.firebase.auth.FirebaseAuth
+import com.iti.pocketshop.CUSTOMER_ACCESS_TOKEN
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.safeFirebaseCall
-import com.iti.pocketshop.features.profile.domain.model.OrderEntity
-import com.iti.pocketshop.features.profile.domain.model.OrderStatus
+import com.iti.pocketshop.core.networkutils.map
+import com.iti.pocketshop.features.profile.data.datasource.firebase.FirebaseDataSource
+import com.iti.pocketshop.features.profile.data.datasource.shopify.ShopifyDataSource
+import com.iti.pocketshop.features.profile.data.mapper.toProfileData
+import com.iti.pocketshop.features.profile.data.mapper.toUserEntity
+import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileSession
-import com.iti.pocketshop.features.profile.domain.model.ProfileStats
 import com.iti.pocketshop.features.profile.domain.repository.ProfileRepository
 import javax.inject.Inject
 
 class ProfileRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth,
+    private val firebaseDataSource: FirebaseDataSource,
+    private val shopifyDataSource: ShopifyDataSource
 ) : ProfileRepository {
 
-    override suspend fun getUserSession(): PocketResult<ProfileSession, PocketDataError.Auth> =
-        safeFirebaseCall {
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser == null || currentUser.isAnonymous) {
-                return@safeFirebaseCall ProfileSession.Guest
+    override suspend fun getUserSession(): PocketResult<ProfileSession, PocketDataError.Auth> {
+        return firebaseDataSource.getUserSession().map { user ->
+            if (user == null || user.isAnonymous) {
+                ProfileSession.Guest
             } else {
-                return@safeFirebaseCall ProfileSession.Authenticated(
-                    currentUser.toUserEntity()
-                )
+                ProfileSession.Authenticated(user.toUserEntity())
             }
         }
-
-    override suspend fun getProfileStats(userId: String): PocketResult<ProfileStats, PocketDataError.Remote> {
-        return PocketResult.Success(
-            ProfileStats(
-                ordersCount = 10,
-                wishListCount = 5,
-                addressesCount = 3,
-            )
-        )
     }
 
-    override suspend fun getRecentOrders(
-        userId: String,
-        count: Int
-    ): PocketResult<List<OrderEntity>, PocketDataError.Remote> {
-        return PocketResult.Success(
-            listOf(
-                OrderEntity(
-                    id = "PK-2026-0847",
-                    status = OrderStatus.DELIVERED,
-                    total = 778.50,
-                    currencyCode = "USD",
-                    imageUrl = null,
-                ),
-                OrderEntity(
-                    id = "PK-2026-0612",
-                    status = OrderStatus.PROCESSING,
-                    total = 249.00,
-                    currencyCode = "USD",
-                    imageUrl = null,
-                ),
-                OrderEntity(
-                    id = "PK-2026-0481",
-                    status = OrderStatus.DELIVERED,
-                    total = 437.25,
-                    currencyCode = "USD",
-                    imageUrl = null,
-                ),
-            ).take(count)
-        )
+    override suspend fun getProfile(
+        orderCount: Int,
+    ): PocketResult<ProfileData.Authenticated, PocketDataError> {
+        val tokenResult = getCustomerAccessToken()
+        
+        return when (tokenResult) {
+            is PocketResult.Error -> PocketResult.Error(tokenResult.error)
+
+            is PocketResult.Success -> {
+                val profileResult = shopifyDataSource.getUserProfile(
+                    accessToken = tokenResult.data,
+                    ordersCount = orderCount,
+                )
+
+                when (profileResult) {
+                    is PocketResult.Error -> PocketResult.Error(profileResult.error)
+
+                    is PocketResult.Success -> {
+                        val customer = profileResult.data
+                            ?: return PocketResult.Error(PocketDataError.Auth.UnAuthorized)
+
+                        PocketResult.Success(customer.toProfileData())
+                    }
+                }
+            }
+        }
     }
 
-    override suspend fun signOut(): PocketResult<Unit, PocketDataError.Auth> =
-        safeFirebaseCall { firebaseAuth.signOut() }
+    private fun getCustomerAccessToken(): PocketResult<String, PocketDataError.Auth> =
+        PocketResult.Success(CUSTOMER_ACCESS_TOKEN)
+
+
+    override suspend fun logout(): PocketResult<Unit, PocketDataError.Auth> {
+        val token = when (val tokenResult = getCustomerAccessToken()) {
+            is PocketResult.Success -> tokenResult.data
+            is PocketResult.Error -> null
+        }
+        token?.let {
+            shopifyDataSource.logOut(accessToken = token)
+        }
+
+        //todo:also delete the locally stored access token
+
+        firebaseDataSource.logout()
+
+        return PocketResult.Success(Unit)
+    }
 }

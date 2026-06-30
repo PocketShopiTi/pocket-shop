@@ -1,13 +1,14 @@
 package com.iti.pocketshop.features.profile.presentation
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.core.components.ObserveEvent
-import com.iti.pocketshop.core.networkutils.toUserMessage
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
@@ -15,7 +16,7 @@ import com.iti.pocketshop.features.profile.domain.model.ProfileStats
 import com.iti.pocketshop.features.profile.domain.model.UserEntity
 import com.iti.pocketshop.features.profile.presentation.components.GuestProfileScreen
 import com.iti.pocketshop.features.profile.presentation.components.LoggedInProfileScreen
-import com.iti.pocketshop.features.profile.presentation.components.ProfileErrorContent
+import com.iti.pocketshop.features.profile.presentation.components.ProfileLoadingContent
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 
 @Composable
@@ -60,30 +61,41 @@ fun ProfileScreen(
     openAddresses: () -> Unit = {},
     openWishList: () -> Unit = {},
 ) {
-    val context = LocalContext.current
-    when {
-        state.error != null -> ProfileErrorContent(
-            message = state.error.toUserMessage(context),
-            onRetry = { onAction(ProfileAction.Retry) },
-        )
+    PullToRefreshBox(
+        isRefreshing = state.isRefreshing,
+        onRefresh = { onAction(ProfileAction.Refresh) },
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        when (val profile = state.profile) {
+            is ProfileData.Authenticated -> LoggedInProfileScreen(
+                profile = profile,
+                state = state,
+                onReload = { onAction(ProfileAction.Refresh) },
+                onLogoutRequested = { onAction(ProfileAction.LogoutRequested) },
+                onLogoutConfirmed = { onAction(ProfileAction.LogoutConfirmed) },
+                onLogoutDismissed = { onAction(ProfileAction.LogoutDismissed) },
+                openOrders = openOrders,
+                openAddresses = openAddresses,
+                openWishList = openWishList,
+                openSettings = openSettings,
+            )
 
-        state.profile is ProfileData.Authenticated -> LoggedInProfileScreen(
-            profile = state.profile,
-            state = state,
-            onLogoutRequested = { onAction(ProfileAction.LogoutRequested) },
-            onLogoutConfirmed = { onAction(ProfileAction.LogoutConfirmed) },
-            onLogoutDismissed = { onAction(ProfileAction.LogoutDismissed) },
-            openOrders = openOrders,
-            openAddresses = openAddresses,
-            openWishList = openWishList,
-            openSettings = openSettings,
-        )
+            ProfileData.Guest -> GuestProfileScreen(
+                openLogin = openLogin,
+                openRegister = openRegister,
+                openSettings = openSettings,
+            )
 
-        else -> GuestProfileScreen(
-            openLogin = openLogin,
-            openRegister = openRegister,
-            openSettings = openSettings,
-        )
+            null -> if (state.isRefreshing) {
+                ProfileLoadingContent()
+            } else {
+                GuestProfileScreen(
+                    openLogin = openLogin,
+                    openRegister = openRegister,
+                    openSettings = openSettings,
+                )
+            }
+        }
     }
 }
 
@@ -93,7 +105,7 @@ fun ProfileScreen(
 private fun GuestProfilePreview() {
     PocketShopTheme {
         ProfileScreen(
-            state = ProfileState(isLoading = false, profile = ProfileData.Guest),
+            state = ProfileState(isRefreshing = false, profile = ProfileData.Guest),
             onAction = {},
             openLogin = {},
             openRegister = {},
@@ -108,7 +120,7 @@ private fun LoggedInProfilePreview() {
     PocketShopTheme {
         ProfileScreen(
             state = ProfileState(
-                isLoading = false,
+                isRefreshing = false,
                 profile = ProfileData.Authenticated(
                     user = UserEntity(
                         id = "preview-user",
@@ -121,7 +133,7 @@ private fun LoggedInProfilePreview() {
                     recentOrders = listOf(
                         OrderEntity(
                             id = "PK-2026-0847",
-                            status = OrderStatus.DELIVERED,
+                            status = OrderStatus.FULFILLED,
                             total = 778.50,
                             currencyCode = "USD",
                             imageUrl = null,

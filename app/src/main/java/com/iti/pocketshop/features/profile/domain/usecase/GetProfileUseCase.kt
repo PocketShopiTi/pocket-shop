@@ -1,50 +1,48 @@
 package com.iti.pocketshop.features.profile.domain.usecase
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
+import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
 import com.iti.pocketshop.features.profile.domain.model.ProfileSession
 import com.iti.pocketshop.features.profile.domain.repository.ProfileRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class GetProfileUseCase @Inject constructor(
     private val repository: ProfileRepository,
 ) {
-    suspend operator fun invoke(): PocketResult<ProfileData, PocketDataError> {
+    operator fun invoke(): Flow<ProfileLoadUpdate> = flow {
+        val sessionResult = repository.getUserSession()
 
-        return when (val sessionResult = repository.getUserSession()) {
-            is PocketResult.Error ->
-                PocketResult.Error(sessionResult.error)
+        when (sessionResult) {
+            is PocketResult.Error -> emit(ProfileLoadUpdate.Failed(sessionResult.error))
 
             is PocketResult.Success ->
-                when (val session = sessionResult.data) {
-                    ProfileSession.Guest -> PocketResult.Success(ProfileData.Guest)
+                when (sessionResult.data) {
+                    ProfileSession.Guest -> emit(ProfileLoadUpdate.Cached(ProfileData.Guest))
 
-                    is ProfileSession.Authenticated -> loadAuthenticatedProfile(session)
+                    is ProfileSession.Authenticated -> {
+                        emit(
+                            ProfileLoadUpdate.Cached(
+                                ProfileData.Authenticated(
+                                    user = sessionResult.data.user,
+                                    stats = null,
+                                    recentOrders = listOf(),
+                                )
+                            )
+                        )
+
+                        val profileResult = repository.getProfile()
+                        when (profileResult) {
+                            is PocketResult.Success ->
+                                emit(ProfileLoadUpdate.Fresh(profileResult.data))
+
+                            is PocketResult.Error ->
+                                emit(ProfileLoadUpdate.Failed(profileResult.error))
+                        }
+                    }
                 }
         }
-    }
-
-    private suspend fun loadAuthenticatedProfile(
-        session: ProfileSession.Authenticated,
-    ): PocketResult<ProfileData, PocketDataError> {
-
-        val stats = when (val statsResult = repository.getProfileStats(session.user.id)) {
-            is PocketResult.Error -> return PocketResult.Error(statsResult.error)
-            is PocketResult.Success -> statsResult.data
-        }
-
-        val orders = when (val ordersResult = repository.getRecentOrders(session.user.id)) {
-            is PocketResult.Error -> return PocketResult.Error(ordersResult.error)
-            is PocketResult.Success -> ordersResult.data
-        }
-
-        return PocketResult.Success(
-            ProfileData.Authenticated(
-                user = session.user,
-                stats = stats,
-                recentOrders = orders,
-            )
-        )
     }
 }

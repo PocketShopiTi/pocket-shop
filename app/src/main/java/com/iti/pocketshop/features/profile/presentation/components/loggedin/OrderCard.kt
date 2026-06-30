@@ -28,6 +28,10 @@ import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus.CANCELLED
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus.FULFILLED
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus.PENDING
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus.PROCESSING
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
 import java.text.NumberFormat
 import java.util.Currency
@@ -93,11 +97,10 @@ fun RecentOrderCard(order: OrderEntity) {
 private fun OrderStatusChip(status: OrderStatus, modifier: Modifier = Modifier) {
     val extendedColors = LocalExtendedColors.current
     val (label, color) = when (status) {
-        OrderStatus.PENDING -> stringResource(R.string.profile_status_pending) to extendedColors.info
-        OrderStatus.PROCESSING -> stringResource(R.string.profile_status_processing) to extendedColors.warning
-        OrderStatus.SHIPPED -> stringResource(R.string.profile_status_shipped) to extendedColors.info
-        OrderStatus.DELIVERED -> stringResource(R.string.profile_status_delivered) to extendedColors.success
-        OrderStatus.CANCELLED -> stringResource(R.string.profile_status_cancelled) to extendedColors.error
+        PENDING -> stringResource(R.string.profile_status_pending) to extendedColors.info
+        PROCESSING -> stringResource(R.string.profile_status_processing) to extendedColors.warning
+        CANCELLED -> stringResource(R.string.profile_status_cancelled) to extendedColors.error
+        FULFILLED -> stringResource(R.string.profile_status_fulfilled) to extendedColors.success
     }
     Surface(
         modifier = modifier,

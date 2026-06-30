@@ -37,6 +37,10 @@ apollo {
             "URL",
             "kotlin.String"
         )
+
+        mapScalar("DateTime", "kotlin.String")
+        mapScalar("UnsignedInt64", "kotlin.Long")
+
     }
 }
 

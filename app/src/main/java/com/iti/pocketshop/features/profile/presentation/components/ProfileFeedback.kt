@@ -1,13 +1,16 @@
 package com.iti.pocketshop.features.profile.presentation.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,25 +35,34 @@ fun ProfileLoadingContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ProfileErrorContent(
+fun ProfileErrorCard(
     message: String,
-    onRetry: () -> Unit,
+    onReload: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+    OutlinedCard(
+        modifier = modifier.fillMaxWidth(),
+        border = BorderStroke(
+            width = 1.dp,
+            color = MaterialTheme.colorScheme.error,
+        ),
     ) {
-        Text(
-            text = message,
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Button(onClick = onRetry, modifier = Modifier.padding(top = 16.dp)) {
-            Text(stringResource(R.string.profile_retry))
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = message,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            Button(
+                onClick = onReload,
+                modifier = Modifier.align(Alignment.End),
+            ) {
+                Text(stringResource(R.string.profile_reload))
+            }
         }
     }
 }

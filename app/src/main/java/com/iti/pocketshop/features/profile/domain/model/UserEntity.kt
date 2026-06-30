@@ -7,7 +7,7 @@ data class UserEntity(
     val name: String,
     val email: String,
     val imageUrl: String?,
-    private val memberSinceEpochMillis: Long?,
+    private val memberSinceEpochMillis: Long? = null,
 ) {
     val memberSince: String? = memberSinceEpochMillis?.toFormattedDate("MMMM yyyy")
 }

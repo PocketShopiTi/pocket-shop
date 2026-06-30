@@ -5,10 +5,10 @@ import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.profile.domain.repository.ProfileRepository
 import javax.inject.Inject
 
-class ProfileSignOutUseCase @Inject constructor(
+class ProfileLogOutUseCase @Inject constructor(
     private val repository: ProfileRepository,
 ) {
     suspend operator fun invoke(): PocketResult<Unit, PocketDataError.Auth> =
-        repository.signOut()
+        repository.logout()
 
 }

@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.profile.presentation.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import com.iti.pocketshop.features.profile.presentation.components.loggedin.Rece
 fun LoggedInProfileScreen(
     profile: ProfileData.Authenticated,
     state: ProfileState,
+    onReload: () -> Unit,
     onLogoutRequested: () -> Unit,
     onLogoutConfirmed: () -> Unit,
     onLogoutDismissed: () -> Unit,
@@ -34,9 +36,11 @@ fun LoggedInProfileScreen(
     openSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(bottom = 24.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         item {
             ProfileHeader(
@@ -44,7 +48,16 @@ fun LoggedInProfileScreen(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
             )
         }
-        item {
+        state.error?.let { error ->
+            item {
+                ProfileErrorCard(
+                    message = error.toUserMessage(context),
+                    onReload = onReload,
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                )
+            }
+        }
+        if (profile.stats != null) item {
             ProfileStats(
                 orders = profile.stats.ordersCount,
                 wishlist = profile.stats.wishListCount,
@@ -52,8 +65,13 @@ fun LoggedInProfileScreen(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
             )
         }
-        item { RecentOrdersHeader(openOrders) }
-        item { RecentOrders(profile) }
+
+        if (profile.recentOrders.isNotEmpty()) {
+            if (profile.recentOrders.size > 3) {
+                item { RecentOrdersHeader(openOrders) }
+            }
+            item { RecentOrders(profile) }
+        }
 
         item {
             ProfileActions(
@@ -84,7 +102,7 @@ fun LoggedInProfileScreen(
 
     state.logoutError?.let { error ->
         ErrorDialog(
-            message = error.toUserMessage(LocalContext.current),
+            message = error.toUserMessage(context),
             onDismiss = onLogoutDismissed,
         )
     }
