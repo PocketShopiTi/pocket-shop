@@ -173,4 +173,7 @@
     <string name="profile_status_fulfilled">Fulfilled</string>
     <string name="profile_status_cancelled">Cancelled</string>
 
+    <string name="log_in_to_unlock_all_features_and_sync_your_data_across_devices">Log in to unlock all features and sync your data across devices.</string>
+    <string name="go_to_login">Go to Login</string>
+    <string name="not_now">Not now</string>
 </resources>

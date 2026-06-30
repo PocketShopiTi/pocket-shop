@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "925942644827-2uvacolvskrr6ffkmvbv6fcffc947ok8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iti.pocketshop",
+            "certificate_hash": "94c146b69df6024815e70f44b53ee12161ffb763"
+          }
+        },
+        {
+          "client_id": "925942644827-gaoiomm45c7douksrgat4gt6nvmcs5ka.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iti.pocketshop",
+            "certificate_hash": "46f544f96ff5495daa84f3d92cb90c3e661d83ad"
+          }
+        },
+        {
           "client_id": "925942644827-i54bkqrksgrtbeq7576dg5hi01n86098.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

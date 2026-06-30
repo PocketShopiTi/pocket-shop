@@ -21,7 +21,7 @@ fun LoginHeader(
     subtitle: String = stringResource(id = R.string.login_header_subtitle),
 ) {
     Column(
-        modifier = modifier.padding(top = 16.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

@@ -6,12 +6,12 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.NavKey
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
+import com.iti.pocketshop.core.components.SignInDialog
 import com.iti.pocketshop.features.aichat.AiChatRoot
 import com.iti.pocketshop.features.login.presentation.LoginRoot
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
@@ -23,38 +23,18 @@ import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
 @Composable
 fun RootNavDisplay() {
 
-    val rootBackStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Route.Splash::class, Route.Splash.serializer())
-                    subclass(Route.Onboarding::class, Route.Onboarding.serializer())
-                    subclass(Route.Login::class, Route.Login.serializer())
-                    subclass(Route.OTP::class, Route.OTP.serializer())
-                    subclass(Route.Register::class, Route.Register.serializer())
-                    subclass(Route.NestedNav::class, Route.NestedNav.serializer())
-                    subclass(Route.ProductDetails::class, Route.ProductDetails.serializer())
-                    subclass(Route.AiChat::class, Route.AiChat.serializer())
-                    subclass(Route.OrderCheckout::class, Route.OrderCheckout.serializer())
-                    subclass(Route.Settings::class, Route.Settings.serializer())
-                    subclass(Route.Search::class, Route.Search.serializer())
-                }
-            }
-        },
-        Route.NestedNav
-    )
+    val rootBackStack = rememberNavBackStack(Route.Splash)
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = rootBackStack,
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
         ),
         transitionSpec = {
             slideIntoContainer(
@@ -65,13 +45,22 @@ fun RootNavDisplay() {
                 animationSpec = tween(350)
             )
         },
+        popTransitionSpec = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(350)
+            ) togetherWith slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(350)
+            )
+        },
         entryProvider = entryProvider {
             entry<Route.Splash> {
                 SplashRoot(
-                    showNextScreen = {
+                    showNextScreen = { nextScreen ->
                         rootBackStack.apply {
                             clear()
-                            navigateSingleTop(Route.Onboarding)
+                            navigateSingleTop(nextScreen)
                         }
                     }
                 )
@@ -135,9 +124,12 @@ fun RootNavDisplay() {
                     },
                     openLogin = {
                         rootBackStack.apply {
-                            clear()
                             navigateSingleTop(Route.Login)
+                            rootBackStack.remove(Route.Register)
                         }
+                    },
+                    navigateBack = {
+                        rootBackStack.removeLastOrNull()
                     }
                 )
             }
@@ -196,6 +188,12 @@ fun RootNavDisplay() {
             entry<Route.Search> {
                 SearchRoot()
             }
+        }
+    )
+
+    SignInDialog(
+        onSignIn = {
+            rootBackStack.navigateSingleTop(Route.Login)
         }
     )
 }
