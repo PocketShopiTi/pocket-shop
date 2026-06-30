@@ -173,4 +173,17 @@
     <string name="profile_status_fulfilled">Fulfilled</string>
     <string name="profile_status_cancelled">Cancelled</string>
 
+    <string name="orders_title">My orders</string>
+    <string name="orders_back">Back</string>
+    <string name="orders_track">Track</string>
+    <string name="orders_view">View</string>
+    <string name="orders_loading">Loading orders</string>
+    <string name="orders_empty_title">No orders yet</string>
+    <string name="orders_empty_description">Your completed orders will appear here.</string>
+    <string name="orders_image_description">Image for order %1$s</string>
+    <string name="orders_status_pending">Pending</string>
+    <string name="orders_status_processing">Processing</string>
+    <string name="orders_status_delivered">Delivered</string>
+    <string name="orders_status_cancelled">Cancelled</string>
+
 </resources>

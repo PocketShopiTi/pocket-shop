@@ -17,6 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
+import com.iti.pocketshop.features.orders.presentation.OrdersRoot
 import com.iti.pocketshop.features.profile.presentation.ProfileRoot
 import com.iti.pocketshop.features.wishlist.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
@@ -44,6 +45,7 @@ fun NestedNavDisplay(
                     subclass(Route.NestedNav.Wishlist::class, Route.NestedNav.Wishlist.serializer())
                     subclass(Route.NestedNav.Cart::class, Route.NestedNav.Cart.serializer())
                     subclass(Route.NestedNav.Profile::class, Route.NestedNav.Profile.serializer())
+                    subclass(Route.NestedNav.Orders::class, Route.NestedNav.Orders.serializer())
                 }
             }
         },
@@ -54,7 +56,10 @@ fun NestedNavDisplay(
         bottomBar = {
             NavigationBar {
                 BottomBarDestination.entries.forEach { destination ->
-                    val isSelected = nestedBackStack.lastOrNull() == destination.route
+                    val currentRoute = nestedBackStack.lastOrNull()
+                    val isSelected = currentRoute == destination.route ||
+                            destination == BottomBarDestination.Profile &&
+                            currentRoute == Route.NestedNav.Orders
                     BottomNavigationButton(
                         onClick = {
                             nestedBackStack.apply {
@@ -111,7 +116,17 @@ fun NestedNavDisplay(
                         openWishList = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
                         },
+                        openOrders = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Orders)
+                        },
                         logout = logout,
+                    )
+                }
+                entry<Route.NestedNav.Orders> {
+                    OrdersRoot(
+                        onBack = { nestedBackStack.removeLastOrNull() },
+                        onTrack = {},
+                        onView = {},
                     )
                 }
             }
