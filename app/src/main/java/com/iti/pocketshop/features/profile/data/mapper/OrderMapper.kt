@@ -7,8 +7,7 @@ import com.iti.pocketshop.shopify.type.OrderFulfillmentStatus
 
 
 internal fun GetProfileQuery.Customer.toOrdersList(): List<OrderEntity> =
-    orders.edges.map {
-        val order = it.node
+    orders.nodes.map { order ->
         OrderEntity(
             id = order.id,
             status = order.fulfillmentStatus.toOrderStatus(),
