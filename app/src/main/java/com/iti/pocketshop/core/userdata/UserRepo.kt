@@ -12,5 +12,5 @@ interface UserRepo {
 
     fun signOut()
 
-    suspend fun isUserLoggedIn(): Boolean
+    suspend fun isUserNotAnonymous(): Boolean
 }

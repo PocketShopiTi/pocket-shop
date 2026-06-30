@@ -33,7 +33,7 @@ class UserRepoImpl @Inject constructor(
         auth.signOut()
     }
 
-    override suspend fun isUserLoggedIn(): Boolean {
+    override suspend fun isUserNotAnonymous(): Boolean {
         if (isAnonymous) {
             SignInDialogController.sendEvent(true)
             return false
