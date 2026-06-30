@@ -17,7 +17,7 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
-import com.iti.pocketshop.features.profile.ProfileRoot
+import com.iti.pocketshop.features.profile.presentation.ProfileRoot
 import com.iti.pocketshop.features.wishlist.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
@@ -32,6 +32,8 @@ fun NestedNavDisplay(
     logout: () -> Unit,
     openServiceOrder: (String) -> Unit,
     openSettings: () -> Unit,
+    openLogin: () -> Unit,
+    openRegister: () -> Unit,
 ) {
 
     val nestedBackStack = rememberNavBackStack(
@@ -103,7 +105,12 @@ fun NestedNavDisplay(
                 }
                 entry<Route.NestedNav.Profile> {
                     ProfileRoot(
+                        openLogin = openLogin,
+                        openRegister = openRegister,
                         openSettings = openSettings,
+                        openWishList = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
+                        },
                         logout = logout,
                     )
                 }
