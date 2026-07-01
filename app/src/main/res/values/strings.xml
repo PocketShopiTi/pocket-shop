@@ -88,6 +88,10 @@
     <string name="up_to_50_off">Up to\n50% Off</string>
     <string name="shop_now">Shop now</string>
     <string name="search">Search</string>
+    <string name="search_placeholder">Search products, brands, and more</string>
+    <string name="search_clear_query">Clear search</string>
+    <string name="search_products">Products</string>
+    <string name="search_load_more">Load more</string>
     <string name="sold_out">Sold Out</string>
     <string name="see_all">See all</string>
 
@@ -118,4 +122,26 @@
     <string name="error_user_not_found">No account found with this email</string>
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="no_results_found">No results found</string>
+    <string name="search_explore_title">Explore</string>
+    <string name="search_results_count">%1$d results for \'%2$s\'</string>
+    <string name="search_no_results_subtitle">We couldn\'t find anything matching that. Try different keywords or browse categories.</string>
+    <string name="search_browse_categories">Browse categories</string>
+    <string name="search_toggle_wishlist">Toggle wishlist</string>
+    <string name="trending_searches">Trending Searches</string>
+    <string name="recommended_for_you">Recommended for you</string>
+    <string name="search_filters_clear">Clear</string>
+    <string name="search_filters_show_results">Show results</string>
+    <string name="search_filters_title">Filters (%1$d)</string>
+    <string name="search_filters_clear_all">Clear filters</string>
+    <string name="search_filters_show_results_count">Show %1$d results</string>
+    <string name="search_filters_empty">No filters available</string>
+    <string name="filters_label">Filters</string>
+    <string-array name="suggested_keywords">
+        <item>Shoes</item>
+        <item>Laptops</item>
+        <item>Watches</item>
+        <item>Accessories</item>
+        <item>T-Shirts</item>
+    </string-array>
 </resources>

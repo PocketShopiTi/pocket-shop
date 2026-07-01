@@ -19,7 +19,7 @@ import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
-import com.iti.pocketshop.features.search.SearchRoot
+import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
 import com.iti.pocketshop.features.settings.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
@@ -43,16 +43,23 @@ fun RootNavDisplay() {
                     subclass(Route.AiChat::class, Route.AiChat.serializer())
                     subclass(Route.OrderCheckout::class, Route.OrderCheckout.serializer())
                     subclass(Route.Settings::class, Route.Settings.serializer())
-                    subclass(Route.Search::class, Route.Search.serializer())
+                    subclass(Route.SearchNav::class, Route.SearchNav.serializer())
                 }
             }
         },
         Route.Splash
     )
 
+    val openProductDetails: (String) -> Unit = { id ->
+        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+    }
+
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = rootBackStack,
+        onBack = {
+            rootBackStack.removeLastOrNull()
+        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
         ),
@@ -153,14 +160,12 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openServiceOrder = { id ->
-                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
-                    },
+                    openServiceOrder = openProductDetails,
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
                     openSearch = {
-                        rootBackStack.navigateSingleTop(Route.Search)
+                        rootBackStack.navigateSingleTop(Route.SearchNav)
                     },
                 )
             }
@@ -181,8 +186,13 @@ fun RootNavDisplay() {
             entry<Route.Settings> {
                 SettingsRoot()
             }
-            entry<Route.Search> {
-                SearchRoot()
+            entry<Route.SearchNav> {
+                SearchNavDisplay(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    openProductDetails = openProductDetails
+                )
             }
         }
     )
