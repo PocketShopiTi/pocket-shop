@@ -1,19 +1,23 @@
 package com.iti.pocketshop.features.login.presentation
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -83,7 +87,29 @@ fun LoginScreen(
     onGoogleSignInClick: () -> Unit,
 ) {
     Scaffold(
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.statusBars)
+            ) {
+                TextButton(
+                    onClick = {
+                        onAction(LoginAction.ContinueAsGuestClicked)
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                ) {
+                    Text(
+                        text = stringResource(R.string.login_continue_as_guest),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                    )
+                }
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -92,16 +118,6 @@ fun LoginScreen(
                 .padding(horizontal = 24.dp)
                 .imePadding()
         ) {
-            Text(
-                text = stringResource(R.string.login_continue_as_guest),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 16.dp)
-                    .clickable { onAction(LoginAction.ContinueAsGuestClicked) }
-            )
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()

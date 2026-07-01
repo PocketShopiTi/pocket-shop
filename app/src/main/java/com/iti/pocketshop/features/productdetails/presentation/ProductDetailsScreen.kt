@@ -6,15 +6,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.LocalUser
+import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
+import com.iti.pocketshop.core.components.RemoveFavoriteDialog
+import com.iti.pocketshop.core.components.SignInDialogController
+import com.iti.pocketshop.features.productdetails.domain.entity.toFavoriteProduct
 import com.iti.pocketshop.features.productdetails.presentation.components.ErrorContent
 import com.iti.pocketshop.features.productdetails.presentation.components.LoadingContent
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductBottomBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductContent
 import com.iti.pocketshop.ui.theme.PocketShopTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductDetailsRoot(
@@ -25,13 +33,29 @@ fun ProductDetailsRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val user = LocalUser.current
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(productId) {
         viewModel.onAction(ProductDetailsAction.ProductChanged(productId))
     }
 
     ProductDetailsScreen(
         state = state,
+        scope = scope,
         onAction = { action ->
+            if (user?.isAnonymous == true && (
+                        action == ProductDetailsAction.AddToCartClicked ||
+                                action == ProductDetailsAction.IncreaseQuantity ||
+                                action == ProductDetailsAction.DecreaseQuantity ||
+                                action is ProductDetailsAction.ToggleFavorite
+                        )
+            ) {
+                scope.launch {
+                    SignInDialogController.sendEvent(true)
+                }
+                return@ProductDetailsScreen
+            }
             when (action) {
                 ProductDetailsAction.BackClicked -> onBack()
                 ProductDetailsAction.SeeAllReviewsClicked -> onSeeAllReviews(productId)
@@ -45,6 +69,7 @@ fun ProductDetailsRoot(
 fun ProductDetailsScreen(
     state: ProductDetailsState,
     onAction: (ProductDetailsAction) -> Unit,
+    scope: CoroutineScope = rememberCoroutineScope(),
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -71,10 +96,25 @@ fun ProductDetailsScreen(
                 product = state.product,
                 state = state,
                 onAction = onAction,
+                onFavoriteClick = {
+                    if (state.isFavorite) {
+                        scope.launch {
+                            DeleteFavoriteDialogController.sendEvent(state.product.toFavoriteProduct())
+                        }
+                    } else {
+                        onAction(ProductDetailsAction.ToggleFavorite(state.product.toFavoriteProduct()))
+                    }
+                } ,
                 modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
             )
         }
     }
+
+    RemoveFavoriteDialog(
+        onConfirm = {
+            onAction(ProductDetailsAction.ToggleFavorite(it))
+        }
+    )
 }
 
 

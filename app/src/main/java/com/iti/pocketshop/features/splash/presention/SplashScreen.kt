@@ -29,16 +29,19 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.iti.pocketshop.features.splash.presention.components.SplashAppIcon
 import com.iti.pocketshop.features.splash.presention.components.SplashSubtitle
 import com.iti.pocketshop.features.splash.presention.components.SplashTitle
+import com.iti.pocketshop.rootnavigation.Route
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun SplashRoot(
-    showNextScreen: () -> Unit
+    showNextScreen: (Route) -> Unit,
+    viewModel: SplashViewModel = hiltViewModel()
 ) {
 
     val scope = rememberCoroutineScope()
@@ -46,7 +49,12 @@ fun SplashRoot(
     SplashScreen {
         scope.launch {
             delay(1_000L.milliseconds)
-            showNextScreen()
+            val nextScreen = if (viewModel.isUserLoggedIn()) {
+                Route.NestedNav
+            } else {
+                Route.Onboarding
+            }
+            showNextScreen(nextScreen)
         }
     }
 }

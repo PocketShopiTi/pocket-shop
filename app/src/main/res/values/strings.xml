@@ -122,6 +122,7 @@
     <string name="error_user_not_found">No account found with this email</string>
     <string name="error_network">Network error. Please check your connection.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
+
     <string name="no_results_found">No results found</string>
     <string name="search_explore_title">Explore</string>
     <string name="search_results_count">%1$d results for \'%2$s\'</string>
@@ -144,4 +145,36 @@
         <item>Accessories</item>
         <item>T-Shirts</item>
     </string-array>
+
+    <string name="log_in_to_unlock_all_features_and_sync_your_data_across_devices">Log in to unlock all features and sync your data across devices.</string>
+    <string name="go_to_login">Go to Login</string>
+    <string name="not_now">Not now</string>
+
+    <string name="auth_invalid_credentials">Incorrect email or password.</string>
+    <string name="auth_user_not_found">No account found with that email.</string>
+    <string name="auth_email_already_in_use">An account with this email already exists.</string>
+    <string name="auth_weak_password">Password must be at least 6 characters.</string>
+    <string name="auth_account_disabled">This account has been disabled. Contact support.</string>
+    <string name="auth_email_not_verified">Please verify your email before signing in.</string>
+    <string name="auth_operation_not_allowed">This sign-in method is not enabled.</string>
+
+    <string name="firestore_permission_denied">You don\'t have permission to do that.</string>
+    <string name="firestore_not_found">The requested data could not be found.</string>
+    <string name="firestore_already_exists">This item already exists.</string>
+    <string name="firestore_unavailable">Service temporarily unavailable. Try again shortly.</string>
+    <string name="firestore_quota_exceeded">Service limit reached. Please try again later.</string>
+    <string name="firestore_data_loss">Some data could not be loaded. Please contact support.</string>
+    <string name="firestore_cancelled">The operation was canceled.</string>
+
+    <!-- Wishlist screen -->
+    <string name="wishlist_title">Wishlist</string>
+    <string name="wishlist_empty_title">Your wishlist is empty</string>
+    <string name="wishlist_empty_subtitle">Save items you love and find them here whenever you\'re ready to shop.</string>
+    <string name="wishlist_remove_from_wishlist">Remove from wishlist</string>
+    <string name="remove_favorite_dialog_title">Remove from wishlist?</string>
+    <string name="remove_favorite_dialog_body">Remove \"%1$s\" from your wishlist? You can always add it back later.</string>
+    <string name="remove_favorite_dialog_cancel">Keep it</string>
+    <string name="remove_favorite_dialog_confirm">Remove</string>
+    <string name="sign_in_to_continue">Sign in to continue</string>
+
 </resources>

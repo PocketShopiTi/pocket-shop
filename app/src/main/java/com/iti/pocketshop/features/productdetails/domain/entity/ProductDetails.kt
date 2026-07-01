@@ -1,5 +1,7 @@
 package com.iti.pocketshop.features.productdetails.domain.entity
 
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
+
 data class ProductDetails(
     val id: String,
     val vendor: String,
@@ -15,4 +17,12 @@ data class ProductDetails(
 ) {
     val defaultVariant = variants.firstOrNull { it.availableForSale }
         ?: variants.firstOrNull()
+}
+
+fun ProductDetails.toFavoriteProduct(): FavoriteProduct {
+    return FavoriteProduct(
+        id = id,
+        title = title,
+        imageUrl = images.firstOrNull()?.url.orEmpty(),
+    )
 }

@@ -9,20 +9,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
+import com.iti.pocketshop.LocalUser
+import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.profile.ProfileRoot
-import com.iti.pocketshop.features.wishlist.WishlistRoot
+import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
+import kotlinx.coroutines.launch
 
 @Composable
 fun NestedNavDisplay(
@@ -30,23 +33,14 @@ fun NestedNavDisplay(
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
     logout: () -> Unit,
-    openServiceOrder: (String) -> Unit,
+    openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
 ) {
 
-    val nestedBackStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Route.NestedNav.Home::class, Route.NestedNav.Home.serializer())
-                    subclass(Route.NestedNav.Wishlist::class, Route.NestedNav.Wishlist.serializer())
-                    subclass(Route.NestedNav.Cart::class, Route.NestedNav.Cart.serializer())
-                    subclass(Route.NestedNav.Profile::class, Route.NestedNav.Profile.serializer())
-                }
-            }
-        },
-        Route.NestedNav.Home
-    )
+    val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
+
+    val currentUser = LocalUser.current
+    val scope = rememberCoroutineScope()
 
     Scaffold(
         bottomBar = {
@@ -55,6 +49,15 @@ fun NestedNavDisplay(
                     val isSelected = nestedBackStack.lastOrNull() == destination.route
                     BottomNavigationButton(
                         onClick = {
+                            if (currentUser?.isAnonymous == true && (
+                                        destination.route == Route.NestedNav.Wishlist ||
+                                        destination.route == Route.NestedNav.Cart
+                                    )) {
+                                scope.launch {
+                                    SignInDialogController.sendEvent(true)
+                                }
+                                return@BottomNavigationButton
+                            }
                             nestedBackStack.apply {
                                 clear()
                                 if (destination.route != Route.NestedNav.Home) {
@@ -78,6 +81,10 @@ fun NestedNavDisplay(
                 .padding(innerPadding)
                 .fillMaxSize(),
             backStack = nestedBackStack,
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
             onBack = {
                 if (currentRootRoute == Route.NestedNav) {
                     nestedBackStack.removeLastOrNull()
@@ -91,12 +98,14 @@ fun NestedNavDisplay(
             entryProvider = entryProvider {
                 entry<Route.NestedNav.Home> {
                     HomeRoot(
-                        openProductDetails = openServiceOrder,
+                        openProductDetails = openProductDetails,
                         openSearch = openSearch
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {
-                    WishlistRoot()
+                    WishlistRoot(
+                        openProductDetails = openProductDetails,
+                    )
                 }
                 entry<Route.NestedNav.Cart> {
                     CartRoot()
