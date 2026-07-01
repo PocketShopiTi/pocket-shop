@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.wishlist.data.local
+package com.iti.pocketshop.common.favorites.data.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
