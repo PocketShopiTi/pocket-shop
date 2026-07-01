@@ -2,8 +2,8 @@ package com.iti.pocketshop.core.di
 
 import android.content.Context
 import androidx.room.Room
+import com.iti.pocketshop.common.favorites.data.local.FavoriteDao
 import com.iti.pocketshop.core.database.PocketDatabase
-import com.iti.pocketshop.features.wishlist.data.local.FavoriteDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

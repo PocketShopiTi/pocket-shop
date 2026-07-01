@@ -1,10 +1,13 @@
 package com.iti.pocketshop.core.networkutils
 
 import android.content.Context
+import android.util.Log
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.iti.pocketshop.R
+
+private const val TAG = "PocketDataError"
 
 sealed interface PocketDataError : Error {
     enum class Remote : PocketDataError {
@@ -68,6 +71,7 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
 
 // for firebase errors
 fun Throwable.toPocketFirebaseError(): PocketDataError {
+    Log.e(TAG, "toPocketFirebaseError: ", this)
     return when (this) {
         is FirebaseAuthException -> toAuthError()
         is FirebaseFirestoreException -> toFirestoreError()

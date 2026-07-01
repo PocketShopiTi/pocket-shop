@@ -4,6 +4,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.iti.pocketshop.common.favorites.data.local.FavoriteDao
 import com.iti.pocketshop.common.favorites.data.mapper.toDomain
 import com.iti.pocketshop.common.favorites.data.mapper.toEntity
+import com.iti.pocketshop.common.favorites.data.mapper.toFirebaseFavorite
+import com.iti.pocketshop.common.favorites.data.remote.FirebaseFavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.constants.FirestoreTables
 import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.repository.FavoriteRepo
@@ -25,8 +27,7 @@ class FavoriteRepoImpl @Inject constructor(
 ) : FavoriteRepo {
 
     override fun getLocalFavorites(): Flow<List<FavoriteProduct>> {
-        val userId = userRepo.currentUser?.uid ?: return flowOf(emptyList())
-        return favoriteDao.getFavorites(userId).map { entities ->
+        return favoriteDao.getFavorites().map { entities ->
             entities.map { it.toDomain() }
         }
     }
@@ -41,30 +42,32 @@ class FavoriteRepoImpl @Inject constructor(
 
         val isFav = favoriteDao.isFavoriteOnce(product.id, userId)
 
-        val favProduct = product.toEntity(userId)
+        val favProductEntity = product.toEntity(userId)
         if (isFav) {
-            favoriteDao.deleteFavorite(favProduct)
+            favoriteDao.deleteFavorite(favProductEntity)
         } else {
-            favoriteDao.insertFavorite(favProduct)
+            favoriteDao.insertFavorite(favProductEntity)
         }
+
+        val fireFavProduct = favProductEntity.toFirebaseFavorite()
 
         return try {
             val docRef = firestore.collection(FirestoreTables.FAVORITES)
                 .document(userId)
                 .collection(FirestoreTables.PRODUCTS)
-                .document(product.id)
+                .document(fireFavProduct.id ?: return PocketResult.Error(PocketDataError.Firestore.NOT_FOUND))
 
             if (isFav) {
                 docRef.delete().await()
             } else {
-                docRef.set(product).await()
+                docRef.set(fireFavProduct).await()
             }
             PocketResult.Success(product)
         } catch (e: Exception) {
             if (isFav) {
-                favoriteDao.insertFavorite(favProduct)
+                favoriteDao.insertFavorite(favProductEntity)
             } else {
-                favoriteDao.deleteFavorite(favProduct)
+                favoriteDao.deleteFavorite(favProductEntity)
             }
             PocketResult.Error(e.toPocketFirebaseError())
         }
@@ -87,14 +90,15 @@ class FavoriteRepoImpl @Inject constructor(
                 .get()
                 .await()
 
-            val products = snapshot.documents.mapNotNull { doc ->
-                doc.toObject(FavoriteProduct::class.java)
+            val favoriteProductEntities = snapshot.documents.mapNotNull { doc ->
+                doc.toObject(FirebaseFavoriteProduct::class.java)
+                    ?.toEntity()
             }
-
-            val favoriteProductEntities = products.map { it.toEntity(userId) }
 
             favoriteDao.clearFavorites(userId)
             favoriteDao.insertAllFavorite(favoriteProductEntities)
+
+            val products = favoriteProductEntities.map { it.toDomain() }
 
             PocketResult.Success(products)
         } catch (e: Exception) {
