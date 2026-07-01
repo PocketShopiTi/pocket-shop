@@ -29,11 +29,8 @@ apollo {
             )
             schemaFile.set(file("src/main/graphql/client/schema.graphqls"))
         }
-
         mapScalar("Decimal", "kotlin.Double")
         mapScalar("URL", "kotlin.String")
-        mapScalar("DateTime", "kotlin.String")
-        mapScalar("UnsignedInt64", "kotlin.Long")
     }
 
     service("shopifyAdmin") {
@@ -50,8 +47,6 @@ apollo {
         }
         mapScalar("Decimal", "kotlin.Double")
         mapScalar("URL", "kotlin.String")
-        mapScalar("DateTime", "kotlin.String")
-        mapScalar("UnsignedInt64", "kotlin.Long")
     }
 }
 

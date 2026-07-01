@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.di
+package com.iti.pocketshop.features.login.di
 
 import com.google.firebase.auth.FirebaseAuth
 import dagger.Module
@@ -9,7 +9,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object FirebaseAuthModule {
+object FirebaseModule {
 
     @Provides
     @Singleton
