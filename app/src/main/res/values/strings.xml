@@ -121,4 +121,20 @@
     <string name="log_in_to_unlock_all_features_and_sync_your_data_across_devices">Log in to unlock all features and sync your data across devices.</string>
     <string name="go_to_login">Go to Login</string>
     <string name="not_now">Not now</string>
+
+    <string name="auth_invalid_credentials">Incorrect email or password.</string>
+    <string name="auth_user_not_found">No account found with that email.</string>
+    <string name="auth_email_already_in_use">An account with this email already exists.</string>
+    <string name="auth_weak_password">Password must be at least 6 characters.</string>
+    <string name="auth_account_disabled">This account has been disabled. Contact support.</string>
+    <string name="auth_email_not_verified">Please verify your email before signing in.</string>
+    <string name="auth_operation_not_allowed">This sign-in method is not enabled.</string>
+
+    <string name="firestore_permission_denied">You don\'t have permission to do that.</string>
+    <string name="firestore_not_found">The requested data could not be found.</string>
+    <string name="firestore_already_exists">This item already exists.</string>
+    <string name="firestore_unavailable">Service temporarily unavailable. Try again shortly.</string>
+    <string name="firestore_quota_exceeded">Service limit reached. Please try again later.</string>
+    <string name="firestore_data_loss">Some data could not be loaded. Please contact support.</string>
+    <string name="firestore_cancelled">The operation was canceled.</string>
 </resources>
