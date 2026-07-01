@@ -51,7 +51,7 @@ fun RootNavDisplay() {
         Route.Splash
     )
 
-    val openProductDetails: (String) -> Unit = { id ->
+    fun openProductDetails(id: String) {
         rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
     }
 
@@ -162,7 +162,7 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openServiceOrder = openProductDetails,
+                    openServiceOrder = { id -> openProductDetails(id) },
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
@@ -193,7 +193,7 @@ fun RootNavDisplay() {
                     onBack = {
                         rootBackStack.removeLastOrNull()
                     },
-                    openProductDetails = openProductDetails
+                    openProductDetails = { id -> openProductDetails(id) }
                 )
             }
         }
