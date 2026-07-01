@@ -137,4 +137,16 @@
     <string name="firestore_quota_exceeded">Service limit reached. Please try again later.</string>
     <string name="firestore_data_loss">Some data could not be loaded. Please contact support.</string>
     <string name="firestore_cancelled">The operation was canceled.</string>
+
+    <!-- Wishlist screen -->
+    <string name="wishlist_title">Wishlist</string>
+    <string name="wishlist_empty_title">Your wishlist is empty</string>
+    <string name="wishlist_empty_subtitle">Save items you love and find them here whenever you\'re ready to shop.</string>
+    <string name="wishlist_remove_from_wishlist">Remove from wishlist</string>
+    <string name="remove_favorite_dialog_title">Remove from wishlist?</string>
+    <string name="remove_favorite_dialog_body">Remove \"%1$s\" from your wishlist? You can always add it back later.</string>
+    <string name="remove_favorite_dialog_cancel">Keep it</string>
+    <string name="remove_favorite_dialog_confirm">Remove</string>
+    <string name="sign_in_to_continue">Sign in to continue</string>
+
 </resources>
