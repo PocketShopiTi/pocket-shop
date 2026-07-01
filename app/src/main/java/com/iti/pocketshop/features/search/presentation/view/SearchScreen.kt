@@ -1,0 +1,138 @@
+package com.iti.pocketshop.features.search.presentation.view
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.R
+import com.iti.pocketshop.features.search.presentation.action.SearchAction
+import com.iti.pocketshop.features.search.presentation.action.SearchEffect
+import com.iti.pocketshop.features.search.presentation.state.SearchPhase
+import com.iti.pocketshop.features.search.presentation.state.SearchState
+import com.iti.pocketshop.features.search.presentation.viewmodel.SearchViewModel
+import com.iti.pocketshop.features.search.presentation.view.components.FilterChipsRow
+import com.iti.pocketshop.features.search.presentation.view.components.PredictiveSearchContent
+import com.iti.pocketshop.features.search.presentation.view.components.SearchBar
+import com.iti.pocketshop.features.search.presentation.view.components.SearchEmptyState
+import com.iti.pocketshop.features.search.presentation.view.components.SearchInitialContent
+import com.iti.pocketshop.features.search.presentation.view.components.SearchResultsContent
+
+@Composable
+fun SearchRoot(
+    viewModel: SearchViewModel,
+    onBack: () -> Unit,
+    openProductDetails: (String) -> Unit,
+    onOpenFiltersScreen: () -> Unit,
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is SearchEffect.NavigateToProductDetails -> openProductDetails(effect.id)
+                is SearchEffect.NavigateToCollection -> Unit // TODO: navigate to collection
+                is SearchEffect.NavigateToArticle -> Unit    // TODO: navigate to article
+                is SearchEffect.NavigateToPage -> Unit       // TODO: navigate to page
+                SearchEffect.NavigateToFilters -> onOpenFiltersScreen()
+                SearchEffect.NavigateBack -> onBack()
+                is SearchEffect.ShowError -> snackbarHostState.showSnackbar(effect.error.toString())
+            }
+        }
+    }
+
+    SearchScreen(
+        state = state,
+        snackbarHostState = snackbarHostState,
+        onAction = viewModel::processIntent,
+    )
+}
+
+@Composable
+fun SearchScreen(
+    state: SearchState,
+    snackbarHostState: SnackbarHostState,
+    onAction: (SearchAction) -> Unit,
+) {
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = stringResource(R.string.search_explore_title),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                )
+
+                SearchBar(
+                    query = state.query,
+                    onAction = onAction,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+
+                when (val phase = state.phase) {
+                    SearchPhase.Initial -> {
+                        SearchInitialContent(
+                            products = state.initialProducts,
+                            onAction = onAction,
+                        )
+                    }
+
+                    is SearchPhase.Predictive -> {
+                        PredictiveSearchContent(
+                            predictiveResult = phase.predictiveResult,
+                            onAction = onAction,
+                        )
+                    }
+
+                    is SearchPhase.Results -> {
+                        FilterChipsRow(
+                            filterGroups = phase.searchResult.filters,
+                            activeFilters = state.activeFilters,
+                            activeSortOption = state.activeSortOption,
+                            activePriceRange = state.activePriceRange,
+                            priceRangeBounds = state.priceRangeBounds,
+                            onAction = onAction,
+                            onOpenFiltersScreen = { onAction(SearchAction.OpenFiltersScreen) },
+                        )
+                        SearchResultsContent(
+                            query = state.query,
+                            searchResult = phase.searchResult,
+                            onAction = onAction,
+                        )
+                    }
+
+                    SearchPhase.Empty -> SearchEmptyState(onAction = onAction)
+                }
+            }
+
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
+        }
+    }
+}
