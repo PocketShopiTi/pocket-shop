@@ -101,6 +101,9 @@ dependencies {
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
 
+    // ViewModel scoping per NavEntry (Navigation 3)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
+
     // datastore proto
     implementation(libs.androidx.datastore)
 
