@@ -23,7 +23,7 @@ import kotlin.math.sin
 internal fun ArrowBackIcon() {
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val color = MaterialTheme.colorScheme.onSurface
-    Canvas(Modifier.size(18.dp)) {
+    Canvas(Modifier.size(24.dp)) {
         val startX = if (isRtl) size.width * 0.72f else size.width * 0.28f
         val endX = if (isRtl) size.width * 0.28f else size.width * 0.72f
         drawLine(color, Offset(startX, size.height / 2), Offset(endX, size.height / 2), 1.6.dp.toPx())

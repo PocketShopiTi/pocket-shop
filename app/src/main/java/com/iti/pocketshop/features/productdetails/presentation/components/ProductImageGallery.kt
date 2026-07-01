@@ -1,9 +1,5 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,19 +13,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
@@ -44,6 +42,7 @@ internal fun ProductImageGallery(
     images: List<ProductImage>,
     selectedIndex: Int,
     isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
     onAction: (ProductDetailsAction) -> Unit,
 ) {
     val pageCount = images.size.coerceAtLeast(1)
@@ -89,7 +88,7 @@ internal fun ProductImageGallery(
             ) { ArrowBackIcon() }
             FavoriteButton(
                 isFavorite = isFavorite,
-                onClick = { onAction(ProductDetailsAction.ToggleFavorite) },
+                onClick = onFavoriteClick,
             )
         }
         if (images.size > 1) {
@@ -121,26 +120,20 @@ internal fun ProductImageGallery(
 
 @Composable
 private fun FavoriteButton(isFavorite: Boolean, onClick: () -> Unit) {
-    val scale by animateFloatAsState(
-        targetValue = if (isFavorite) 1.15f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-        label = "favoriteScale",
-    )
-    val color by animateColorAsState(
-        targetValue = if (isFavorite) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.onSurface,
-        label = "favoriteColor",
-    )
-    RoundIconButton(
-        contentDescription = stringResource(
-            if (isFavorite) R.string.product_details_remove_favorite
-            else R.string.product_details_add_favorite,
-        ),
+    IconButton(
         onClick = onClick,
+        modifier = Modifier,
+        colors = IconButtonDefaults.iconButtonColors(
+            containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+            contentColor = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+        )
     ) {
-        Box(Modifier.graphicsLayer(scaleX = scale, scaleY = scale)) {
-            HeartIcon(filled = isFavorite, color = color)
-        }
+        Icon(
+            imageVector = ImageVector.vectorResource(if (isFavorite) R.drawable.ic_favorites_filled else R.drawable.ic_favorites),
+            contentDescription = stringResource(
+                if (isFavorite) R.string.product_details_remove_favorite else R.string.product_details_add_favorite
+            ),
+        )
     }
 }
 
@@ -152,7 +145,7 @@ private fun RoundIconButton(
 ) {
     Surface(
         modifier = Modifier
-            .size(36.dp)
+            .size(44.dp)
             .semantics { this.contentDescription = contentDescription }
             .clickable(onClick = onClick),
         shape = CircleShape,

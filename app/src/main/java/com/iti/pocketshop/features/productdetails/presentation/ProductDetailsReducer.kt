@@ -20,7 +20,6 @@ internal fun reduceProductDetails(
     } else {
         state
     }
-    ProductDetailsAction.ToggleFavorite -> state.copy(isFavorite = !state.isFavorite)
     ProductDetailsAction.ToggleDescription -> state.copy(
         isDescriptionExpanded = !state.isDescriptionExpanded,
     )

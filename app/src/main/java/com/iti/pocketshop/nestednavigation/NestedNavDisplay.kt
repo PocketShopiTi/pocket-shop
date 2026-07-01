@@ -22,7 +22,7 @@ import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.profile.ProfileRoot
-import com.iti.pocketshop.features.wishlist.WishlistRoot
+import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ fun NestedNavDisplay(
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
     logout: () -> Unit,
-    openServiceOrder: (String) -> Unit,
+    openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
 ) {
 
@@ -98,12 +98,14 @@ fun NestedNavDisplay(
             entryProvider = entryProvider {
                 entry<Route.NestedNav.Home> {
                     HomeRoot(
-                        openProductDetails = openServiceOrder,
+                        openProductDetails = openProductDetails,
                         openSearch = openSearch
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {
-                    WishlistRoot()
+                    WishlistRoot(
+                        openProductDetails = openProductDetails,
+                    )
                 }
                 entry<Route.NestedNav.Cart> {
                     CartRoot()
