@@ -145,7 +145,7 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openServiceOrder = { id ->
+                    openProductDetails = { id ->
                         rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
                     },
                     openSettings = {

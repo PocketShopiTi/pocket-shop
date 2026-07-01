@@ -28,20 +28,12 @@ class WishlistViewModel @Inject constructor(
     getLocalFavoritesUseCase: GetLocalFavoritesUseCase,
 ) : ViewModel() {
 
-    private var hasLoadedInitialData = false
-
     private val _state = MutableStateFlow(WishlistState())
     val state = _state
         .combine(
             getLocalFavoritesUseCase()
         ) { state, favorites ->
             state.copy(favorites = favorites)
-        }
-        .onStart {
-            if (!hasLoadedInitialData) {
-                syncFavoritesUseCase()
-                hasLoadedInitialData = true
-            }
         }
         .stateIn(
             scope = viewModelScope,
