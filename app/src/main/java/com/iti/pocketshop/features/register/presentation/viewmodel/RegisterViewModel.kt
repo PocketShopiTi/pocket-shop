@@ -1,8 +1,9 @@
 package com.iti.pocketshop.features.register.presentation.viewmodel
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.pocketshop.features.register.data.state.RegisterState
+import com.iti.pocketshop.features.register.presentation.state.RegisterState
 import com.iti.pocketshop.features.register.presentation.action.RegisterAction
 import com.iti.pocketshop.features.register.domain.usecase.RegisterUserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,6 +16,9 @@ import javax.inject.Inject
 import kotlinx.coroutines.tasks.await
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.iti.pocketshop.core.components.ErrorDialogController
+import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.core.networkutils.onSuccess
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
@@ -27,22 +31,52 @@ class RegisterViewModel @Inject constructor(
     fun onAction(action: RegisterAction) {
         when (action) {
             is RegisterAction.FullNameChanged -> {
-                _state.update { it.copy(fullNameInput = action.fullName, fullNameError = null, generalError = null) }
+                _state.update {
+                    it.copy(
+                        fullNameInput = action.fullName,
+                        isFullNameError = false,
+                    )
+                }
             }
+
             is RegisterAction.EmailChanged -> {
-                _state.update { it.copy(emailInput = action.email, emailError = null, generalError = null) }
+                _state.update {
+                    it.copy(
+                        emailInput = action.email,
+                        isEmailError = false,
+                    )
+                }
             }
+
             is RegisterAction.PasswordChanged -> {
-                _state.update { it.copy(passwordInput = action.password, passwordError = null, generalError = null) }
+                _state.update {
+                    it.copy(
+                        passwordInput = action.password,
+                        isPasswordError = false,
+                    )
+                }
             }
+
             is RegisterAction.ConfirmPasswordChanged -> {
-                _state.update { it.copy(confirmPasswordInput = action.password, confirmPasswordError = null, generalError = null) }
+                _state.update {
+                    it.copy(
+                        confirmPasswordInput = action.password,
+                        isConfirmPasswordError = false,
+                    )
+                }
             }
+
             is RegisterAction.RegisterClicked -> {
                 registerUser()
             }
+
             is RegisterAction.ClearError -> {
-                _state.update { it.copy(generalError = null) }
+                _state.update { it.copy(
+                    isFullNameError = false,
+                    isEmailError = false,
+                    isPasswordError = false,
+                    isConfirmPasswordError = false,
+                ) }
             }
         }
     }
@@ -56,31 +90,36 @@ class RegisterViewModel @Inject constructor(
 
         var hasError = false
         if (fullName.isBlank()) {
-            _state.update { it.copy(fullNameError = "Name cannot be empty") }
+            _state.update { it.copy(isFullNameError = true) }
             hasError = true
         }
 
-        if (email.isBlank()) {
-            _state.update { it.copy(emailError = "Email cannot be empty") }
-            hasError = true
-        } else if (!email.trim().contains("@") || !email.trim().contains(".")) {
-            _state.update { it.copy(emailError = "Please enter a valid email address") }
+        if (email.isBlank() || !Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+            _state.update { it.copy(isEmailError = true) }
             hasError = true
         }
 
-        if (password.length < 8) {
-            _state.update { it.copy(passwordError = "Password must be at least 8 characters") }
+        if (password.length < 6) {
+            _state.update { it.copy(isPasswordError = true) }
             hasError = true
         }
 
         if (password != confirmPassword) {
-            _state.update { it.copy(confirmPasswordError = "Passwords do not match") }
+            _state.update { it.copy(isConfirmPasswordError = true) }
             hasError = true
         }
 
         if (hasError) return
 
-        _state.update { it.copy(isLoading = true, generalError = null) }
+        _state.update {
+            it.copy(
+                isLoading = true,
+                isFullNameError = false,
+                isEmailError = false,
+                isPasswordError = false,
+                isConfirmPasswordError = false,
+            )
+        }
 
         viewModelScope.launch {
             val result = registerUserUseCase(email, password)
@@ -98,8 +137,9 @@ class RegisterViewModel @Inject constructor(
                     // Fail silently or log error for profile display name update, authentication itself was successful
                 }
                 _state.update { it.copy(isLoading = false, success = true) }
-            }.onFailure { error ->
-                _state.update { it.copy(isLoading = false, generalError = error.message) }
+            }.onError { error ->
+                _state.update { it.copy(isLoading = false) }
+                ErrorDialogController.sendEvent(error)
             }
         }
     }

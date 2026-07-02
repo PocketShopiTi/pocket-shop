@@ -27,9 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,20 +42,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.register.data.state.RegisterState
 import com.iti.pocketshop.features.register.presentation.action.RegisterAction
+import com.iti.pocketshop.features.register.presentation.state.RegisterState
 import com.iti.pocketshop.features.register.presentation.viewmodel.RegisterViewModel
 
 @Composable
@@ -135,24 +129,6 @@ fun RegisterScreen(
                 )
             }
             item {
-                if (state.generalError != null) {
-                    Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        color = MaterialTheme.colorScheme.errorContainer,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text(
-                            text = state.generalError,
-                            color = MaterialTheme.colorScheme.onErrorContainer,
-                            modifier = Modifier.padding(12.dp),
-                            fontSize = 14.sp
-                        )
-                    }
-                }
-            }
-            item {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -171,8 +147,16 @@ fun RegisterScreen(
                                 contentDescription = null,
                             )
                         },
-                        isError = state.fullNameError != null,
-                        supportingText = state.fullNameError?.let { { Text(it) } },
+                        isError = state.isFullNameError,
+                        supportingText = {
+                            Text(
+                                stringResource(
+                                    if (state.isFullNameError) {
+                                        R.string.please_enter_your_full_name
+                                    } else R.string.empty_string
+                                )
+                            )
+                        },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
@@ -211,8 +195,16 @@ fun RegisterScreen(
                                 contentDescription = null
                             )
                         },
-                        isError = state.emailError != null,
-                        supportingText = state.emailError?.let { { Text(it) } },
+                        isError = state.isEmailError,
+                        supportingText = {
+                            Text(
+                                stringResource(
+                                    if (state.isEmailError) {
+                                        R.string.please_enter_a_valid_email
+                                    } else R.string.empty_string
+                                )
+                            )
+                        },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
@@ -261,8 +253,16 @@ fun RegisterScreen(
                                 )
                             }
                         },
-                        isError = state.passwordError != null,
-                        supportingText = state.passwordError?.let { { Text(it) } },
+                        isError = state.isPasswordError,
+                        supportingText = {
+                            Text(
+                                stringResource(
+                                    if (state.isPasswordError) {
+                                        R.string.error_password_too_short
+                                    } else R.string.empty_string
+                                )
+                            )
+                        },
                         singleLine = true,
                         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
@@ -314,8 +314,16 @@ fun RegisterScreen(
                                 )
                             }
                         },
-                        isError = state.confirmPasswordError != null,
-                        supportingText = state.confirmPasswordError?.let { { Text(it) } },
+                        isError = state.isConfirmPasswordError,
+                        supportingText = {
+                            Text(
+                                stringResource(
+                                    if (state.isConfirmPasswordError) {
+                                        R.string.passwords_must_match
+                                    } else R.string.empty_string
+                                )
+                            )
+                        },
                         singleLine = true,
                         visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(

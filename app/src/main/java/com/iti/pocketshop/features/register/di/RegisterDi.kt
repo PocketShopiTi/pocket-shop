@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.register.di
 
-import com.iti.pocketshop.features.register.data.state.FirebaseAuthRepositoryImpl
+import com.iti.pocketshop.features.register.data.FirebaseAuthRepositoryImpl
 import com.iti.pocketshop.features.register.domain.repo.AuthRepository
 import dagger.Binds
 import dagger.Module

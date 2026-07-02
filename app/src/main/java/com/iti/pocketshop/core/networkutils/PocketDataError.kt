@@ -32,6 +32,7 @@ sealed interface PocketDataError : Error {
         UnAuthorized,
         NO_INTERNET,
         USER_DISABLED,
+        INVALID_EMAIL,
         UNKNOWN,
     }
 
@@ -56,6 +57,7 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.EMPTY_RESULT -> context.getString(R.string.no_results_found)
 
     // Auth
+    PocketDataError.Auth.INVALID_EMAIL-> context.getString(R.string.auth_invalid_email)
     PocketDataError.Auth.INVALID_CREDENTIALS -> context.getString(R.string.auth_invalid_credentials)
     PocketDataError.Auth.USER_NOT_FOUND -> context.getString(R.string.auth_user_not_found)
     PocketDataError.Auth.EMAIL_ALREADY_IN_USE -> context.getString(R.string.auth_email_already_in_use)

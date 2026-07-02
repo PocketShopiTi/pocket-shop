@@ -266,4 +266,9 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="already_have_an_account">"Already have an account? "</string>
     <string name="sign_in">Sign in</string>
+    <string name="auth_invalid_email">Invalid email</string>
+    <string name="please_enter_your_full_name">Please enter your full name.</string>
+    <string name="empty_string" />
+    <string name="please_enter_a_valid_email">Please enter a valid email</string>
+    <string name="passwords_must_match">Passwords must match</string>
 </resources>
