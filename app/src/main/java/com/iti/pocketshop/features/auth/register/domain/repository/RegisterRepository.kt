@@ -8,5 +8,7 @@ import com.iti.pocketshop.features.auth.register.domain.model.AuthUser
 interface RegisterRepository {
     suspend fun register(data: AuthData): PocketResult<Unit, PocketDataError>
 
+    suspend fun createShopifyCustomer(user: AuthUser): PocketResult<Unit, PocketDataError>
+
     suspend fun ensureShopifyCustomer(user: AuthUser): PocketResult<Unit, PocketDataError>
 }

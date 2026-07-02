@@ -8,6 +8,11 @@ data class AuthUser(
     val isEmailVerified: Boolean,
 )
 
+data class AuthSignInResult(
+    val user: AuthUser,
+    val isNewUser: Boolean,
+)
+
 data class RegistrationRecord(
     val shopifyPassword: String,
     val shopifyCustomerId: String?,

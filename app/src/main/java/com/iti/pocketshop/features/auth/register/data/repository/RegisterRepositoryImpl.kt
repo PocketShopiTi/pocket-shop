@@ -65,10 +65,24 @@ class RegisterRepositoryImpl @Inject constructor(
                 if (result.data?.shopifyCustomerId != null)
                     PocketResult.Success(Unit)
                 else
-                    PocketResult.Error(PocketDataError.Auth.UnAuthorized)
+                    createShopifyCustomer(user)
             }
         }
 
+    }
+
+    override suspend fun createShopifyCustomer(
+        user: AuthUser,
+    ): PocketResult<Unit, PocketDataError> {
+        if (user.email.isBlank()) {
+            return PocketResult.Error(PocketDataError.Auth.UnAuthorized)
+        }
+        val (firstName, lastName) = splitDisplayName(user.displayName)
+        return createShopifyCustomer(
+            user = user,
+            firstName = firstName,
+            lastName = lastName,
+        )
     }
 
     private suspend fun createShopifyCustomer(
@@ -92,9 +106,8 @@ class RegisterRepositoryImpl @Inject constructor(
             is PocketResult.Success -> when (val customer = createdCustomerResult.data) {
                 is ShopifyCustomerCreation.Created -> customer.customerId
 
-                is ShopifyCustomerCreation.AlreadyExists -> {
-                    null
-                }
+                is ShopifyCustomerCreation.AlreadyExists ->
+                    return PocketResult.Error(PocketDataError.Auth.EMAIL_ALREADY_IN_USE)
             }
         }
 
@@ -109,15 +122,28 @@ class RegisterRepositoryImpl @Inject constructor(
     }
 
 
-    fun generatePassword(): String {
-        val PASSWORD_LENGTH = 32
-        val CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%"
-
+    private fun generatePassword(): String {
         return buildString(PASSWORD_LENGTH) {
             repeat(PASSWORD_LENGTH) {
-                append(CHARACTERS[SecureRandom().nextInt(CHARACTERS.length)])
+                append(PASSWORD_CHARACTERS[secureRandom.nextInt(PASSWORD_CHARACTERS.length)])
             }
         }
     }
+
+    private fun splitDisplayName(displayName: String?): Pair<String, String> {
+        val parts = displayName.orEmpty()
+            .trim()
+            .split(Regex("\\s+"), limit = 2)
+            .filter(String::isNotBlank)
+        return parts.getOrElse(0) { "" } to parts.getOrElse(1) { "" }
+    }
+
+    private companion object {
+        const val PASSWORD_LENGTH = 32
+        const val PASSWORD_CHARACTERS =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%"
+    }
+
+    private val secureRandom = SecureRandom()
 }
 
