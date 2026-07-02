@@ -93,7 +93,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.common)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -110,9 +109,6 @@ dependencies {
 
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
-
-    // ViewModel scoping per NavEntry (Navigation 3)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     // datastore proto
     implementation(libs.androidx.datastore)
