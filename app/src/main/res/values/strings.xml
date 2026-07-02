@@ -14,7 +14,7 @@
     <string name="you_re_offline">You are offline!</string>
     <string name="shop_by_category">Shop by Category</string>
     <string name="featured">Featured</string>
-    <string name="best_sellers">Best Sellers</string>
+    <string name="trending">Trending</string>
     <string name="on_fire_emoji">🔥</string>
     <string name="new_arrivals">New Arrivals</string>
     <string name="new_items">NEW</string>
@@ -28,4 +28,8 @@
     <string name="search">Search</string>
     <string name="sold_out">Sold Out</string>
     <string name="see_all">See all</string>
+    <string name="brands">Brands</string>
+    <string name="brands_available">%1$d brands available</string>
+    <string name="items_count">%1$d items</string>
+    <string name="back">Back</string>
 </resources>

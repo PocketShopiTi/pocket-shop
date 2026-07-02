@@ -12,8 +12,8 @@ enum class ProductListType(
         sortKey = "ID",
         reverse = false
     ),
-    BEST_SELLERS(
-        titleResId = R.string.best_sellers,
+    TRENDING(
+        titleResId = R.string.trending,
         sortKey = "BEST_SELLING",
         reverse = false
     ),

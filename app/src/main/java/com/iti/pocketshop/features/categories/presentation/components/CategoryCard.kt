@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.iti.pocketshop.features.categories.domain.models.CategoryItem
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 
 @Composable
 fun CategoryCard(
@@ -84,7 +86,7 @@ fun CategoryCard(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = "${category.itemCount} items",
+                text = stringResource(R.string.items_count, category.itemCount),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp

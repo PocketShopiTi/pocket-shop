@@ -134,10 +134,10 @@ private fun HomeScreen(
                     item { Spacer(Modifier.height(28.dp)) }
                     item {
                         SectionHeader(
-                            title = stringResource(R.string.best_sellers),
+                            title = stringResource(R.string.trending),
                             badge = stringResource(R.string.on_fire_emoji),
                             onSeeAllClick = {
-                                openProductList("BEST_SELLERS")
+                                openProductList("TRENDING")
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )

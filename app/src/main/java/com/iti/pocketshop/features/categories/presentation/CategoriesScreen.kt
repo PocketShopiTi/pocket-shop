@@ -27,6 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import com.iti.pocketshop.R
 import com.iti.pocketshop.features.categories.presentation.components.CategoryCard
 
 @Composable
@@ -55,21 +57,21 @@ fun CategoriesScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Brands",
+                        text = stringResource(R.string.brands),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                 },
                 navigationIcon = {
                     Text(
-                        text = "Back",
+                        text = stringResource(R.string.back),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable(onClick = onBack).padding(horizontal = 16.dp)
                     )
                 },
                 actions = {
                     Text(
-                        text = "Search",
+                        text = stringResource(R.string.search),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable { /* TODO implement search overlay */ }.padding(horizontal = 16.dp)
                     )
@@ -83,7 +85,7 @@ fun CategoriesScreen(
                 .padding(innerPadding)
         ) {
             Text(
-                text = "${state.filteredCategories.size} brands available",
+                text = stringResource(R.string.brands_available, state.filteredCategories.size),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)

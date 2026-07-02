@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.R
 import com.iti.pocketshop.features.home.presentation.components.ProductCard
 import com.iti.pocketshop.features.productlist.domain.ProductListType
 
@@ -93,7 +94,7 @@ private fun ProductListScreen(
                 },
                 navigationIcon = {
                     Text(
-                        text = "Back",
+                        text = stringResource(R.string.back),
                         color = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.clickable(onClick = onBack).padding(horizontal = 16.dp)
                     )

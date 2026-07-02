@@ -153,7 +153,10 @@ fun RootNavDisplay() {
             }
             entry<Route.ProductDetails> {
                 ProductDetailsRoot(
-                    productId = it.id
+                    productId = it.id,
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
                 )
             }
             entry<Route.OrderCheckout> {
