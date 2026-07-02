@@ -54,4 +54,7 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object Search : Route
+
+    @Serializable
+    data object Address : Route
 }

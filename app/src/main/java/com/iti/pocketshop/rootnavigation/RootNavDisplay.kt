@@ -19,6 +19,7 @@ import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
+import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
@@ -27,7 +28,7 @@ import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 @Composable
 fun RootNavDisplay() {
 
-    val rootBackStack = rememberNavBackStack(Route.Splash)
+    val rootBackStack = rememberNavBackStack(Route.Address)
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
@@ -175,6 +176,13 @@ fun RootNavDisplay() {
             }
             entry<Route.Search> {
                 SearchRoot()
+            }
+            entry<Route.Address> {
+                AddressRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                )
             }
         }
     )

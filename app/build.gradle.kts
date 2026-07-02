@@ -62,6 +62,17 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
+        val customerAccessToken = localProperties["CUSTOMER_ACCESS_TOKEN"]
+            ?.toString()
+            .orEmpty()
+            .replace("\"", "\\\"")
+        val mapsApiKey = localProperties["MAPS_API_KEY"]
+            ?.toString()
+            .orEmpty()
+            .replace("\"", "\\\"")
+        buildConfigField("String", "CUSTOMER_ACCESS_TOKEN", "\"$customerAccessToken\"")
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -130,6 +141,11 @@ dependencies {
     // coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
+
+    // google maps
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.location)
 
     //work manager
     implementation(libs.androidx.work.runtime.ktx)
