@@ -29,8 +29,11 @@ apollo {
             )
             schemaFile.set(file("src/main/graphql/client/schema.graphqls"))
         }
+
         mapScalar("Decimal", "kotlin.Double")
         mapScalar("URL", "kotlin.String")
+        mapScalar("DateTime", "kotlin.String")
+        mapScalar("UnsignedInt64", "kotlin.Long")
     }
 
     service("shopifyAdmin") {
@@ -47,6 +50,8 @@ apollo {
         }
         mapScalar("Decimal", "kotlin.Double")
         mapScalar("URL", "kotlin.String")
+        mapScalar("DateTime", "kotlin.String")
+        mapScalar("UnsignedInt64", "kotlin.Long")
     }
 }
 
@@ -93,7 +98,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.common)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
@@ -110,9 +114,6 @@ dependencies {
 
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
-
-    // ViewModel scoping per NavEntry (Navigation 3)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     // datastore proto
     implementation(libs.androidx.datastore)

@@ -146,6 +146,61 @@
         <item>T-Shirts</item>
     </string-array>
 
+
+    <string name="profile_error">We couldn’t load user info.</string>
+
+    <string name="error_user_disabled">This account has been disabled.</string>
+    <string name="error_invalid_credentials">The supplied credentials are invalid.</string>
+    <string name="error_unauthorized">You are not authorized to perform this action.</string>
+    <string name="error_email_already_in_use">An account already uses this email address.</string>
+    <string name="error_weak_password">Please choose a stronger password.</string>
+    <string name="error_email_not_verified">Verify your email address before continuing.</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_loading">Loading profile</string>
+    <string name="profile_retry">Retry</string>
+    <string name="profile_reload">Reload</string>
+    <string name="profile_open_settings">Open settings</string>
+    <string name="profile_browsing_as_guest">Browsing as guest</string>
+    <string name="profile_guest_heading">Sign in to unlock\nyour full wardrobe</string>
+    <string name="profile_guest_description">Create an account or log in to save favourites, track orders, and get personalised picks.</string>
+    <string name="profile_create_account">Create account</string>
+    <string name="profile_log_in">Log in</string>
+    <string name="profile_why_sign_up">Why sign up?</string>
+    <string name="profile_benefit_favourites_title">Save favourites</string>
+    <string name="profile_benefit_favourites_description">Build wishlists that stick around.</string>
+    <string name="profile_benefit_orders_title">Track every order</string>
+    <string name="profile_benefit_orders_description">Full order history at a glance.</string>
+    <string name="profile_benefit_checkout_title">Faster checkout</string>
+    <string name="profile_benefit_checkout_description">Saved addresses and payment.</string>
+    <string name="profile_benefit_ai_title">AI recommendations</string>
+    <string name="profile_benefit_ai_description">Picks that learn your taste.</string>
+    <string name="profile_general">General</string>
+    <string name="profile_settings">Settings</string>
+    <string name="profile_language">Language</string>
+    <string name="profile_language_english">English</string>
+    <string name="profile_contact_support">Contact support</string>
+    <string name="profile_terms">Terms of service</string>
+    <string name="profile_default_name">Shopper</string>
+    <string name="profile_user_image">Profile image</string>
+    <string name="profile_welcome_back">Welcome back,</string>
+    <string name="profile_member_since">Member since %1$s</string>
+    <string name="profile_orders">Orders</string>
+    <string name="profile_addresses">Addresses</string>
+    <string name="profile_recent_orders">Recent orders</string>
+    <string name="profile_no_orders_yet">No orders yet.</string>
+    <string name="profile_my_orders">My orders</string>
+    <string name="profile_saved_count">%1$d saved</string>
+    <string name="profile_log_out">Log out</string>
+    <string name="profile_logging_out">Logging out…</string>
+    <string name="profile_cancel">Cancel</string>
+    <string name="profile_logout_title">Log out?</string>
+    <string name="profile_logout_message">You will need to sign in again to access your account.</string>
+    <string name="profile_order_image">Image for order %1$s</string>
+    <string name="profile_status_pending">Pending</string>
+    <string name="profile_status_processing">Processing</string>
+    <string name="profile_status_fulfilled">Fulfilled</string>
+    <string name="profile_status_cancelled">Cancelled</string>
+
     <string name="log_in_to_unlock_all_features_and_sync_your_data_across_devices">Log in to unlock all features and sync your data across devices.</string>
     <string name="go_to_login">Go to Login</string>
     <string name="not_now">Not now</string>
