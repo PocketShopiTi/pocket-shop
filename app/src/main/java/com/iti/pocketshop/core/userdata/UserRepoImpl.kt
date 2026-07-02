@@ -3,13 +3,15 @@ package com.iti.pocketshop.core.userdata
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.iti.pocketshop.core.components.SignInDialogController
+import com.iti.pocketshop.core.tokenmanager.data.datasource.local.CustomerTokenStore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 
 class UserRepoImpl @Inject constructor(
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val tokenStore: CustomerTokenStore,
 ) : UserRepo {
 
     override val currentUser: FirebaseUser?
@@ -30,6 +32,7 @@ class UserRepoImpl @Inject constructor(
     }
 
     override fun signOut() {
+        tokenStore.clear()
         auth.signOut()
     }
 

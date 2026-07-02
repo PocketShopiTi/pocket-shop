@@ -6,11 +6,9 @@ import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileSession
 
 interface ProfileRepository {
-
     suspend fun getUserSession(): PocketResult<ProfileSession, PocketDataError.Auth>
-
-    suspend fun getProfile(orderCount: Int = 3):
-            PocketResult<ProfileData.Authenticated, PocketDataError>
-
-    suspend fun logout(): PocketResult<Unit, PocketDataError.Auth>
+    suspend fun getProfile(
+        accessToken: String,
+        orderCount: Int = 3,
+    ): PocketResult<ProfileData.Authenticated, PocketDataError>
 }
