@@ -20,7 +20,7 @@ import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
 import com.iti.pocketshop.features.search.SearchRoot
-import com.iti.pocketshop.features.settings.SettingsRoot
+import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 
@@ -171,7 +171,11 @@ fun RootNavDisplay() {
                 OrderCheckoutRoot()
             }
             entry<Route.Settings> {
-                SettingsRoot()
+                SettingsRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
+                )
             }
             entry<Route.Search> {
                 SearchRoot()
