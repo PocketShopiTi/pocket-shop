@@ -10,11 +10,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -40,8 +40,9 @@ import com.iti.pocketshop.features.home.presentation.formatPrice
 @Composable
 fun ProductCard(
     product: Product,
+    isFavorite: Boolean,
     onClick: () -> Unit,
-    onWishlistClick: (String) -> Unit,
+    onWishlistClick: (Product) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val hasDiscount = product.compareAtPrice != null &&
@@ -90,23 +91,21 @@ fun ProductCard(
             }
 
             // Wishlist button
-            Box(
+            IconButton(
+                onClick = {
+                    onWishlistClick(product)
+                },
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))
-                    .clickable {
-                        onWishlistClick(product.id)
-                    },
-                contentAlignment = Alignment.Center
+                    .align(Alignment.TopEnd),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                    contentColor = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                )
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_favorites),
+                    imageVector = ImageVector.vectorResource(if (isFavorite) R.drawable.ic_favorites_filled else R.drawable.ic_favorites),
                     contentDescription = stringResource(R.string.wishlist),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(16.dp)
                 )
             }
 

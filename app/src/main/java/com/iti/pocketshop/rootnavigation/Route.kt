@@ -56,5 +56,11 @@ sealed interface Route : NavKey {
     data object Settings : Route
 
     @Serializable
-    data object Search : Route
+    data object SearchNav : Route {
+        @Serializable
+        data object Search : Route
+
+        @Serializable
+        data object Filters : Route
+    }
 }

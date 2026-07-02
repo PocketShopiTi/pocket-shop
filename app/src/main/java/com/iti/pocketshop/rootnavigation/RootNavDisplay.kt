@@ -20,6 +20,9 @@ import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
+import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
+import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
+import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
 import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
@@ -30,9 +33,16 @@ fun RootNavDisplay() {
 
     val rootBackStack = rememberNavBackStack(Route.Splash)
 
+    fun openProductDetails(id: String) {
+        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+    }
+
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = rootBackStack,
+        onBack = {
+            rootBackStack.removeLastOrNull()
+        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
@@ -129,11 +139,7 @@ fun RootNavDisplay() {
                         }
                     },
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Login)
-                        }
+                        rootBackStack.popIfCurrentIs<Route.Register>()
                     }
                 )
             }
@@ -141,7 +147,7 @@ fun RootNavDisplay() {
                 NestedNavDisplay(
                     currentRootRoute = rootBackStack.lastOrNull(),
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.NestedNav>()
                     },
                     logout = {
                         rootBackStack.apply {
@@ -149,9 +155,7 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openServiceOrder = { id ->
-                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
-                    },
+                    openProductDetails = { id -> openProductDetails(id) },
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
@@ -168,7 +172,7 @@ fun RootNavDisplay() {
                         }
                     },
                     openSearch = {
-                        rootBackStack.navigateSingleTop(Route.Search)
+                        rootBackStack.navigateSingleTop(Route.SearchNav)
                     },
                 )
             }
@@ -179,7 +183,7 @@ fun RootNavDisplay() {
                 ProductDetailsRoot(
                     productId = it.id,
                     onBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.ProductDetails>()
                     }
                 )
             }
@@ -187,10 +191,19 @@ fun RootNavDisplay() {
                 OrderCheckoutRoot()
             }
             entry<Route.Settings> {
-                SettingsRoot()
+                SettingsRoot(
+                    onBack = {
+                        rootBackStack.popIfCurrentIs<Route.Settings>()
+                    }
+                )
             }
-            entry<Route.Search> {
-                SearchRoot()
+            entry<Route.SearchNav> {
+                SearchNavDisplay(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    openProductDetails = { id -> openProductDetails(id) }
+                )
             }
         }
     )

@@ -13,8 +13,9 @@ import com.iti.pocketshop.features.home.domain.models.Product
 @Composable
 fun ProductRow(
     products: List<Product>,
+    favoriteIds: Set<String>,
     onProductClick: (String) -> Unit,
-    onWishlistClick: (String) -> Unit,
+    onWishlistClick: (Product) -> Unit,
     cardWidth: androidx.compose.ui.unit.Dp = 170.dp
 ) {
     LazyRow(
@@ -26,6 +27,7 @@ fun ProductRow(
                 product = product,
                 onClick = { onProductClick(product.id) },
                 onWishlistClick = onWishlistClick,
+                isFavorite = favoriteIds.contains(product.id),
                 modifier = Modifier
                     .animateItem()
                     .width(cardWidth)

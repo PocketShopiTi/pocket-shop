@@ -11,4 +11,5 @@ data class HomeState(
     val featuredProducts: List<Product> = emptyList(),
     val bestSellers: List<Product> = emptyList(),
     val newArrivals: List<Product> = emptyList(),
+    val favoriteIds: Set<String> = emptySet()
 )
