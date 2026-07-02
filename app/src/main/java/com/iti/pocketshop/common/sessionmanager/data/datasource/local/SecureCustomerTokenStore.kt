@@ -1,11 +1,11 @@
-package com.iti.pocketshop.core.sessionmanager.data.datasource.local
+package com.iti.pocketshop.common.sessionmanager.data.datasource.local
 
 import android.content.Context
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import androidx.core.content.edit
-import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerSession
+import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerSession
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

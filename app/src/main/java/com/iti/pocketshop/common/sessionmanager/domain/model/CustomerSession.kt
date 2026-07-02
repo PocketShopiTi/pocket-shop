@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.sessionmanager.domain.model
+package com.iti.pocketshop.common.sessionmanager.domain.model
 
 import java.time.Instant
 

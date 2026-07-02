@@ -1,14 +1,14 @@
-package com.iti.pocketshop.core.sessionmanager.data.repository
+package com.iti.pocketshop.common.sessionmanager.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.iti.pocketshop.common.sessionmanager.data.datasource.firebase.FirebaseUserDataSource
+import com.iti.pocketshop.common.sessionmanager.data.toUserSession
+import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.sessionmanager.data.datasource.firebase.FirebaseUserDataSource
-import com.iti.pocketshop.core.sessionmanager.data.toUserSession
-import com.iti.pocketshop.core.sessionmanager.domain.model.UserSession
-import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
+import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

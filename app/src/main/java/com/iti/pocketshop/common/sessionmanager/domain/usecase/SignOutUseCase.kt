@@ -1,7 +1,7 @@
-package com.iti.pocketshop.core.sessionmanager.domain.usecase
+package com.iti.pocketshop.common.sessionmanager.domain.usecase
 
-import com.iti.pocketshop.core.sessionmanager.domain.repository.CustomerAccessTokenRepository
-import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
+import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
+import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import javax.inject.Inject
 
 class SignOutUseCase @Inject constructor(

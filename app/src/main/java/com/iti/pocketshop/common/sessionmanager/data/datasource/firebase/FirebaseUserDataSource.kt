@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.sessionmanager.data.datasource.firebase
+package com.iti.pocketshop.common.sessionmanager.data.datasource.firebase
 
 import com.google.firebase.auth.FirebaseUser
 import com.iti.pocketshop.core.networkutils.PocketDataError

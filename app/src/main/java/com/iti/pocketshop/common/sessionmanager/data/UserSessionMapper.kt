@@ -1,7 +1,7 @@
-package com.iti.pocketshop.core.sessionmanager.data
+package com.iti.pocketshop.common.sessionmanager.data
 
 import com.google.firebase.auth.FirebaseUser
-import com.iti.pocketshop.core.sessionmanager.domain.model.UserSession
+import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 
 fun FirebaseUser.toUserSession(): UserSession = UserSession(
     uid = uid,

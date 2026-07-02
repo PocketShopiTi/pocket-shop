@@ -1,12 +1,12 @@
-package com.iti.pocketshop.core.sessionmanager.data.datasource.customerremote
+package com.iti.pocketshop.common.sessionmanager.data.datasource.customerremote
 
 import com.apollographql.apollo.ApolloClient
+import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerCredentials
+import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerSession
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
 import com.iti.pocketshop.core.networkutils.safeCall
-import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerCredentials
-import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerSession
 import com.iti.pocketshop.shopify.CustomerAccessTokenCreateMutation
 import com.iti.pocketshop.shopify.CustomerAccessTokenRenewMutation
 import com.iti.pocketshop.shopify.LogoutCustomerMutation

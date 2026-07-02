@@ -1,8 +1,8 @@
-package com.iti.pocketshop.core.sessionmanager.domain.usecase
+package com.iti.pocketshop.common.sessionmanager.domain.usecase
 
+import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import javax.inject.Inject
 
 class GetAccessTokenUseCase @Inject constructor(

@@ -1,14 +1,14 @@
-package com.iti.pocketshop.core.sessionmanager.data.repository
+package com.iti.pocketshop.common.sessionmanager.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
+import com.iti.pocketshop.common.sessionmanager.data.datasource.customerremote.CustomerCredentialsDataSource
+import com.iti.pocketshop.common.sessionmanager.data.datasource.customerremote.ShopifyTokenDataSource
+import com.iti.pocketshop.common.sessionmanager.data.datasource.local.CustomerTokenStore
+import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerCredentials
+import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerSession
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.sessionmanager.data.datasource.customerremote.CustomerCredentialsDataSource
-import com.iti.pocketshop.core.sessionmanager.data.datasource.customerremote.ShopifyTokenDataSource
-import com.iti.pocketshop.core.sessionmanager.data.datasource.local.CustomerTokenStore
-import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerCredentials
-import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerSession
-import com.iti.pocketshop.core.sessionmanager.domain.repository.CustomerAccessTokenRepository
+import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.Clock

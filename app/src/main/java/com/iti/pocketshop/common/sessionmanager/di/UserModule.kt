@@ -1,9 +1,9 @@
-package com.iti.pocketshop.core.sessionmanager.di
+package com.iti.pocketshop.common.sessionmanager.di
 
-import com.iti.pocketshop.core.sessionmanager.data.datasource.firebase.FirebaseUserDataSource
-import com.iti.pocketshop.core.sessionmanager.data.datasource.firebase.FirebaseUserDataSourceImpl
-import com.iti.pocketshop.core.sessionmanager.data.repository.UserRepoImpl
-import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
+import com.iti.pocketshop.common.sessionmanager.data.datasource.firebase.FirebaseUserDataSource
+import com.iti.pocketshop.common.sessionmanager.data.datasource.firebase.FirebaseUserDataSourceImpl
+import com.iti.pocketshop.common.sessionmanager.data.repository.UserRepoImpl
+import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
