@@ -22,10 +22,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -56,6 +61,8 @@ fun CategoriesScreen(
     onAction: (CategoriesAction) -> Unit,
     onBack: () -> Unit
 ) {
+    var isSearchActive by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -76,11 +83,13 @@ fun CategoriesScreen(
                     }
                 },
                 actions = {
-                    Text(
-                        text = stringResource(R.string.search),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable { /* TODO implement search overlay */ }.padding(horizontal = 16.dp)
-                    )
+                    IconButton(onClick = { isSearchActive = !isSearchActive }) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                            contentDescription = stringResource(R.string.search),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             )
         }
@@ -90,6 +99,29 @@ fun CategoriesScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            if (isSearchActive) {
+                OutlinedTextField(
+                    value = state.searchQuery,
+                    onValueChange = { onAction(CategoriesAction.SearchCategories(it)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                    placeholder = { Text(stringResource(R.string.search)) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    leadingIcon = {
+                        Icon(ImageVector.vectorResource(R.drawable.ic_search), contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (state.searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onAction(CategoriesAction.SearchCategories("")) }) {
+                                Icon(ImageVector.vectorResource(R.drawable.ic_close), contentDescription = "Clear")
+                            }
+                        }
+                    }
+                )
+            }
+
             Text(
                 text = stringResource(R.string.brands_available, state.filteredCategories.size),
                 style = MaterialTheme.typography.bodyMedium,

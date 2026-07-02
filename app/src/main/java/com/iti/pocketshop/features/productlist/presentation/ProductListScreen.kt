@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -28,9 +29,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -87,6 +92,8 @@ private fun ProductListScreen(
         }
     }
 
+    var isSearchActive by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -105,17 +112,52 @@ private fun ProductListScreen(
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
+                },
+                actions = {
+                    IconButton(onClick = { isSearchActive = !isSearchActive }) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_search),
+                            contentDescription = stringResource(R.string.search),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             )
         }
     ) { innerPadding ->
-        PullToRefreshBox(
-            isRefreshing = state.isLoading,
-            onRefresh = { onAction(ProductListAction.Refresh) },
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+            if (isSearchActive) {
+                OutlinedTextField(
+                    value = state.searchQuery,
+                    onValueChange = { onAction(ProductListAction.SearchProducts(it)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp, vertical = 8.dp),
+                    placeholder = { Text(stringResource(R.string.search)) },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    leadingIcon = {
+                        Icon(ImageVector.vectorResource(R.drawable.ic_search), contentDescription = null)
+                    },
+                    trailingIcon = {
+                        if (state.searchQuery.isNotEmpty()) {
+                            IconButton(onClick = { onAction(ProductListAction.SearchProducts("")) }) {
+                                Icon(ImageVector.vectorResource(R.drawable.ic_close), contentDescription = "Clear")
+                            }
+                        }
+                    }
+                )
+            }
+
+            PullToRefreshBox(
+                isRefreshing = state.isLoading,
+                onRefresh = { onAction(ProductListAction.Refresh) },
+                modifier = Modifier.fillMaxSize()
+            ) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(2),
                 state = gridState,
@@ -124,7 +166,7 @@ private fun ProductListScreen(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(state.products, key = { it.id }) { product ->
+                items(state.filteredProducts, key = { it.id }) { product ->
                     ProductCard(
                         product = product,
                         onClick = { onProductClick(product.id) },
@@ -148,6 +190,7 @@ private fun ProductListScreen(
                         }
                     }
                 }
+            }
             }
         }
     }
