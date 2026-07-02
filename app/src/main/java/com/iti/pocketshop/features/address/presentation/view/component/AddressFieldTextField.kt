@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -35,6 +36,7 @@ internal fun AddressFieldTextField(
     onValueChange: (String) -> Unit,
 ) {
     val extendedColors = LocalExtendedColors.current
+    val errorColor = MaterialTheme.colorScheme.error
     val density = LocalDensity.current
     val shakeOffset = remember { Animatable(0f) }
     val shakeDistance = with(density) { 10.dp.toPx() }
@@ -65,7 +67,7 @@ internal fun AddressFieldTextField(
         if (label.isNotBlank()) {
             Text(
                 text = label.uppercase(),
-                color = if (error != null) extendedColors.error else extendedColors.textSecondary,
+                color = if (error != null) errorColor else extendedColors.textSecondary,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 1.sp,
@@ -85,7 +87,7 @@ internal fun AddressFieldTextField(
                 {
                     Text(
                         text = text,
-                        color = extendedColors.error,
+                        color = errorColor,
                     )
                 }
             },
@@ -98,7 +100,7 @@ internal fun AddressFieldTextField(
                 unfocusedBorderColor = extendedColors.outline,
                 focusedContainerColor = extendedColors.surface,
                 unfocusedContainerColor = extendedColors.surface,
-                errorBorderColor = extendedColors.error,
+                errorBorderColor = errorColor,
                 errorContainerColor = extendedColors.surface,
                 cursorColor = extendedColors.primary,
                 focusedTextColor = extendedColors.textPrimary,

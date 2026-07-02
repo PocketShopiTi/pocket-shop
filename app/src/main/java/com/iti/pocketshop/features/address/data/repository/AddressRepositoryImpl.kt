@@ -249,7 +249,7 @@ class AddressRepositoryImpl @Inject constructor(
         return PocketResult.Success(coordinates)
     }
 
-    private fun tokenOrError(): String? {
+    private suspend fun tokenOrError(): String? {
         return tokenProvider.currentCustomerAccessToken()?.takeIf { it.isNotBlank() }
     }
 
@@ -429,7 +429,8 @@ class AddressRepositoryImpl @Inject constructor(
             firstName = present(firstName.trim()),
             lastName = present(lastName.trim()),
             phone = optional(phone),
-            province = optional(province),
+            province = Optional.Absent,
+            provinceCode = optional(provinceCode),
             zip = present(zip.trim()),
         )
     }

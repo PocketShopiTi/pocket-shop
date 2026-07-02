@@ -42,6 +42,7 @@ data class AddressEditorState(
     val address2: String = "",
     val city: String = "",
     val province: String = "",
+    val provinceCode: String = "",
     val zip: String = "",
     val country: String = "",
     val formattedArea: String = "",
@@ -67,6 +68,7 @@ data class AddressEditorState(
             address2 = address2.trim(),
             city = city.trim(),
             province = province.trim(),
+            provinceCode = provinceCode.trim(),
             zip = zip.trim(),
             country = country.trim(),
             isDefault = isDefault,
@@ -138,7 +140,7 @@ data class AddressEditorState(
             AddressField.ADDRESS1 -> copy(address1 = value)
             AddressField.ADDRESS2 -> copy(address2 = value)
             AddressField.CITY -> copy(city = value)
-            AddressField.PROVINCE -> copy(province = value)
+            AddressField.PROVINCE -> copy(province = value, provinceCode = value)
             AddressField.ZIP -> copy(zip = value)
             AddressField.COUNTRY -> copy(country = value)
         }
@@ -162,6 +164,7 @@ data class AddressEditorState(
                 address2 = address.address2,
                 city = address.city,
                 province = address.province,
+                provinceCode = address.provinceCode,
                 zip = address.zip,
                 country = address.country,
                 formattedArea = address.formattedArea,

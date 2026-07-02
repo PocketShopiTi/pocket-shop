@@ -1,5 +1,5 @@
 package com.iti.pocketshop.core.userdata
 
 interface CustomerAccessTokenProvider {
-    fun currentCustomerAccessToken(): String?
+    suspend fun currentCustomerAccessToken(): String?
 }

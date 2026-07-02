@@ -9,6 +9,7 @@ data class AddressDraft(
     val address2: String = "",
     val city: String = "",
     val province: String = "",
+    val provinceCode: String = "",
     val zip: String = "",
     val country: String = "",
     val isDefault: Boolean = false,
