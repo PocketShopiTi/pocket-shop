@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.auth.login.domain.repository
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.features.auth.register.domain.model.AuthSignInResult
 import com.iti.pocketshop.features.auth.register.domain.model.AuthUser
 
 interface LoginRepository {
@@ -10,6 +11,8 @@ interface LoginRepository {
         password: String
     ): PocketResult<AuthUser, PocketDataError.Auth>
 
-    suspend fun loginWithGoogle(idToken: String): PocketResult<AuthUser, PocketDataError.Auth>
+    suspend fun loginWithGoogle(
+        idToken: String,
+    ): PocketResult<AuthSignInResult, PocketDataError.Auth>
     suspend fun continueAsGuest(): PocketResult<AuthUser, PocketDataError.Auth>
 }

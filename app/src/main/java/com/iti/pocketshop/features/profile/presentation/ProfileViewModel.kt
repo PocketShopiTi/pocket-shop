@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.sessionmanager.domain.usecase.SignOutUseCase
+import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
 import com.iti.pocketshop.features.profile.domain.usecase.GetProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -74,8 +75,22 @@ class ProfileViewModel @Inject constructor(
                             )
                         }
 
-                        is ProfileLoadUpdate.Fresh -> _state.update {
-                            it.copy(profile = profileResult.profile, error = null)
+                        is ProfileLoadUpdate.Fresh -> _state.update { state ->
+                            val profile = if (
+                                state.profile is ProfileData.Authenticated &&
+                                !state.profile.user.imageUrl.isNullOrEmpty() &&
+                                profileResult.profile.user.imageUrl.isNullOrEmpty()
+                            ) {
+                                profileResult.profile.copy(
+                                    user = profileResult.profile.user.copy(
+                                        imageUrl = state.profile.user.imageUrl
+                                    )
+                                )
+                            } else {
+                                profileResult.profile
+                            }
+
+                            state.copy(profile = profile, error = null)
                         }
 
                         is ProfileLoadUpdate.Failed -> _state.update {

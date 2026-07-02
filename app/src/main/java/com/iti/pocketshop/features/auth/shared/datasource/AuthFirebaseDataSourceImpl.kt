@@ -8,6 +8,7 @@ import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeFirebaseCall
 import com.iti.pocketshop.features.auth.register.data.toDomain
 import com.iti.pocketshop.features.auth.register.domain.model.AuthData
+import com.iti.pocketshop.features.auth.register.domain.model.AuthSignInResult
 import com.iti.pocketshop.features.auth.register.domain.model.AuthUser
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -45,11 +46,16 @@ class AuthFirebaseDataSourceImpl @Inject constructor(
 
     override suspend fun signInWithGoogle(
         idToken: String,
-    ): PocketResult<AuthUser, PocketDataError.Auth> =
+    ): PocketResult<AuthSignInResult, PocketDataError.Auth> =
         safeFirebaseCall {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
-            auth.signInWithCredential(credential).await().user?.toDomain()
+            val authResult = auth.signInWithCredential(credential).await()
+            val user = authResult.user?.toDomain()
                 ?: error("Firebase user is missing after Google login")
+            AuthSignInResult(
+                user = user,
+                isNewUser = authResult.additionalUserInfo?.isNewUser == true,
+            )
         }
 
     override suspend fun signInAnonymously(): PocketResult<AuthUser, PocketDataError.Auth> =

@@ -7,5 +7,12 @@ import javax.inject.Inject
 class EnsureShopifyCustomerUseCase @Inject constructor(
     private val repository: RegisterRepository,
 ) {
-    suspend operator fun invoke(user: AuthUser) = repository.ensureShopifyCustomer(user)
+    suspend operator fun invoke(
+        user: AuthUser,
+        isNewGoogleUser: Boolean = false,
+    ) = if (isNewGoogleUser) {
+        repository.createShopifyCustomer(user)
+    } else {
+        repository.ensureShopifyCustomer(user)
+    }
 }
