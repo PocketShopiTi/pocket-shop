@@ -21,7 +21,7 @@ import com.iti.pocketshop.features.profile.domain.model.ProfileData
 
 
 @Composable
-fun RecentOrdersHeader(openOrders: () -> Unit) {
+fun RecentOrdersHeader(openOrders: () -> Unit, showSeeAll: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -34,12 +34,15 @@ fun RecentOrdersHeader(openOrders: () -> Unit) {
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,
         )
-        Text(
-            text = stringResource(R.string.see_all),
-            modifier = Modifier.clickable(onClick = openOrders),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-        )
+        if (showSeeAll) {
+            Text(
+                text = stringResource(R.string.see_all),
+                modifier = Modifier.clickable(onClick = openOrders),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+            )
+
+        }
     }
 }
 

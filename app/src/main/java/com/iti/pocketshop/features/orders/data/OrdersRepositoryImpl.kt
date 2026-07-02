@@ -2,15 +2,15 @@ package com.iti.pocketshop.features.orders.data
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.core.sessionmanager.domain.usecase.GetAccessTokenUseCase
 import com.iti.pocketshop.features.orders.data.datasource.OrdersRemoteDataSource
 import com.iti.pocketshop.features.orders.data.mapper.toDomain
 import com.iti.pocketshop.features.orders.domain.model.OrdersPage
 import com.iti.pocketshop.features.orders.domain.repository.OrdersRepository
-import com.iti.pocketshop.features.profile.data.datasource.shopify.ShopifyDataSource
 import javax.inject.Inject
 
 class OrdersRepositoryImpl @Inject constructor(
-    private val shopifyDataSource: ShopifyDataSource,
+    private val accessTokenUseCase: GetAccessTokenUseCase,
     private val ordersRemoteDataSource: OrdersRemoteDataSource,
 ) : OrdersRepository {
 
@@ -18,7 +18,7 @@ class OrdersRepositoryImpl @Inject constructor(
         pageSize: Int,
         after: String?,
     ): PocketResult<OrdersPage, PocketDataError> {
-        return when (val tokenResult = shopifyDataSource.getCustomerAccessToken()) {
+        return when (val tokenResult = accessTokenUseCase()) {
             is PocketResult.Error -> PocketResult.Error(tokenResult.error)
 
 

@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.orders.di
 
-import com.iti.pocketshop.features.orders.data.MockOrdersRepository
+import com.iti.pocketshop.features.orders.data.OrdersRepositoryImpl
 import com.iti.pocketshop.features.orders.data.datasource.OrdersRemoteDataSource
 import com.iti.pocketshop.features.orders.data.datasource.OrdersRemoteDataSourceImpl
 import com.iti.pocketshop.features.orders.domain.repository.OrdersRepository
@@ -15,7 +15,7 @@ abstract class OrdersModule {
 
     @Binds
     abstract fun bindOrdersRepository(
-        impl: MockOrdersRepository,
+        impl: OrdersRepositoryImpl,
     ): OrdersRepository
 
     @Binds

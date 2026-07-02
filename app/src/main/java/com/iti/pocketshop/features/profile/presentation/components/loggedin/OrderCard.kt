@@ -72,7 +72,7 @@ fun RecentOrderCard(order: OrderEntity) {
             }
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = order.id,
+                    text = order.name,
                     maxLines = 1,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
