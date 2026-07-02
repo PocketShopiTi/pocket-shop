@@ -34,6 +34,8 @@ sealed interface PocketDataError : Error {
         USER_DISABLED,
         INVALID_EMAIL,
         UNKNOWN,
+        USER_DISABLED,
+        TOKEN_NOT_VALID,
     }
 
     enum class Firestore : PocketDataError {
@@ -79,6 +81,8 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Firestore.QUOTA_EXCEEDED -> context.getString(R.string.firestore_quota_exceeded)
     PocketDataError.Firestore.DATA_LOSS -> context.getString(R.string.firestore_data_loss)
     PocketDataError.Firestore.CANCELLED -> context.getString(R.string.firestore_cancelled)
+    PocketDataError.Auth.TOKEN_NOT_VALID -> context.getString(R.string.error_token_not_valid)
+
 }
 
 // for firebase errors

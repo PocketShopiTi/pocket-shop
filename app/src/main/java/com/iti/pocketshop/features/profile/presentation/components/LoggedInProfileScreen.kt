@@ -12,7 +12,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
 import com.iti.pocketshop.core.components.ConfirmationDialog
-import com.iti.pocketshop.core.components.ErrorDialog
 import com.iti.pocketshop.core.networkutils.toUserMessage
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.presentation.ProfileState
@@ -85,7 +84,7 @@ fun LoggedInProfileScreen(
         }
     }
 
-    if (state.showLogoutConfirmation && state.logoutError == null) {
+    if (state.showLogoutConfirmation) {
         ConfirmationDialog(
             title = stringResource(R.string.profile_logout_title),
             message = stringResource(R.string.profile_logout_message),
@@ -100,10 +99,4 @@ fun LoggedInProfileScreen(
         )
     }
 
-    state.logoutError?.let { error ->
-        ErrorDialog(
-            message = error.toUserMessage(context),
-            onDismiss = onLogoutDismissed,
-        )
-    }
 }

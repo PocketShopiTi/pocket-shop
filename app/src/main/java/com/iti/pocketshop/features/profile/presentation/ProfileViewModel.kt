@@ -2,10 +2,10 @@ package com.iti.pocketshop.features.profile.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.core.sessionmanager.domain.usecase.SignOutUseCase
+import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
 import com.iti.pocketshop.features.profile.domain.usecase.GetProfileUseCase
-import com.iti.pocketshop.features.profile.domain.usecase.ProfileLogOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getProfile: GetProfileUseCase,
-    private val signOutUseCase: ProfileLogOutUseCase,
+    private val signOutUseCase: SignOutUseCase,
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
@@ -47,11 +47,11 @@ class ProfileViewModel @Inject constructor(
         when (action) {
             ProfileAction.Refresh -> loadProfile()
             ProfileAction.LogoutRequested -> _state.update {
-                it.copy(showLogoutConfirmation = true, logoutError = null)
+                it.copy(showLogoutConfirmation = true)
             }
 
             ProfileAction.LogoutDismissed -> _state.update {
-                it.copy(showLogoutConfirmation = false, logoutError = null)
+                it.copy(showLogoutConfirmation = false)
             }
 
             ProfileAction.LogoutConfirmed -> signOut()
@@ -75,8 +75,22 @@ class ProfileViewModel @Inject constructor(
                             )
                         }
 
-                        is ProfileLoadUpdate.Fresh -> _state.update {
-                            it.copy(profile = profileResult.profile, error = null)
+                        is ProfileLoadUpdate.Fresh -> _state.update { state ->
+                            val profile = if (
+                                state.profile is ProfileData.Authenticated &&
+                                !state.profile.user.imageUrl.isNullOrEmpty() &&
+                                profileResult.profile.user.imageUrl.isNullOrEmpty()
+                            ) {
+                                profileResult.profile.copy(
+                                    user = profileResult.profile.user.copy(
+                                        imageUrl = state.profile.user.imageUrl
+                                    )
+                                )
+                            } else {
+                                profileResult.profile
+                            }
+
+                            state.copy(profile = profile, error = null)
                         }
 
                         is ProfileLoadUpdate.Failed -> _state.update {
@@ -94,22 +108,12 @@ class ProfileViewModel @Inject constructor(
         if (_state.value.isLoggingOut) return
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoggingOut = true, logoutError = null) }
-
-            when (val result = signOutUseCase()) {
-
-                is PocketResult.Success -> {
-                    _state.update {
-                        it.copy(isLoggingOut = false, showLogoutConfirmation = false)
-                    }
-                    _events.send(ProfileEvent.LoggedOut)
-                }
-
-                is PocketResult.Error ->
-                    _state.update {
-                        it.copy(isLoggingOut = false, logoutError = result.error)
-                    }
+            _state.update { it.copy(isLoggingOut = true) }
+            signOutUseCase()
+            _state.update {
+                it.copy(isLoggingOut = false, showLogoutConfirmation = false)
             }
+            _events.send(ProfileEvent.LoggedOut)
         }
     }
 }

@@ -1,21 +1,10 @@
 package com.iti.pocketshop.features.profile.data.mapper
 
-import com.google.firebase.auth.FirebaseUser
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileStats
 import com.iti.pocketshop.features.profile.domain.model.UserEntity
 import com.iti.pocketshop.shopify.GetProfileQuery
 import java.time.Instant
-
-fun FirebaseUser.toUserEntity(): UserEntity =
-    UserEntity(
-        id = uid,
-        name = displayName.orEmpty(),
-        email = email.orEmpty(),
-        imageUrl = photoUrl?.toString(),
-        memberSinceEpochMillis = metadata?.creationTimestamp,
-    )
-
 
 fun GetProfileQuery.Customer.toProfileData(): ProfileData.Authenticated =
     ProfileData.Authenticated(
