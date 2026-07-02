@@ -28,7 +28,11 @@ sealed interface PocketDataError : Error {
         ACCOUNT_DISABLED,
         EMAIL_NOT_VERIFIED,
         OPERATION_NOT_ALLOWED,
-        NETWORK_ERROR
+        NETWORK_ERROR,
+        UnAuthorized,
+        NO_INTERNET,
+        USER_DISABLED,
+        UNKNOWN,
     }
 
     enum class Firestore : PocketDataError {
@@ -60,6 +64,10 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Auth.EMAIL_NOT_VERIFIED -> context.getString(R.string.auth_email_not_verified)
     PocketDataError.Auth.OPERATION_NOT_ALLOWED -> context.getString(R.string.auth_operation_not_allowed)
     PocketDataError.Auth.NETWORK_ERROR -> context.getString(R.string.no_internet_connection)
+    PocketDataError.Auth.UnAuthorized -> context.getString(R.string.error_unauthorized)
+    PocketDataError.Auth.NO_INTERNET -> context.getString(R.string.error_network)
+    PocketDataError.Auth.USER_DISABLED -> context.getString(R.string.error_user_disabled)
+    PocketDataError.Auth.UNKNOWN -> context.getString(R.string.error_unknown)
 
     // Firestore
     PocketDataError.Firestore.PERMISSION_DENIED -> context.getString(R.string.firestore_permission_denied)
