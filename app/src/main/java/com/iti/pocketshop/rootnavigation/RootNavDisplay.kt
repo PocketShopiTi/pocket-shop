@@ -129,7 +129,7 @@ fun RootNavDisplay() {
                         }
                     },
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.Register>()
                     }
                 )
             }
@@ -137,7 +137,7 @@ fun RootNavDisplay() {
                 NestedNavDisplay(
                     currentRootRoute = rootBackStack.lastOrNull(),
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.NestedNav>()
                     },
                     logout = {
                         rootBackStack.apply {
@@ -163,7 +163,7 @@ fun RootNavDisplay() {
                 ProductDetailsRoot(
                     productId = it.id,
                     onBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.ProductDetails>()
                     }
                 )
             }
@@ -173,7 +173,7 @@ fun RootNavDisplay() {
             entry<Route.Settings> {
                 SettingsRoot(
                     onBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.Settings>()
                     }
                 )
             }
