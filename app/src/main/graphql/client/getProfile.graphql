@@ -1,0 +1,45 @@
+query GetProfile(
+    $customerAccessToken: String!,
+    $ordersCount: Int! = 0
+) {
+    customer(customerAccessToken: $customerAccessToken) {
+        id
+        displayName
+        email
+        phone
+        createdAt
+        avatarUrl
+        numberOfOrders
+        socialLoginProvider {
+            handle
+        }
+
+        addresses(first: 10) {
+            edges { node {  id  }   }
+        }
+
+        orders(first: $ordersCount, sortKey: PROCESSED_AT, reverse: true) {
+            edges {
+                node {
+                    id
+                    orderNumber
+                    fulfillmentStatus
+                    currentTotalPrice {
+                        amount
+                        currencyCode
+                    }
+                    lineItems(first: 1) {
+                        edges {
+                            node {
+                                variant {
+                                    id
+                                    image { url }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

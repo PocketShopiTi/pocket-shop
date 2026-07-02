@@ -21,7 +21,11 @@ object ApolloNetworkModule {
     @Singleton
     fun provideApolloClient(): ApolloClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BASIC
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
 
         val okHttpClient = OkHttpClient.Builder()

@@ -13,11 +13,15 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.iti.pocketshop.core.components.SignInDialog
 import com.iti.pocketshop.features.aichat.AiChatRoot
-import com.iti.pocketshop.features.login.presentation.LoginRoot
+import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
+import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
+import com.iti.pocketshop.features.auth.otp.presentation.EmailVerificationRoot
+import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
-import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
+import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
+import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
 import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.search.SearchRoot
@@ -28,11 +32,18 @@ import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 @Composable
 fun RootNavDisplay() {
 
-    val rootBackStack = rememberNavBackStack(Route.Address)
+    val rootBackStack = rememberNavBackStack(Route.Splash)
+
+    fun openProductDetails(id: String) {
+        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+    }
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = rootBackStack,
+        onBack = {
+            rootBackStack.removeLastOrNull()
+        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
@@ -84,9 +95,9 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.NestedNav)
                         }
                     },
-                    openOTP = {
+                    openVerification = {
                         rootBackStack.apply {
-                            navigateSingleTop(Route.OTP)
+                            navigateSingleTop(Route.EmailVerification)
                         }
                     },
                     openRegister = {
@@ -95,32 +106,31 @@ fun RootNavDisplay() {
                         }
                     },
                     openForgotPassword = {
-                        // TODO: Navigate to Forgot Password Route when implemented
+                        rootBackStack.navigateSingleTop(Route.ForgotPassword)
                     }
                 )
             }
-            entry<Route.OTP> {
-                OTPRoot(
-                    openHome = {
+            entry<Route.EmailVerification> {
+                EmailVerificationRoot(
+                    openLogin = {
                         rootBackStack.apply {
                             clear()
-                            navigateSingleTop(Route.NestedNav)
-                        }
-                    },
-                    openRegister = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Register)
+                            navigateSingleTop(Route.Login)
                         }
                     }
+                )
+            }
+            entry<Route.ForgotPassword> {
+                ForgotPasswordRoot(
+                    navigateBack = { rootBackStack.removeLastOrNull() }
                 )
             }
             entry<Route.Register> {
                 RegisterRoot(
-                    openHome = {
+                    openVerification = {
                         rootBackStack.apply {
                             clear()
-                            navigateSingleTop(Route.NestedNav)
+                            navigateSingleTop(Route.EmailVerification)
                         }
                     },
                     openLogin = {
@@ -130,7 +140,7 @@ fun RootNavDisplay() {
                         }
                     },
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.Register>()
                     }
                 )
             }
@@ -138,7 +148,7 @@ fun RootNavDisplay() {
                 NestedNavDisplay(
                     currentRootRoute = rootBackStack.lastOrNull(),
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.NestedNav>()
                     },
                     logout = {
                         rootBackStack.apply {
@@ -146,14 +156,24 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openServiceOrder = { id ->
-                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
-                    },
+                    openProductDetails = { id -> openProductDetails(id) },
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
+                    openLogin = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.Login)
+                        }
+                    },
+                    openRegister = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.Register)
+                        }
+                    },
                     openSearch = {
-                        rootBackStack.navigateSingleTop(Route.Search)
+                        rootBackStack.navigateSingleTop(Route.SearchNav)
                     },
                 )
             }
@@ -164,7 +184,7 @@ fun RootNavDisplay() {
                 ProductDetailsRoot(
                     productId = it.id,
                     onBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.ProductDetails>()
                     }
                 )
             }
@@ -172,10 +192,19 @@ fun RootNavDisplay() {
                 OrderCheckoutRoot()
             }
             entry<Route.Settings> {
-                SettingsRoot()
+                SettingsRoot(
+                    onBack = {
+                        rootBackStack.popIfCurrentIs<Route.Settings>()
+                    }
+                )
             }
-            entry<Route.Search> {
-                SearchRoot()
+            entry<Route.SearchNav> {
+                SearchNavDisplay(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    openProductDetails = { id -> openProductDetails(id) }
+                )
             }
             entry<Route.Address> {
                 AddressRoot(

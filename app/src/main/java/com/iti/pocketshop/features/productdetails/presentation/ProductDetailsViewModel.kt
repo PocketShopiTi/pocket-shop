@@ -2,24 +2,44 @@ package com.iti.pocketshop.features.productdetails.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
+import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
+import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
+import com.iti.pocketshop.core.components.ErrorDialogController
+import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class ProductDetailsViewModel @Inject constructor(
     private val getProductDetails: GetProductDetailsUseCase,
+    private val isFavorite: IsFavoriteUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductDetailsState())
-    val state = _state.asStateFlow()
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val state = _state
+        .flatMapLatest { state ->
+            isFavorite(state.productId)
+                .map {
+                    state.copy(isFavorite = it)
+                }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ProductDetailsState())
 
     private var loadJob: Job? = null
     private var cartFeedbackJob: Job? = null
@@ -76,7 +96,19 @@ class ProductDetailsViewModel @Inject constructor(
             is ProductDetailsAction.ProductChanged -> loadProduct(action.productId)
             ProductDetailsAction.Retry -> loadProduct(_state.value.productId, force = true)
             ProductDetailsAction.AddToCartClicked -> showAddToCartFeedback()
+            is ProductDetailsAction.ToggleFavorite -> {
+                toggleFavorite(action.product)
+            }
             else -> _state.update { current -> reduceProductDetails(current, action) }
+        }
+    }
+
+    private fun toggleFavorite(product: FavoriteProduct) {
+        viewModelScope.launch {
+            toggleFavoriteUseCase(product)
+                .onError {
+                    ErrorDialogController.sendEvent(it)
+                }
         }
     }
 
@@ -88,7 +120,7 @@ class ProductDetailsViewModel @Inject constructor(
         }
         cartFeedbackJob?.cancel()
         cartFeedbackJob = viewModelScope.launch {
-            delay(CART_FEEDBACK_DURATION_MILLIS)
+            delay(CART_FEEDBACK_DURATION_MILLIS.milliseconds)
             _state.update { current ->
                 reduceProductDetails(current, ProductDetailsAction.CartFeedbackFinished)
             }
