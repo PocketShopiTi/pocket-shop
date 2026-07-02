@@ -429,8 +429,10 @@ class AddressRepositoryImpl @Inject constructor(
             firstName = present(firstName.trim()),
             lastName = present(lastName.trim()),
             phone = optional(phone),
-            province = Optional.Absent,
-            provinceCode = optional(provinceCode),
+            // Prefer provinceCode when available (codes are less likely to be rejected by Shopify),
+            // otherwise fall back to free-text province name. The generated MailingAddressInput
+            // only accepts a `province` field, so we send the code in that field when present.
+            province = optional(provinceCode.trim().ifBlank { province.trim() }),
             zip = present(zip.trim()),
         )
     }
