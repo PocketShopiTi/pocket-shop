@@ -3,9 +3,7 @@ package com.iti.pocketshop.rootnavigation
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-sealed interface
-
-Route : NavKey {
+sealed interface Route : NavKey {
 
     @Serializable
     data object Splash : Route
@@ -17,7 +15,10 @@ Route : NavKey {
     data object Login : Route
 
     @Serializable
-    data object OTP : Route
+    data object EmailVerification : Route
+
+    @Serializable
+    data object ForgotPassword : Route
 
     @Serializable
     data object Register : Route

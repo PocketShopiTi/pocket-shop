@@ -12,13 +12,12 @@ import com.iti.pocketshop.common.favorites.domain.repository.FavoriteRepo
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.toPocketFirebaseError
-import com.iti.pocketshop.core.userdata.UserRepo
+import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.jvm.java
 
 class FavoriteRepoImpl @Inject constructor(
     private val favoriteDao: FavoriteDao,
@@ -55,7 +54,10 @@ class FavoriteRepoImpl @Inject constructor(
             val docRef = firestore.collection(FirestoreTables.FAVORITES)
                 .document(userId)
                 .collection(FirestoreTables.PRODUCTS)
-                .document(fireFavProduct.id ?: return PocketResult.Error(PocketDataError.Firestore.NOT_FOUND))
+                .document(
+                    fireFavProduct.id
+                        ?: return PocketResult.Error(PocketDataError.Firestore.NOT_FOUND)
+                )
 
             if (isFav) {
                 docRef.delete().await()

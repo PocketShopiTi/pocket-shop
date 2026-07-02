@@ -3,11 +3,11 @@ package com.iti.pocketshop
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseUser
 import com.iti.pocketshop.common.settings.domain.UserSettingsRepo
 import com.iti.pocketshop.common.settings.domain.models.LanguageSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
-import com.iti.pocketshop.core.userdata.UserRepo
+import com.iti.pocketshop.core.sessionmanager.domain.model.UserSession
+import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
             MainUiState.Ready(it)
         }
 
-    val currentUser = userRepo.observeAuthState()
+    val currentUser = userRepo.observeSession()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
@@ -43,5 +43,5 @@ class MainViewModel @Inject constructor(
     }
 }
 
-val LocalUser = compositionLocalOf<FirebaseUser?> { null }
+val LocalUser = compositionLocalOf<UserSession?> { null }
 val LocalSettingsUser = compositionLocalOf { UserSettings() }
