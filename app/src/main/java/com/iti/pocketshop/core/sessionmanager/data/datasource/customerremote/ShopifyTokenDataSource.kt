@@ -1,12 +1,12 @@
-package com.iti.pocketshop.core.tokenmanager.data.datasource.remote
+package com.iti.pocketshop.core.sessionmanager.data.datasource.customerremote
 
 import com.apollographql.apollo.ApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
 import com.iti.pocketshop.core.networkutils.safeCall
-import com.iti.pocketshop.core.tokenmanager.domain.model.CustomerCredentials
-import com.iti.pocketshop.core.tokenmanager.domain.model.CustomerSession
+import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerCredentials
+import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerSession
 import com.iti.pocketshop.shopify.CustomerAccessTokenCreateMutation
 import com.iti.pocketshop.shopify.CustomerAccessTokenRenewMutation
 import com.iti.pocketshop.shopify.LogoutCustomerMutation
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 interface ShopifyTokenDataSource {
     suspend fun create(credentials: CustomerCredentials): PocketResult<CustomerSession, PocketDataError>
-    suspend fun renew(session: CustomerSession): PocketResult<CustomerSession, PocketDataError>
+    suspend fun renewWithAccessToken(session: CustomerSession): PocketResult<CustomerSession, PocketDataError>
     suspend fun revoke(accessToken: String): PocketResult<Unit, PocketDataError.Remote>
 }
 
@@ -50,7 +50,7 @@ class ShopifyTokenDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun renew(
+    override suspend fun renewWithAccessToken(
         session: CustomerSession,
     ): PocketResult<CustomerSession, PocketDataError> {
         val result = apolloClient.mutation(

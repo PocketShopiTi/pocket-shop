@@ -1,11 +1,11 @@
-package com.iti.pocketshop.core.tokenmanager.data.datasource.remote
+package com.iti.pocketshop.core.sessionmanager.data.datasource.customerremote
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeFirestoreCall
-import com.iti.pocketshop.core.tokenmanager.domain.model.CustomerCredentials
+import com.iti.pocketshop.core.sessionmanager.domain.model.CustomerCredentials
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

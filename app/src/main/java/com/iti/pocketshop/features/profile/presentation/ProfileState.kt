@@ -9,5 +9,4 @@ data class ProfileState(
     val error: PocketDataError? = null,
     val showLogoutConfirmation: Boolean = false,
     val isLoggingOut: Boolean = false,
-    val logoutError: PocketDataError? = null,
 )

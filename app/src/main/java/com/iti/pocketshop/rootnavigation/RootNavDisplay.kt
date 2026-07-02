@@ -130,6 +130,10 @@ fun RootNavDisplay() {
                     },
                     navigateBack = {
                         rootBackStack.removeLastOrNull()
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.Login)
+                        }
                     }
                 )
             }

@@ -25,5 +25,4 @@ interface AuthFirebaseDataSource {
 
     suspend fun sendPasswordReset(email: String): PocketResult<Unit, PocketDataError.Auth>
 
-    fun signOut()
 }

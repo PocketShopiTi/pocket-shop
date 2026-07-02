@@ -3,9 +3,9 @@ package com.iti.pocketshop.features.auth.otp.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.core.sessionmanager.domain.usecase.GetCurrentUserSessionUseCase
+import com.iti.pocketshop.core.sessionmanager.domain.usecase.SignOutUseCase
 import com.iti.pocketshop.features.auth.otp.domain.ResendVerificationEmailUseCase
-import com.iti.pocketshop.features.auth.otp.domain.SignOutUseCase
-import com.iti.pocketshop.features.auth.register.domain.usecase.GetCurrentAuthUserUseCase
 import com.iti.pocketshop.features.auth.shared.CheckEmailVerificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -24,14 +24,14 @@ sealed interface EmailVerificationEvent {
 
 @HiltViewModel
 class EmailVerificationViewModel @Inject constructor(
-    getCurrentAuthUser: GetCurrentAuthUserUseCase,
+    getCurrentUserSession: GetCurrentUserSessionUseCase,
     private val checkEmailVerification: CheckEmailVerificationUseCase,
     private val resendVerificationEmail: ResendVerificationEmailUseCase,
     private val signOut: SignOutUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(
-        EmailVerificationState(email = getCurrentAuthUser()?.email.orEmpty())
+        EmailVerificationState(email = getCurrentUserSession()?.email.orEmpty())
     )
     val state = _state.asStateFlow()
 

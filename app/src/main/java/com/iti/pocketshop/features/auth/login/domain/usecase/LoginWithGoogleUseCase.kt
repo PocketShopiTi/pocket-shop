@@ -2,7 +2,7 @@ package com.iti.pocketshop.features.auth.login.domain.usecase
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.tokenmanager.domain.CustomerAccessTokenRepository
+import com.iti.pocketshop.core.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import com.iti.pocketshop.features.auth.login.domain.model.LoginOutcome
 import com.iti.pocketshop.features.auth.login.domain.repository.LoginRepository
 import javax.inject.Inject
@@ -21,7 +21,7 @@ class LoginWithGoogleUseCase @Inject constructor(
             is PocketResult.Error -> return provisioning
             is PocketResult.Success -> Unit
         }
-        
+
         return when (val token = tokenRepository.getValidToken()) {
             is PocketResult.Error -> token
             is PocketResult.Success -> PocketResult.Success(LoginOutcome.Ready)

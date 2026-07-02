@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.tokenmanager.domain.model
+package com.iti.pocketshop.core.sessionmanager.domain.model
 
 data class CustomerCredentials(
     val uid: String,

@@ -78,6 +78,4 @@ class AuthFirebaseDataSourceImpl @Inject constructor(
             auth.sendPasswordResetEmail(email).await()
         }
 
-    override fun signOut() = auth.signOut()
-
 }

@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.tokenmanager.domain.model
+package com.iti.pocketshop.core.sessionmanager.domain.model
 
 import java.time.Instant
 
@@ -7,4 +7,3 @@ data class CustomerSession(
     val accessToken: String,
     val expiresAt: Instant,
 )
-

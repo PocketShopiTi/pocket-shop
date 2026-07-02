@@ -23,6 +23,7 @@ sealed interface PocketDataError : Error {
         USER_DISABLED,
         EMAIL_NOT_VERIFIED,
         UNKNOWN,
+        TOKEN_NOT_VALID,
     }
 }
 
@@ -42,4 +43,5 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Auth.USER_DISABLED -> context.getString(R.string.error_user_disabled)
     PocketDataError.Auth.EMAIL_NOT_VERIFIED -> context.getString(R.string.error_email_not_verified)
     PocketDataError.Auth.UNKNOWN -> context.getString(R.string.error_unknown)
+    PocketDataError.Auth.TOKEN_NOT_VALID -> context.getString(R.string.error_token_not_valid)
 }
