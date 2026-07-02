@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.PocketShop" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.PocketShop" parent="Theme.AppCompat.Light.NoActionBar" />
 </resources>

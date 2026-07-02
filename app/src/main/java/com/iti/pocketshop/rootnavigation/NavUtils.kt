@@ -10,3 +10,9 @@ fun <T : NavKey> NavBackStack<T>.navigateSingleTop(
         add(route)
     }
 }
+
+inline fun <reified T: NavKey> NavBackStack<*>.popIfCurrentIs() {
+    if (lastOrNull() is T) {
+        removeLastOrNull()
+    }
+}
