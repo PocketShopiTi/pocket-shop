@@ -51,6 +51,20 @@ class ProductListViewModel @AssistedInject constructor(
         when (action) {
             ProductListAction.LoadMore -> loadProducts(isRefresh = false)
             ProductListAction.Refresh -> loadProducts(isRefresh = true)
+            is ProductListAction.SearchProducts -> {
+                _state.update {
+                    it.copy(
+                        searchQuery = action.query,
+                        filteredProducts = if (action.query.isEmpty()) {
+                            it.products
+                        } else {
+                            it.products.filter { product ->
+                                product.title.contains(action.query, ignoreCase = true)
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -75,8 +89,12 @@ class ProductListViewModel @AssistedInject constructor(
             )
                 .onSuccess { page ->
                     _state.update {
+                        val newProducts = if (isRefresh) page.products else it.products + page.products
                         it.copy(
-                            products = if (isRefresh) page.products else it.products + page.products,
+                            products = newProducts,
+                            filteredProducts = if (it.searchQuery.isEmpty()) newProducts else newProducts.filter { product ->
+                                product.title.contains(it.searchQuery, ignoreCase = true)
+                            },
                             hasNextPage = page.hasNextPage,
                             endCursor = page.endCursor,
                             isLoading = false,

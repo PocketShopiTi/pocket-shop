@@ -8,6 +8,8 @@ import com.iti.pocketshop.features.productlist.domain.ProductListType
 data class ProductListState(
     val listType: ProductListType = ProductListType.FEATURED,
     val products: List<Product> = emptyList(),
+    val filteredProducts: List<Product> = emptyList(),
+    val searchQuery: String = "",
     val isLoading: Boolean = false,
     val isLoadingMore: Boolean = false,
     val hasNextPage: Boolean = false,
