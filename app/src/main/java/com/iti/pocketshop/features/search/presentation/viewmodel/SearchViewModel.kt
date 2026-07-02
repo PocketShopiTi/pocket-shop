@@ -144,6 +144,7 @@ class SearchViewModel @Inject constructor(
                         ), isLoading = false
                     )
                 }
+
                 is PocketResult.Error -> {
                     sendEffect(SearchEffect.ShowError(result.error))
                     _state.update { it.copy(isLoading = false) }

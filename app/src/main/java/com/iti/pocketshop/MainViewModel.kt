@@ -3,11 +3,9 @@ package com.iti.pocketshop
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseUser
 import com.iti.pocketshop.common.settings.domain.UserSettingsRepo
 import com.iti.pocketshop.common.settings.domain.models.LanguageSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
-import com.iti.pocketshop.core.userdata.UserRepo
 import com.iti.pocketshop.core.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,14 +21,13 @@ class MainViewModel @Inject constructor(
     userRepo: UserRepo,
     private val userSettingsRepo: UserSettingsRepo
 ) : ViewModel() {
-    val currentUser = userRepo.observeSession()
 
     val mainUiState: Flow<MainUiState> = userSettingsRepo.settingsFlow
         .map {
             MainUiState.Ready(it)
         }
 
-    val currentUser = userRepo.observeAuthState()
+    val currentUser = userRepo.observeSession()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),

@@ -17,6 +17,7 @@ class LoginWithGoogleUseCase @Inject constructor(
             is PocketResult.Error -> return login
             is PocketResult.Success -> login.data
         }
+        
         when (val provisioning = ensureShopifyCustomer(user)) {
             is PocketResult.Error -> return provisioning
             is PocketResult.Success -> Unit

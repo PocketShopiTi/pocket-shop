@@ -20,11 +20,8 @@ import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
-import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
-import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
-import com.iti.pocketshop.features.search.SearchRoot
-import com.iti.pocketshop.features.settings.SettingsRoot
+import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 

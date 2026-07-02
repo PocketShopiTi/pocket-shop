@@ -111,8 +111,7 @@ class RegisterRepositoryImpl @Inject constructor(
 
     fun generatePassword(): String {
         val PASSWORD_LENGTH = 32
-        val CHARACTERS =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%"
+        val CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%"
 
         return buildString(PASSWORD_LENGTH) {
             repeat(PASSWORD_LENGTH) {
@@ -120,7 +119,5 @@ class RegisterRepositoryImpl @Inject constructor(
             }
         }
     }
-
-
 }
 
