@@ -7,6 +7,8 @@ import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.features.cart.data.MockCartRepository
+import com.iti.pocketshop.features.cart.domain.entity.CartItem
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +30,7 @@ class ProductDetailsViewModel @Inject constructor(
     private val getProductDetails: GetProductDetailsUseCase,
     private val isFavorite: IsFavoriteUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val cartRepository: MockCartRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductDetailsState())
@@ -114,6 +117,37 @@ class ProductDetailsViewModel @Inject constructor(
 
     private fun showAddToCartFeedback() {
         if (_state.value.selectedVariant?.availableForSale != true) return
+
+        val currentState = _state.value
+        val product = currentState.product
+        val variant = currentState.selectedVariant
+        
+        if (product != null && variant != null) {
+            val title = product.title
+            val brand = product.vendor
+            // Mock size resolution based on selected options if possible, fallback to "One size"
+            val size = currentState.selectedOptionValueIds.entries.firstOrNull { 
+                product.options.find { opt -> opt.id == it.key }?.name?.equals("size", ignoreCase = true) == true 
+            }?.let { entry ->
+                product.options.find { it.id == entry.key }?.values?.find { it.id == entry.value }?.label
+            } ?: "One size"
+            
+            val price = variant.price.amount
+            val imageUrl = product.images.firstOrNull()?.url.orEmpty()
+            
+            cartRepository.addToCart(
+                CartItem(
+                    id = "",
+                    productId = product.id,
+                    title = title,
+                    brand = brand,
+                    size = size,
+                    price = price,
+                    imageUrl = imageUrl,
+                    quantity = currentState.quantity
+                )
+            )
+        }
 
         _state.update { current ->
             reduceProductDetails(current, ProductDetailsAction.AddToCartClicked)
