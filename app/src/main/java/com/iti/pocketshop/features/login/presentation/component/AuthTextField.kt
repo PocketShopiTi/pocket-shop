@@ -75,7 +75,7 @@ fun AuthTextField(
             trailingIcon = trailingIcon,
             singleLine = true,
             isError = isError,
-            shape = RoundedCornerShape(28.dp),
+            shape = MaterialTheme.shapes.large,
             keyboardOptions = KeyboardOptions(
                 keyboardType = keyboardType
             ),

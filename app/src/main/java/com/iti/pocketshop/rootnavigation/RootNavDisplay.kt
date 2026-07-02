@@ -157,16 +157,10 @@ fun RootNavDisplay() {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
                     openLogin = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Login)
-                        }
+                        rootBackStack.navigateSingleTop(Route.Login)
                     },
                     openRegister = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Register)
-                        }
+                        rootBackStack.navigateSingleTop(Route.Register)
                     },
                     openSearch = {
                         rootBackStack.navigateSingleTop(Route.SearchNav)
