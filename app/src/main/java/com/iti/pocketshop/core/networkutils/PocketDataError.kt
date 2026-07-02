@@ -16,7 +16,8 @@ sealed interface PocketDataError : Error {
         NO_INTERNET,
         SERVER,
         SERIALIZATION,
-        UNKNOWN
+        UNKNOWN,
+        EMPTY_RESULT
     }
 
     enum class Auth : PocketDataError {
@@ -27,7 +28,11 @@ sealed interface PocketDataError : Error {
         ACCOUNT_DISABLED,
         EMAIL_NOT_VERIFIED,
         OPERATION_NOT_ALLOWED,
-        NETWORK_ERROR
+        NETWORK_ERROR,
+        UnAuthorized,
+        NO_INTERNET,
+        USER_DISABLED,
+        UNKNOWN,
     }
 
     enum class Firestore : PocketDataError {
@@ -48,6 +53,7 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.SERVER -> context.getString(R.string.server_error)
     PocketDataError.Remote.SERIALIZATION -> context.getString(R.string.failed_to_process_response)
     PocketDataError.Remote.UNKNOWN -> context.getString(R.string.something_went_wrong)
+    PocketDataError.Remote.EMPTY_RESULT -> context.getString(R.string.no_results_found)
 
     // Auth
     PocketDataError.Auth.INVALID_CREDENTIALS -> context.getString(R.string.auth_invalid_credentials)
@@ -58,6 +64,10 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Auth.EMAIL_NOT_VERIFIED -> context.getString(R.string.auth_email_not_verified)
     PocketDataError.Auth.OPERATION_NOT_ALLOWED -> context.getString(R.string.auth_operation_not_allowed)
     PocketDataError.Auth.NETWORK_ERROR -> context.getString(R.string.no_internet_connection)
+    PocketDataError.Auth.UnAuthorized -> context.getString(R.string.error_unauthorized)
+    PocketDataError.Auth.NO_INTERNET -> context.getString(R.string.error_network)
+    PocketDataError.Auth.USER_DISABLED -> context.getString(R.string.error_user_disabled)
+    PocketDataError.Auth.UNKNOWN -> context.getString(R.string.error_unknown)
 
     // Firestore
     PocketDataError.Firestore.PERMISSION_DENIED -> context.getString(R.string.firestore_permission_denied)
