@@ -3,9 +3,7 @@ package com.iti.pocketshop.rootnavigation
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-sealed interface
-
-Route : NavKey {
+sealed interface Route : NavKey {
 
     @Serializable
     data object Splash : Route
@@ -55,11 +53,5 @@ Route : NavKey {
     data object Settings : Route
 
     @Serializable
-    data object SearchNav : Route {
-        @Serializable
-        data object Search : Route
-
-        @Serializable
-        data object Filters : Route
-    }
+    data object Search : Route
 }

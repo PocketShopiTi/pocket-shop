@@ -19,7 +19,7 @@ import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
 import com.iti.pocketshop.features.otp.OTPRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.register.presentation.view.RegisterRoot
-import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
+import com.iti.pocketshop.features.search.SearchRoot
 import com.iti.pocketshop.features.settings.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
@@ -29,16 +29,9 @@ fun RootNavDisplay() {
 
     val rootBackStack = rememberNavBackStack(Route.Splash)
 
-    fun openProductDetails(id: String) {
-        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
-    }
-
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = rootBackStack,
-        onBack = {
-            rootBackStack.removeLastOrNull()
-        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
@@ -152,12 +145,14 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openProductDetails = { id -> openProductDetails(id) },
+                    openProductDetails = { id ->
+                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+                    },
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
                     openSearch = {
-                        rootBackStack.navigateSingleTop(Route.SearchNav)
+                        rootBackStack.navigateSingleTop(Route.Search)
                     },
                 )
             }
@@ -178,13 +173,8 @@ fun RootNavDisplay() {
             entry<Route.Settings> {
                 SettingsRoot()
             }
-            entry<Route.SearchNav> {
-                SearchNavDisplay(
-                    onBack = {
-                        rootBackStack.removeLastOrNull()
-                    },
-                    openProductDetails = { id -> openProductDetails(id) }
-                )
+            entry<Route.Search> {
+                SearchRoot()
             }
         }
     )
