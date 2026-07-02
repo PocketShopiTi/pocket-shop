@@ -12,9 +12,13 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,6 +46,7 @@ fun ProductListRoot(
     onBack: () -> Unit,
     onProductClick: (String) -> Unit,
     viewModel: ProductListViewModel = hiltViewModel(
+        key = type,
         creationCallback = { factory: ProductListViewModel.Factory ->
             factory.create(type)
         }
@@ -93,11 +98,13 @@ private fun ProductListScreen(
                     )
                 },
                 navigationIcon = {
-                    Text(
-                        text = stringResource(R.string.back),
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable(onClick = onBack).padding(horizontal = 16.dp)
-                    )
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
+                            contentDescription = stringResource(R.string.back),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
                 }
             )
         }
