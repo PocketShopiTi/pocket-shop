@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.auth.register.presentation
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.auth.register.domain.model.AuthData
 import com.iti.pocketshop.features.auth.register.domain.usecase.RegisterUserUseCase
@@ -36,32 +37,36 @@ class RegisterViewModel @Inject constructor(
                 it.copy(
                     firstNameInput = action.firstName,
                     firstNameError = false,
-                    generalError = null
                 )
             }
 
             is RegisterAction.LastNameChanged -> _state.update {
-                it.copy(lastNameInput = action.lastName, lastNameError = false, generalError = null)
+                it.copy(lastNameInput = action.lastName, lastNameError = false)
             }
 
             is RegisterAction.EmailChanged -> _state.update {
-                it.copy(emailInput = action.email, emailError = false, generalError = null)
+                it.copy(emailInput = action.email, emailError = false)
             }
 
             is RegisterAction.PasswordChanged -> _state.update {
-                it.copy(passwordInput = action.password, passwordError = false, generalError = null)
+                it.copy(passwordInput = action.password, passwordError = false)
             }
 
             is RegisterAction.ConfirmPasswordChanged -> _state.update {
                 it.copy(
                     confirmPasswordInput = action.password,
                     confirmPasswordError = false,
-                    generalError = null,
                 )
             }
 
             RegisterAction.RegisterClicked -> registerUser()
-            RegisterAction.ClearError -> _state.update { it.copy(generalError = null) }
+            RegisterAction.ClearError -> _state.update { it.copy(
+                firstNameError = false,
+                lastNameError = false,
+                emailError = false,
+                passwordError = false,
+                confirmPasswordError = false,
+            ) }
         }
     }
 
@@ -71,7 +76,7 @@ class RegisterViewModel @Inject constructor(
         val lastNameError = current.lastNameInput.isBlank()
         val emailError = current.emailInput.isBlank() ||
                 !Patterns.EMAIL_ADDRESS.matcher(current.emailInput.trim()).matches()
-        val passwordError = current.passwordInput.length < 8
+        val passwordError = current.passwordInput.length < 6
         val confirmPasswordError = current.passwordInput != current.confirmPasswordInput
 
         _state.update {
@@ -86,7 +91,7 @@ class RegisterViewModel @Inject constructor(
         if (firstNameError || lastNameError || emailError || passwordError || confirmPasswordError) return
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, generalError = null) }
+            _state.update { it.copy(isLoading = true) }
             when (
                 val result = registerUserUseCase(
                     AuthData(
@@ -102,8 +107,11 @@ class RegisterViewModel @Inject constructor(
                     _events.send(RegisterEvent.NavigateToVerification)
                 }
 
-                is PocketResult.Error -> _state.update {
-                    it.copy(isLoading = false, generalError = result.error)
+                is PocketResult.Error -> {
+                    _state.update {
+                        it.copy(isLoading = false)
+                    }
+                    ErrorDialogController.sendEvent(result.error)
                 }
             }
         }
