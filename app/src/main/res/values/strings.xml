@@ -156,8 +156,8 @@
     <string name="error_email_already_in_use">An account already uses this email address.</string>
     <string name="error_weak_password">Please choose a stronger password.</string>
     <string name="error_email_not_verified">Verify your email address before continuing.</string>
-    <string name="register_first_name_label">FIRST NAME</string>
-    <string name="register_last_name_label">LAST NAME</string>
+    <string name="register_first_name_label">First Name</string>
+    <string name="register_last_name_label">Last Name</string>
     <string name="register_first_name_placeholder">First Name</string>
     <string name="register_last_name_placeholder">Last Name</string>
     <string name="register_name_required">This name is required</string>
@@ -273,8 +273,7 @@
     <string name="currency_unit">Currency:</string>
     <string name="create_account">Create account</string>
     <string name="join_millions_of_online_shoppers">Join millions of online shoppers!</string>
-    <string name="full_name">Full Name</string>
-    <string name="enter_your_name">Enter your name</string>
+    <string name="enter_first_name">Enter first name</string>
     <string name="email">Email</string>
     <string name="enter_email">Enter email</string>
     <string name="password">Password</string>
@@ -288,8 +287,10 @@
     <string name="already_have_an_account">"Already have an account? "</string>
     <string name="sign_in">Sign in</string>
     <string name="auth_invalid_email">Invalid email</string>
-    <string name="please_enter_your_full_name">Please enter your full name.</string>
+    <string name="please_enter_your_first_name">Please enter your first name.</string>
     <string name="empty_string" />
     <string name="please_enter_a_valid_email">Please enter a valid email</string>
     <string name="passwords_must_match">Passwords must match</string>
+    <string name="enter_last_name">Enter last name</string>
+    <string name="please_enter_your_last_name">Please enter your last name</string>
 </resources>

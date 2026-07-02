@@ -38,13 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -56,10 +51,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.toUserMessage
-import com.iti.pocketshop.features.register.presentation.action.RegisterAction
-import com.iti.pocketshop.features.register.presentation.state.RegisterState
-import com.iti.pocketshop.features.register.presentation.viewmodel.RegisterViewModel
 
 @Composable
 fun RegisterRoot(
@@ -128,7 +119,7 @@ fun RegisterScreen(
                 .padding(innerPadding)
                 .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 24.dp)
         ) {
             item {
@@ -143,26 +134,74 @@ fun RegisterScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = stringResource(R.string.full_name),
+                        text = stringResource(R.string.register_first_name_label),
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onBackground,
                     )
                     OutlinedTextField(
-                        value = state.fullNameInput,
-                        onValueChange = { onAction(RegisterAction.FullNameChanged(it)) },
-                        placeholder = { Text(stringResource(R.string.enter_your_name)) },
+                        value = state.firstNameInput,
+                        onValueChange = { onAction(RegisterAction.FirstNameChanged(it)) },
+                        placeholder = { Text(stringResource(R.string.enter_first_name)) },
                         leadingIcon = {
                             Icon(
                                 imageVector = ImageVector.vectorResource(R.drawable.ic_profile),
                                 contentDescription = null,
                             )
                         },
-                        isError = state.isFullNameError,
+                        isError = state.firstNameError,
                         supportingText = {
                             Text(
                                 stringResource(
-                                    if (state.isFullNameError) {
-                                        R.string.please_enter_your_full_name
+                                    if (state.firstNameError) {
+                                        R.string.please_enter_your_first_name
+                                    } else R.string.empty_string
+                                )
+                            )
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Next
+                        ),
+                        shape = MaterialTheme.shapes.large,
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            errorContainerColor = MaterialTheme.colorScheme.errorContainer.copy(
+                                alpha = 0.15f
+                            ),
+                            errorBorderColor = MaterialTheme.colorScheme.error,
+                            errorLeadingIconColor = MaterialTheme.colorScheme.error,
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.register_last_name_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onBackground,
+                    )
+                    OutlinedTextField(
+                        value = state.lastNameInput,
+                        onValueChange = { onAction(RegisterAction.LastNameChanged(it)) },
+                        placeholder = { Text(stringResource(R.string.enter_last_name)) },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_profile),
+                                contentDescription = null,
+                            )
+                        },
+                        isError = state.lastNameError,
+                        supportingText = {
+                            Text(
+                                stringResource(
+                                    if (state.lastNameError) {
+                                        R.string.please_enter_your_last_name
                                     } else R.string.empty_string
                                 )
                             )
@@ -205,11 +244,11 @@ fun RegisterScreen(
                                 contentDescription = null
                             )
                         },
-                        isError = state.isEmailError,
+                        isError = state.emailError,
                         supportingText = {
                             Text(
                                 stringResource(
-                                    if (state.isEmailError) {
+                                    if (state.emailError) {
                                         R.string.please_enter_a_valid_email
                                     } else R.string.empty_string
                                 )
@@ -263,11 +302,11 @@ fun RegisterScreen(
                                 )
                             }
                         },
-                        isError = state.isPasswordError,
+                        isError = state.passwordError,
                         supportingText = {
                             Text(
                                 stringResource(
-                                    if (state.isPasswordError) {
+                                    if (state.passwordError) {
                                         R.string.error_password_too_short
                                     } else R.string.empty_string
                                 )
@@ -324,11 +363,11 @@ fun RegisterScreen(
                                 )
                             }
                         },
-                        isError = state.isConfirmPasswordError,
+                        isError = state.confirmPasswordError,
                         supportingText = {
                             Text(
                                 stringResource(
-                                    if (state.isConfirmPasswordError) {
+                                    if (state.confirmPasswordError) {
                                         R.string.passwords_must_match
                                     } else R.string.empty_string
                                 )

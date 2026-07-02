@@ -1,6 +1,5 @@
 package com.iti.pocketshop.features.auth.register.presentation
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
 
 data class RegisterState(
     val firstNameInput: String = "",
@@ -14,5 +13,4 @@ data class RegisterState(
     val emailError: Boolean = false,
     val passwordError: Boolean = false,
     val confirmPasswordError: Boolean = false,
-    val generalError: PocketDataError? = null,
 )

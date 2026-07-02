@@ -31,7 +31,6 @@ sealed interface PocketDataError : Error {
         NETWORK_ERROR,
         UnAuthorized,
         NO_INTERNET,
-        USER_DISABLED,
         INVALID_EMAIL,
         UNKNOWN,
         USER_DISABLED,
