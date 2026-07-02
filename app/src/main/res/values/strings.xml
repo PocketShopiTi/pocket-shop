@@ -173,7 +173,7 @@
     <string name="forgot_password_title">Reset your password</string>
     <string name="forgot_password_description">Enter your email and we’ll send reset instructions.</string>
     <string name="forgot_password_submit">Send reset link</string>
-    <string name="reset_link_sent">If an account exists, a reset link was sent.</string>
+    <string name="reset_link_sent">reset link was sent check your inbox and spams.</string>
     <string name="back_to_login">Back to login</string>
     <string name="retry">Retry</string>
     <string name="profile_title">Profile</string>

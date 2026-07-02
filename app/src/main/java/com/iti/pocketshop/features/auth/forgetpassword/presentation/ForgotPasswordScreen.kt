@@ -79,13 +79,14 @@ private fun ForgotPasswordScreen(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 16.dp),
                 )
+            } else {
+                LoginActionButton(
+                    text = stringResource(R.string.forgot_password_submit),
+                    onClick = { onAction(ForgotPasswordAction.Submit) },
+                    enabled = !state.isLoading,
+                    modifier = Modifier.padding(top = 24.dp),
+                )
             }
-            LoginActionButton(
-                text = stringResource(R.string.forgot_password_submit),
-                onClick = { onAction(ForgotPasswordAction.Submit) },
-                enabled = !state.isLoading,
-                modifier = Modifier.padding(top = 24.dp),
-            )
             TextButton(onClick = navigateBack, modifier = Modifier.padding(top = 8.dp)) {
                 Text(stringResource(R.string.back_to_login))
             }

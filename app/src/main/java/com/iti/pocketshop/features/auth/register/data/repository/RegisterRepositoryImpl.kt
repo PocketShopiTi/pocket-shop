@@ -123,9 +123,12 @@ class RegisterRepositoryImpl @Inject constructor(
 
 
     private fun generatePassword(): String {
-        return buildString(PASSWORD_LENGTH) {
-            repeat(PASSWORD_LENGTH) {
-                append(PASSWORD_CHARACTERS[secureRandom.nextInt(PASSWORD_CHARACTERS.length)])
+        val passwordLength = 32
+        val passwordCharacters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%"
+        return buildString(passwordLength) {
+            repeat(passwordLength) {
+                append(passwordCharacters[secureRandom.nextInt(passwordCharacters.length)])
             }
         }
     }
@@ -138,11 +141,6 @@ class RegisterRepositoryImpl @Inject constructor(
         return parts.getOrElse(0) { "" } to parts.getOrElse(1) { "" }
     }
 
-    private companion object {
-        const val PASSWORD_LENGTH = 32
-        const val PASSWORD_CHARACTERS =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#%"
-    }
 
     private val secureRandom = SecureRandom()
 }
