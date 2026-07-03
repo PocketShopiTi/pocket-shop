@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -55,7 +56,7 @@ fun CartItemCard(
             modifier = Modifier
                 .size(94.dp)
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFF3F1ED))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
         ) {
             AsyncImage(
                 model = item.imageUrl,
@@ -90,13 +91,13 @@ fun CartItemCard(
                     Text(
                         text = item.brand.uppercase(Locale.US),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         letterSpacing = 1.sp
                     )
                     Text(
-                        text = "Size: ${item.size}",
+                        text = stringResource(id = R.string.cart_item_size, item.size),
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 
@@ -106,8 +107,8 @@ fun CartItemCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Remove",
-                        tint = Color.Gray,
+                        contentDescription = stringResource(id = R.string.remove),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(20.dp)
                     )
                 }
@@ -130,13 +131,13 @@ fun CartItemCard(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
-                        .background(Color(0xFFF5F5F5))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = "—", // minus
                         modifier = Modifier.clickable { onUpdateQuantity(item.quantity - 1) },
-                        color = if (item.quantity > 1) Color.Black else Color.Gray
+                        color = if (item.quantity > 1) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = item.quantity.toString(),

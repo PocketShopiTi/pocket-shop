@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,12 +69,12 @@ fun CartScreen(
     onAction: (CartAction) -> Unit,
 ) {
     Scaffold(
-        containerColor = Color(0xFFFCFAF8),
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { 
                     Text(
-                        text = "Cart",
+                        text = stringResource(id = R.string.cart),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
@@ -87,12 +88,12 @@ fun CartScreen(
                             .padding(end = 16.dp)
                             .size(28.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFC26642)),
+                            .background(MaterialTheme.colorScheme.primary),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = state.items.size.toString(),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -111,7 +112,7 @@ fun CartScreen(
                         onClick = { onAction(CartAction.CheckoutClicked) },
                         shape = RoundedCornerShape(24.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFC26642)
+                            containerColor = MaterialTheme.colorScheme.primary
                         ),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -124,7 +125,7 @@ fun CartScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Checkout · ${String.format(Locale.US, "$%.2f", state.total)}",
+                            text = stringResource(id = R.string.checkout_total, String.format(Locale.US, "$%.2f", state.total)),
                             fontWeight = FontWeight.Medium,
                             fontSize = 16.sp
                         )
