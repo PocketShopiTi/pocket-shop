@@ -22,12 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.iti.pocketshop.features.home.domain.models.Category
+import com.iti.pocketshop.features.home.domain.models.Brand
 
 
 @Composable
-fun CategoryChip(
-    category: Category,
+fun BrandChip(
+    brand: Brand,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -44,10 +44,10 @@ fun CategoryChip(
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
         ) {
-            if (category.imageUrl != null) {
+            if (brand.imageUrl != null) {
                 AsyncImage(
-                    model = category.imageUrl,
-                    contentDescription = category.imageAlt,
+                    model = brand.imageUrl,
+                    contentDescription = brand.imageAlt,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
@@ -55,7 +55,7 @@ fun CategoryChip(
                 )
             } else {
                 Text(
-                    text = category.title.take(1).uppercase(),
+                    text = brand.title.take(1).uppercase(),
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
@@ -65,7 +65,7 @@ fun CategoryChip(
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text = category.title,
+            text = brand.title,
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Medium,

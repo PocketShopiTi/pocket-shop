@@ -1,4 +1,4 @@
-query GetCategories($first: Int!) {
+query GetBrands($first: Int!) {
     collections(first: $first) {
         nodes {
             id

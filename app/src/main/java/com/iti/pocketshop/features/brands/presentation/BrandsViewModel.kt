@@ -1,11 +1,11 @@
-package com.iti.pocketshop.features.categories.presentation
+package com.iti.pocketshop.features.brands.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
-import com.iti.pocketshop.features.categories.domain.GetCategoriesUseCase
+import com.iti.pocketshop.features.brands.domain.GetBrandsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,37 +16,37 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class CategoriesViewModel @Inject constructor(
-    private val getCategoriesUseCase: GetCategoriesUseCase,
+class BrandsViewModel @Inject constructor(
+    private val getBrandsUseCase: GetBrandsUseCase,
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(CategoriesState())
+    private val _state = MutableStateFlow(BrandsState())
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
-                fetchCategories()
+                fetchBrands()
                 hasLoadedInitialData = true
             }
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = CategoriesState()
+            initialValue = BrandsState()
         )
 
-    fun onAction(action: CategoriesAction) {
+    fun onAction(action: BrandsAction) {
         when (action) {
-            is CategoriesAction.FetchCategories -> fetchCategories()
-            is CategoriesAction.SearchCategories -> {
+            is BrandsAction.FetchBrands -> fetchBrands()
+            is BrandsAction.SearchBrands -> {
                 _state.update {
                     it.copy(
                         searchQuery = action.query,
-                        filteredCategories = if (action.query.isEmpty()) {
-                            it.categories
+                        filteredBrands = if (action.query.isEmpty()) {
+                            it.brands
                         } else {
-                            it.categories.filter { category ->
+                            it.brands.filter { category ->
                                 category.title.contains(action.query, ignoreCase = true)
                             }
                         }
@@ -56,15 +56,15 @@ class CategoriesViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCategories() {
+    private fun fetchBrands() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            getCategoriesUseCase()
+            getBrandsUseCase()
                 .onSuccess { data ->
                     _state.update {
                         it.copy(
-                            categories = data,
-                            filteredCategories = if (it.searchQuery.isEmpty()) data else data.filter { category ->
+                            brands = data,
+                            filteredBrands = if (it.searchQuery.isEmpty()) data else data.filter { category ->
                                 category.title.contains(it.searchQuery, ignoreCase = true)
                             },
                             isLoading = false

@@ -24,7 +24,7 @@ import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDispl
 import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
-import com.iti.pocketshop.features.categories.presentation.CategoriesRoot
+import com.iti.pocketshop.features.brands.presentation.CategoriesRoot
 import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 
 @Composable

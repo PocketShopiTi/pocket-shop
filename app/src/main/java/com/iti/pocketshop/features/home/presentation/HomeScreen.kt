@@ -24,7 +24,7 @@ import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
-import com.iti.pocketshop.features.home.presentation.components.CategoryRow
+import com.iti.pocketshop.features.home.presentation.components.BrandRow
 import com.iti.pocketshop.features.home.presentation.components.EmptyHome
 import com.iti.pocketshop.features.home.presentation.components.HeroBanner
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
@@ -62,7 +62,7 @@ private fun HomeScreen(
     onAction: (HomeAction) -> Unit,
 ) {
     val isEmptyState =
-        state.categories.isEmpty() &&
+        state.brands.isEmpty() &&
                 state.featuredProducts.isEmpty()
     val user = LocalUser.current
     val scope = rememberCoroutineScope()
@@ -98,7 +98,7 @@ private fun HomeScreen(
                 }
 
                 // Categories
-                if (state.categories.isNotEmpty()) {
+                if (state.brands.isNotEmpty()) {
                     item { Spacer(Modifier.height(24.dp)) }
                     item {
                         SectionHeader(
@@ -109,8 +109,8 @@ private fun HomeScreen(
                     }
                     item { Spacer(Modifier.height(12.dp)) }
                     item {
-                        CategoryRow(
-                            categories = state.categories,
+                        BrandRow(
+                            categories = state.brands,
                             onCategoryClick = {
 
                             }

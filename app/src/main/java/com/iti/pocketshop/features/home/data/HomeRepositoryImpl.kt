@@ -15,12 +15,12 @@ class HomeRepositoryImpl @Inject constructor(
         featuredCount: Int,
         bestSellerCount: Int,
         newArrivalsCount: Int,
-        categoryCount: Int,
+        brandCount: Int,
     ): PocketResult<HomeData, PocketDataError.Remote> {
         return remoteSource.getHomeData(
             featuredCount = featuredCount,
             bestSellerCount = bestSellerCount,
-            categoryCount = categoryCount,
+            brandCount = brandCount,
             newArrivalsCount = newArrivalsCount,
         )
     }

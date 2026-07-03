@@ -9,8 +9,6 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.home.domain.GetHomeDataUseCase
-import com.iti.pocketshop.features.home.domain.models.Product
-import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -60,7 +58,7 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { data ->
                     _state.update {
                         it.copy(
-                            categories = data.categories,
+                            brands = data.brands,
                             featuredProducts = data.featuredProducts,
                             bestSellers = data.bestSellers,
                             newArrivals = data.newArrivals

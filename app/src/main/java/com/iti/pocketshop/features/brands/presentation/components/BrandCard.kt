@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.categories.presentation.components
+package com.iti.pocketshop.features.brands.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,13 +25,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.iti.pocketshop.features.categories.domain.models.CategoryItem
+import com.iti.pocketshop.features.brands.domain.models.BrandItem
 import androidx.compose.ui.res.stringResource
 import com.iti.pocketshop.R
 
 @Composable
 fun CategoryCard(
-    category: CategoryItem,
+    category: BrandItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {

@@ -2,10 +2,10 @@ query HomeQuery(
     $featuredCount: Int!
     $bestSellerCount: Int!
     $newArrivalCount: Int!
-    $categoryCount: Int!
+    $brandCount: Int!
 ) {
     # 1. Categories
-    categories: collections(first: $categoryCount) {
+    brands: collections(first: $brandCount) {
         nodes {
             id
             title

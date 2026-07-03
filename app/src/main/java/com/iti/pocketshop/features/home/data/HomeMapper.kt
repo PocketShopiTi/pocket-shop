@@ -8,8 +8,8 @@ import com.iti.pocketshop.shopify.fragment.ProductFields
 fun HomeQuery.Data.toDomain(): HomeData {
     return HomeData(
 
-        categories =
-            categories.nodes.map {
+        brands =
+            brands.nodes.map {
                 it.toDomain()
             },
 
@@ -68,8 +68,8 @@ fun ProductFields.MaxVariantPrice.toDomain(): Money {
     )
 }
 
-fun HomeQuery.Node.toDomain(): Category {
-    return Category(
+fun HomeQuery.Node.toDomain(): Brand {
+    return Brand(
         id = id,
         title = title,
         handle = handle,

@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.home.domain.models
 
 
-data class Category(
+data class Brand(
     val id: String,
     val title: String,
     val handle: String,
