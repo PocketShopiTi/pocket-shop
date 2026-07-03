@@ -30,6 +30,6 @@ interface FavoriteDao {
     @Query("SELECT * FROM favorite_products WHERE userId = :userId")
     suspend fun getFavoritesOnce(userId: String): List<FavoriteProductEntity>
 
-    @Query("DELETE FROM favorite_products WHERE userId = :userId")
-    suspend fun clearFavorites(userId: String)
+    @Query("DELETE FROM favorite_products")
+    suspend fun clearFavorites()
 }

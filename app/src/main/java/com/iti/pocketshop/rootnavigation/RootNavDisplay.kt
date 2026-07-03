@@ -25,6 +25,8 @@ import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDispl
 import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
+import com.iti.pocketshop.features.categories.presentation.CategoriesRoot
+import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 
 @Composable
 fun RootNavDisplay() {
@@ -161,19 +163,19 @@ fun RootNavDisplay() {
                         rootBackStack.navigateSingleTop(Route.Address)
                     },
                     openLogin = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Login)
-                        }
+                        rootBackStack.navigateSingleTop(Route.Login)
                     },
                     openRegister = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Register)
-                        }
+                        rootBackStack.navigateSingleTop(Route.Register)
                     },
                     openSearch = {
                         rootBackStack.navigateSingleTop(Route.SearchNav)
+                    },
+                    openCategories = {
+                        rootBackStack.navigateSingleTop(Route.Categories)
+                    },
+                    openProductList = { type ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(type = type))
                     },
                 )
             }
@@ -210,7 +212,25 @@ fun RootNavDisplay() {
                 AddressRoot(
                     onBack = {
                         rootBackStack.removeLastOrNull()
+                    }
+                )
+            }
+            entry<Route.Categories> {
+                CategoriesRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
+                )
+            }
+            entry<Route.ProductList> {
+                ProductListRoot(
+                    type = it.type,
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
                     },
+                    onProductClick = { id ->
+                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+                    }
                 )
             }
         }

@@ -3,11 +3,11 @@ package com.iti.pocketshop
 import androidx.compose.runtime.compositionLocalOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.common.settings.domain.UserSettingsRepo
 import com.iti.pocketshop.common.settings.domain.models.LanguageSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
-import com.iti.pocketshop.core.sessionmanager.domain.model.UserSession
-import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
+import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted

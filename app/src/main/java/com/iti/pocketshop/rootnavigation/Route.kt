@@ -29,22 +29,22 @@ sealed interface Route : NavKey {
         @Serializable
         data object Home : Route
 
-
         @Serializable
         data object Wishlist : Route
 
         @Serializable
         data object Cart : Route
 
-
         @Serializable
         data object Profile : Route
+
+        @Serializable
+        data object Orders : Route
 
     }
 
     @Serializable
     data class ProductDetails(val id: String) : Route
-
 
     @Serializable
     data object AiChat : Route
@@ -66,4 +66,10 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object Address : Route
+
+    @Serializable
+    data object Categories : Route
+
+    @Serializable
+    data class ProductList(val type: String) : Route
 }

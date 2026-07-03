@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.auth.login.presentation.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +27,9 @@ fun ForgotPasswordLink(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.primary,
             textDecoration = TextDecoration.None,
-            modifier = Modifier.clickableText(onClick)
+            modifier = Modifier.clickable{
+                onClick()
+            }
         )
     }
 }

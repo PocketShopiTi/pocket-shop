@@ -3,7 +3,7 @@ package com.iti.pocketshop.features.auth.login.domain.usecase
 import android.util.Log
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.sessionmanager.domain.repository.CustomerAccessTokenRepository
+import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import com.iti.pocketshop.features.auth.login.domain.model.LoginOutcome
 import com.iti.pocketshop.features.auth.login.domain.repository.LoginRepository
 import com.iti.pocketshop.features.auth.shared.CheckEmailVerificationUseCase

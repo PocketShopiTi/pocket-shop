@@ -22,6 +22,7 @@ import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
+import com.iti.pocketshop.features.orders.presentation.OrdersRoot
 import com.iti.pocketshop.features.profile.presentation.ProfileRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
@@ -32,6 +33,8 @@ fun NestedNavDisplay(
     currentRootRoute: NavKey?,
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
+    openCategories: () -> Unit,
+    openProductList: (String) -> Unit,
     logout: () -> Unit,
     openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
@@ -49,7 +52,10 @@ fun NestedNavDisplay(
         bottomBar = {
             NavigationBar {
                 BottomBarDestination.entries.forEach { destination ->
-                    val isSelected = nestedBackStack.lastOrNull() == destination.route
+                    val currentRoute = nestedBackStack.lastOrNull()
+                    val isSelected = currentRoute == destination.route ||
+                            destination == BottomBarDestination.Profile &&
+                            currentRoute == Route.NestedNav.Orders
                     BottomNavigationButton(
                         onClick = {
                             if (currentUser?.isAnonymous == true && (
@@ -102,7 +108,9 @@ fun NestedNavDisplay(
                 entry<Route.NestedNav.Home> {
                     HomeRoot(
                         openProductDetails = openProductDetails,
-                        openSearch = openSearch
+                        openSearch = openSearch,
+                        openCategories = openCategories,
+                        openProductList = openProductList
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {
@@ -122,7 +130,17 @@ fun NestedNavDisplay(
                         openWishList = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
                         },
+                        openOrders = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Orders)
+                        },
                         logout = logout,
+                    )
+                }
+                entry<Route.NestedNav.Orders> {
+                    OrdersRoot(
+                        onBack = { nestedBackStack.removeLastOrNull() },
+                        onTrack = {},
+                        onView = {},
                     )
                 }
             }

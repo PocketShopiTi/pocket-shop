@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt.android)
-    id("com.google.gms.google-services")
+    alias(libs.plugins.google.services)
     alias(libs.plugins.secrets)
     alias(libs.plugins.apollo)
 }
@@ -80,7 +80,9 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
+        
+        buildConfigField("String", "STORE_FRONT_TOKEN", "\"${localProperties.getProperty("STORE_FRONT_TOKEN", "")}\"")
+        buildConfigField("String", "ADMIN_TOKEN", "\"${localProperties.getProperty("ADMIN_TOKEN", "")}\"")
     }
 
     buildTypes {
