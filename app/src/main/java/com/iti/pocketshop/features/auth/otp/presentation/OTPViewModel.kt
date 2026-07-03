@@ -2,9 +2,9 @@ package com.iti.pocketshop.features.auth.otp.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.sessionmanager.domain.usecase.GetCurrentUserSessionUseCase
+import com.iti.pocketshop.common.sessionmanager.domain.usecase.SignOutUseCase
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.sessionmanager.domain.usecase.GetCurrentUserSessionUseCase
-import com.iti.pocketshop.core.sessionmanager.domain.usecase.SignOutUseCase
 import com.iti.pocketshop.features.auth.otp.domain.ResendVerificationEmailUseCase
 import com.iti.pocketshop.features.auth.shared.CheckEmailVerificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -3,7 +3,7 @@ package com.iti.pocketshop.features.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.ClearFavoritesUseCase
-import com.iti.pocketshop.core.sessionmanager.domain.usecase.SignOutUseCase
+import com.iti.pocketshop.common.sessionmanager.domain.usecase.SignOutUseCase
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
 import com.iti.pocketshop.features.profile.domain.usecase.GetProfileUseCase

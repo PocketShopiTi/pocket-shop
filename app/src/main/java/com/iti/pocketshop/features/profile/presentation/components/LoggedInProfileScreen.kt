@@ -65,12 +65,9 @@ fun LoggedInProfileScreen(
             )
         }
 
-        if (profile.recentOrders.isNotEmpty()) {
-            if (profile.recentOrders.size > 3) {
-                item { RecentOrdersHeader(openOrders) }
-            }
-            item { RecentOrders(profile) }
-        }
+        item { RecentOrdersHeader(openOrders, showSeeAll = profile.recentOrders.size > 3) }
+        item { RecentOrders(profile) }
+
 
         item {
             ProfileActions(
