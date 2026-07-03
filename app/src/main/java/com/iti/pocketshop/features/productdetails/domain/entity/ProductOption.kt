@@ -1,0 +1,21 @@
+package com.iti.pocketshop.features.productdetails.domain.entity
+
+data class ProductOption(
+    val id: String,
+    val name: String,
+    val type: ProductOptionType,
+    val values: List<ProductOptionValue>,
+)
+
+enum class ProductOptionType {
+    COLOR,
+    SIZE,
+    GENERIC,
+}
+
+data class ProductOptionValue(
+    val id: String,
+    val label: String,
+    val swatchArgb: Long? = null,
+    val swatchImage: ProductImage? = null,
+)

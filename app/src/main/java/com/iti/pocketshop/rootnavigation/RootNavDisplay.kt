@@ -6,57 +6,45 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation3.runtime.NavKey
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
+import com.iti.pocketshop.core.components.SignInDialog
 import com.iti.pocketshop.features.aichat.AiChatRoot
-import com.iti.pocketshop.features.login.LoginRoot
-import com.iti.pocketshop.features.onboarding.OnboardingRoot
+import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
+import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
+import com.iti.pocketshop.features.auth.otp.presentation.EmailVerificationRoot
+import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
+import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
-import com.iti.pocketshop.features.otp.OTPRoot
-import com.iti.pocketshop.features.productdetails.ProductDetailsRoot
-import com.iti.pocketshop.features.register.RegisterRoot
-import com.iti.pocketshop.features.search.SearchRoot
-import com.iti.pocketshop.features.settings.SettingsRoot
+import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
+import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
+import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
+import com.iti.pocketshop.features.splash.presention.SplashRoot
+import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 import com.iti.pocketshop.features.categories.presentation.CategoriesRoot
 import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
-import com.iti.pocketshop.nestednavigation.NestedNavDisplay
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
 
 @Composable
 fun RootNavDisplay() {
 
-    val rootBackStack = rememberNavBackStack(
-        configuration = SavedStateConfiguration {
-            serializersModule = SerializersModule {
-                polymorphic(NavKey::class) {
-                    subclass(Route.Onboarding::class, Route.Onboarding.serializer())
-                    subclass(Route.Login::class, Route.Login.serializer())
-                    subclass(Route.OTP::class, Route.OTP.serializer())
-                    subclass(Route.Register::class, Route.Register.serializer())
-                    subclass(Route.NestedNav::class, Route.NestedNav.serializer())
-                    subclass(Route.ProductDetails::class, Route.ProductDetails.serializer())
-                    subclass(Route.AiChat::class, Route.AiChat.serializer())
-                    subclass(Route.OrderCheckout::class, Route.OrderCheckout.serializer())
-                    subclass(Route.Settings::class, Route.Settings.serializer())
-                    subclass(Route.Search::class, Route.Search.serializer())
-                    subclass(Route.Categories::class, Route.Categories.serializer())
-                    subclass(Route.ProductList::class, Route.ProductList.serializer())
-                }
-            }
-        },
-        Route.Onboarding
-    )
+    val rootBackStack = rememberNavBackStack(Route.Splash)
+
+    fun openProductDetails(id: String) {
+        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+    }
 
     NavDisplay(
         modifier = Modifier.fillMaxSize(),
         backStack = rootBackStack,
+        onBack = {
+            rootBackStack.removeLastOrNull()
+        },
         entryDecorators = listOf(
             rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
         ),
         transitionSpec = {
             slideIntoContainer(
@@ -67,7 +55,26 @@ fun RootNavDisplay() {
                 animationSpec = tween(350)
             )
         },
+        popTransitionSpec = {
+            slideIntoContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(350)
+            ) togetherWith slideOutOfContainer(
+                towards = AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(350)
+            )
+        },
         entryProvider = entryProvider {
+            entry<Route.Splash> {
+                SplashRoot(
+                    showNextScreen = { nextScreen ->
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(nextScreen)
+                        }
+                    }
+                )
+            }
             entry<Route.Onboarding> {
                 OnboardingRoot(
                     openLogin = {
@@ -80,37 +87,29 @@ fun RootNavDisplay() {
             }
             entry<Route.Login> {
                 LoginRoot(
-                    openOTP = {
-                        rootBackStack.apply {
-                            navigateSingleTop(Route.OTP)
-                        }
-                    },
-                )
-            }
-            entry<Route.OTP> {
-                OTPRoot(
                     openHome = {
                         rootBackStack.apply {
                             clear()
                             navigateSingleTop(Route.NestedNav)
+                        }
+                    },
+                    openVerification = {
+                        rootBackStack.apply {
+                            navigateSingleTop(Route.EmailVerification)
                         }
                     },
                     openRegister = {
                         rootBackStack.apply {
-                            clear()
                             navigateSingleTop(Route.Register)
                         }
+                    },
+                    openForgotPassword = {
+                        rootBackStack.navigateSingleTop(Route.ForgotPassword)
                     }
                 )
             }
-            entry<Route.Register> {
-                RegisterRoot(
-                    openHome = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.NestedNav)
-                        }
-                    },
+            entry<Route.EmailVerification> {
+                EmailVerificationRoot(
                     openLogin = {
                         rootBackStack.apply {
                             clear()
@@ -119,11 +118,35 @@ fun RootNavDisplay() {
                     }
                 )
             }
+            entry<Route.ForgotPassword> {
+                ForgotPasswordRoot(
+                    navigateBack = { rootBackStack.removeLastOrNull() }
+                )
+            }
+            entry<Route.Register> {
+                RegisterRoot(
+                    openVerification = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.EmailVerification)
+                        }
+                    },
+                    openLogin = {
+                        rootBackStack.apply {
+                            navigateSingleTop(Route.Login)
+                            rootBackStack.remove(Route.Register)
+                        }
+                    },
+                    navigateBack = {
+                        rootBackStack.popIfCurrentIs<Route.Register>()
+                    }
+                )
+            }
             entry<Route.NestedNav> {
                 NestedNavDisplay(
                     currentRootRoute = rootBackStack.lastOrNull(),
                     navigateBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.NestedNav>()
                     },
                     logout = {
                         rootBackStack.apply {
@@ -131,14 +154,18 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     },
-                    openServiceOrder = { id ->
-                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
-                    },
+                    openProductDetails = { id -> openProductDetails(id) },
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
+                    openLogin = {
+                        rootBackStack.navigateSingleTop(Route.Login)
+                    },
+                    openRegister = {
+                        rootBackStack.navigateSingleTop(Route.Register)
+                    },
                     openSearch = {
-                        rootBackStack.navigateSingleTop(Route.Search)
+                        rootBackStack.navigateSingleTop(Route.SearchNav)
                     },
                     openCategories = {
                         rootBackStack.navigateSingleTop(Route.Categories)
@@ -155,7 +182,7 @@ fun RootNavDisplay() {
                 ProductDetailsRoot(
                     productId = it.id,
                     onBack = {
-                        rootBackStack.removeLastOrNull()
+                        rootBackStack.popIfCurrentIs<Route.ProductDetails>()
                     }
                 )
             }
@@ -163,10 +190,19 @@ fun RootNavDisplay() {
                 OrderCheckoutRoot()
             }
             entry<Route.Settings> {
-                SettingsRoot()
+                SettingsRoot(
+                    onBack = {
+                        rootBackStack.popIfCurrentIs<Route.Settings>()
+                    }
+                )
             }
-            entry<Route.Search> {
-                SearchRoot()
+            entry<Route.SearchNav> {
+                SearchNavDisplay(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    openProductDetails = { id -> openProductDetails(id) }
+                )
             }
             entry<Route.Categories> {
                 CategoriesRoot(
@@ -186,6 +222,12 @@ fun RootNavDisplay() {
                     }
                 )
             }
+        }
+    )
+
+    SignInDialog(
+        onSignIn = {
+            rootBackStack.navigateSingleTop(Route.Login)
         }
     )
 }
