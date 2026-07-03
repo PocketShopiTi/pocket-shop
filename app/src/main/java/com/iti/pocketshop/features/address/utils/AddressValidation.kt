@@ -2,137 +2,157 @@ package com.iti.pocketshop.features.address.utils
 
 import com.iti.pocketshop.features.address.presentation.state.AddressEditorState
 import com.iti.pocketshop.features.address.presentation.state.AddressField
+import com.iti.pocketshop.features.address.presentation.state.PhoneCountryCode
 import java.util.Locale
 
-internal fun validateAddressEditor(editor: AddressEditorState): Map<AddressField, String> {
+internal fun validateAddressEditor(
+    editor: AddressEditorState,
+    strings: AddressValidationStrings,
+): Map<AddressField, String> {
     val errors = linkedMapOf<AddressField, String>()
 
     if (editor.firstName.isBlank()) {
-        errors[AddressField.FIRST_NAME] = "First name is required."
+        errors[AddressField.FIRST_NAME] = strings.firstNameRequired
     }
     if (editor.lastName.isBlank()) {
-        errors[AddressField.LAST_NAME] = "Last name is required."
+        errors[AddressField.LAST_NAME] = strings.lastNameRequired
     }
     if (editor.address1.isBlank()) {
-        errors[AddressField.ADDRESS1] = "Street address is required."
+        errors[AddressField.ADDRESS1] = strings.streetAddressRequired
     }
     if (editor.city.isBlank()) {
-        errors[AddressField.CITY] = "City is required."
+        errors[AddressField.CITY] = strings.cityRequired
     }
     if (editor.country.isBlank()) {
-        errors[AddressField.COUNTRY] = "Country is required."
+        errors[AddressField.COUNTRY] = strings.countryRequired
     }
 
-    validatePhone(editor.country, editor.phone)?.let { message ->
+    validatePhone(editor.phoneCountryCode, editor.phone, strings)?.let { message ->
         errors[AddressField.PHONE] = message
     }
 
-    validatePostalCode(editor.country, editor.zip)?.let { message ->
+    validatePostalCode(editor.country, editor.zip, strings)?.let { message ->
         errors[AddressField.ZIP] = message
     }
 
     return errors
 }
 
-private fun validatePhone(country: String, phone: String): String? {
+private fun validatePhone(
+    phoneCountryCode: PhoneCountryCode,
+    phone: String,
+    strings: AddressValidationStrings,
+): String? {
     val trimmed = phone.trim()
     if (trimmed.isBlank()) {
-        return "Phone number is required."
+        return strings.phoneRequired
     }
 
-    val normalizedPhone = normalizePhone(trimmed)
-    val countryKey = normalizeCountry(country)
-
-    return when {
-        countryKey in setOf("united states", "usa", "us", "united states of america", "canada", "ca") ->
-            if (Regex("^\\+1\\d{10}$").matches(normalizedPhone) ||
-                Regex("^1?\\d{10}$").matches(normalizedPhone)
-            ) {
-                null
-            } else {
-                "Enter a valid phone number for ${countryLabel(country)}."
-            }
-
-        countryKey in setOf("united kingdom", "uk", "great britain", "britain") ->
-            if (Regex("^\\+44\\d{9,10}$").matches(normalizedPhone) ||
-                Regex("^0\\d{9,10}$").matches(normalizedPhone)
-            ) {
-                null
-            } else {
-                "Enter a valid phone number for ${countryLabel(country)}."
-            }
-
-        countryKey in setOf("egypt", "eg", "arab republic of egypt") ->
-            if (Regex("^\\+20\\d{10}$").matches(normalizedPhone) ||
-                Regex("^01\\d{9}$").matches(normalizedPhone)
-            ) {
-                null
-            } else {
-                "Enter a valid phone number for ${countryLabel(country)}."
-            }
-
-        countryKey in setOf("saudi arabia", "sa", "kingdom of saudi arabia") ->
-            if (Regex("^\\+9665\\d{8}$").matches(normalizedPhone) ||
-                Regex("^05\\d{8}$").matches(normalizedPhone)
-            ) {
-                null
-            } else {
-                "Enter a valid phone number for ${countryLabel(country)}."
-            }
-
-        else ->
-            if (Regex("^\\+[1-9]\\d{7,14}$").matches(normalizedPhone)) {
-                null
-            } else {
-                "Enter a valid international phone number."
-            }
+    return if (phoneCountryCode.matches(trimmed)) {
+        null
+    } else {
+        when (phoneCountryCode) {
+            PhoneCountryCode.INTERNATIONAL -> strings.internationalPhoneInvalid
+            else -> strings.phoneInvalidFor(strings.phoneCountryLabel(phoneCountryCode))
+        }
     }
 }
 
-private fun validatePostalCode(country: String, postalCode: String): String? {
+private fun validatePostalCode(
+    country: String,
+    postalCode: String,
+    strings: AddressValidationStrings,
+): String? {
     val trimmed = postalCode.trim()
+    val normalized = normalizePostalCode(trimmed)
+    val postalCountry = resolvePostalCountry(country)
+
     if (trimmed.isBlank()) {
-        return "Postal code is required."
+        return strings.postalCodeRequired
     }
 
-    val upper = trimmed.uppercase(Locale.US)
-    val countryKey = normalizeCountry(country)
+    val isValid = when (postalCountry) {
+        PostalCountry.UNITED_STATES ->
+            Regex("^\\d{5}(\\d{4})?$").matches(normalized)
 
-    val isValid = when {
-        countryKey in setOf("united states", "usa", "us", "united states of america") ->
-            Regex("^\\d{5}(-\\d{4})?$").matches(upper)
+        PostalCountry.CANADA ->
+            Regex("^[A-Z]\\d[A-Z]\\d[A-Z]\\d$").matches(normalized)
 
-        countryKey in setOf("canada", "ca") ->
-            Regex("^[A-Z]\\d[A-Z][ -]?\\d[A-Z]\\d$").matches(upper)
+        PostalCountry.UNITED_KINGDOM ->
+            Regex("^(GIR0AA|[A-Z]{1,2}\\d[A-Z\\d]?\\d[A-Z]{2})$").matches(normalized)
 
-        countryKey in setOf("united kingdom", "uk", "great britain", "britain") ->
-            Regex("^(GIR ?0AA|[A-Z]{1,2}\\d[A-Z\\d]? ?\\d[A-Z]{2})$").matches(upper)
+        PostalCountry.EGYPT,
+        PostalCountry.SAUDI_ARABIA ->
+            Regex("^\\d{5}$").matches(normalized)
 
-        countryKey in setOf("egypt", "eg", "arab republic of egypt", "saudi arabia", "sa", "kingdom of saudi arabia") ->
-            Regex("^\\d{5}$").matches(upper)
-
-        else -> upper.length >= 3 && upper.any(Char::isLetterOrDigit)
+        null ->
+            normalized.length >= 3 && normalized.any(Char::isLetterOrDigit)
     }
 
-    return if (isValid) null else {
-        "Enter a valid postal code for ${countryLabel(country)}."
+    return if (isValid) {
+        null
+    } else {
+        strings.postalCodeInvalidFor(countryLabel(country, strings))
     }
 }
 
-private fun normalizePhone(phone: String): String {
-    return phone
-        .replace(Regex("[\\s\\-().]"), "")
-        .trim()
+private fun normalizePostalCode(postalCode: String): String {
+    return buildString(postalCode.length) {
+        postalCode.forEach { char ->
+            when {
+                char.isDigit() -> {
+                    val digit = Character.getNumericValue(char)
+                    if (digit in 0..9) {
+                        append(digit)
+                    }
+                }
+
+                char.isLetter() -> append(char.uppercaseChar())
+            }
+        }
+    }
 }
 
-private fun normalizeCountry(country: String): String {
-    return country
-        .trim()
+private fun resolvePostalCountry(country: String): PostalCountry? {
+    val trimmed = country.trim()
+    val normalized = trimmed
         .lowercase(Locale.US)
         .replace(Regex("[^a-z0-9]+"), " ")
         .trim()
+
+    return when {
+        normalized in setOf("united states", "usa", "us", "united states of america") ||
+                trimmed in setOf("الولايات المتحدة", "الولايات المتحدة الامريكية") ->
+            PostalCountry.UNITED_STATES
+
+        normalized in setOf("canada", "ca") ||
+                trimmed == "كندا" ->
+            PostalCountry.CANADA
+
+        normalized in setOf("united kingdom", "uk", "great britain", "britain") ||
+                trimmed in setOf("المملكة المتحدة", "بريطانيا") ->
+            PostalCountry.UNITED_KINGDOM
+
+        normalized in setOf("egypt", "eg", "arab republic of egypt") ||
+                trimmed in setOf("مصر", "جمهورية مصر العربية") ->
+            PostalCountry.EGYPT
+
+        normalized in setOf("saudi arabia", "sa", "kingdom of saudi arabia") ||
+                trimmed in setOf("السعودية", "المملكة العربية السعودية") ->
+            PostalCountry.SAUDI_ARABIA
+
+        else -> null
+    }
 }
 
-private fun countryLabel(country: String): String {
-    return country.trim().ifBlank { "the selected country" }
+private fun countryLabel(country: String, strings: AddressValidationStrings): String {
+    return country.trim().ifBlank { strings.selectedCountryFallback }
+}
+
+private enum class PostalCountry {
+    UNITED_STATES,
+    CANADA,
+    UNITED_KINGDOM,
+    EGYPT,
+    SAUDI_ARABIA,
 }

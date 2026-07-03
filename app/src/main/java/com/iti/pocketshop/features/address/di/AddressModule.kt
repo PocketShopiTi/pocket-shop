@@ -7,6 +7,8 @@ import com.iti.pocketshop.features.address.data.datasource.AddressLocationRemote
 import com.iti.pocketshop.features.address.data.datasource.CurrentLocationDataSource
 import com.iti.pocketshop.features.address.data.datasource.CurrentLocationDataSourceImpl
 import com.iti.pocketshop.features.address.data.repository.AddressRepositoryImpl
+import com.iti.pocketshop.features.address.data.repository.AddressRepositoryStrings
+import com.iti.pocketshop.features.address.data.repository.AndroidAddressRepositoryStrings
 import com.iti.pocketshop.features.address.domain.repository.AddressRepository
 import dagger.Binds
 import dagger.Module
@@ -41,4 +43,10 @@ abstract class AddressModule {
     abstract fun bindAddressRepository(
         impl: AddressRepositoryImpl,
     ): AddressRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAddressRepositoryStrings(
+        impl: AndroidAddressRepositoryStrings,
+    ): AddressRepositoryStrings
 }

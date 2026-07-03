@@ -37,6 +37,11 @@ internal fun reduceAddressState(
         error = null,
     )
 
+    is AddressAction.PhoneCountryChanged -> state.copy(
+        editor = state.editor.withPhoneCountryCode(action.countryCode),
+        error = null,
+    )
+
     is AddressAction.LocationSearchChanged -> state.copy(
         editor = state.editor.withLocationSearch(action.query),
         error = null,

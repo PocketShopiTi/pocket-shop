@@ -45,7 +45,7 @@ internal fun AddressTopBar(
                 text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
-                fontFamily = FontFamily.Serif, // Matching the mockup's serif-like title
+                fontFamily = FontFamily.Serif,
                 color = extendedColors.textPrimary,
             )
         },

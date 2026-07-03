@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.address.presentation.view.component
 
+import android.preference.PreferenceManager
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,27 +24,34 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.iti.pocketshop.R
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
-import com.iti.pocketshop.ui.theme.LocalExtendedColors
+import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.Marker
+
 
 @Composable
 internal fun MapPreviewCard(
@@ -51,69 +59,71 @@ internal fun MapPreviewCard(
     longitude: Double?,
     isLoading: Boolean,
     enabled: Boolean,
-    hasMapsKey: Boolean,
+    isExpanded: Boolean,
+    onToggleExpanded: () -> Unit,
+    errorMessage: String?,
     onLocationPicked: (Double, Double) -> Unit,
 ) {
-    val extendedColors = LocalExtendedColors.current
-    val selectedLocation = latitude?.let { lat ->
-        longitude?.let { lng ->
-            LatLng(lat, lng)
-        }
+    val colorScheme = MaterialTheme.colorScheme
+
+    val defaultLatitude = stringResource(R.string.address_map_default_latitude).toDouble()
+    val defaultLongitude = stringResource(R.string.address_map_default_longitude).toDouble()
+    val defaultZoom = stringResource(R.string.address_map_default_zoom).toDouble()
+
+    val hasSelection = latitude != null && longitude != null
+    val cameraTarget = if (latitude != null && longitude != null) {
+        GeoPoint(latitude, longitude)
+    } else {
+        GeoPoint(defaultLatitude, defaultLongitude)
     }
-    val defaultLocation = LatLng(
-        stringResource(R.string.address_map_default_latitude).toDouble(),
-        stringResource(R.string.address_map_default_longitude).toDouble(),
+    val mapHeight by animateDpAsState(
+        targetValue = if (isExpanded) 320.dp else 180.dp,
+        label = "mapHeight",
     )
-    val defaultZoom = stringResource(R.string.address_map_default_zoom).toFloat()
-    val cameraTarget = selectedLocation ?: defaultLocation
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-            text = stringResource(R.string.address_map_title),
-            color = extendedColors.textSecondary,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 1.sp,
+        SectionTitle(
+            title = stringResource(R.string.address_map_title),
         )
+
+        TextButton(
+            onClick = onToggleExpanded,
+            enabled = enabled,
+            modifier = Modifier.align(Alignment.End),
+        ) {
+            Text(
+                text = stringResource(
+                    if (isExpanded) {
+                        R.string.address_map_collapse
+                    } else {
+                        R.string.address_map_expand
+                    },
+                ),
+            )
+        }
 
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp),
+                .height(mapHeight),
             shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(1.dp, extendedColors.outline),
+            border = BorderStroke(1.dp, colorScheme.outlineVariant),
             colors = CardDefaults.cardColors(
-                containerColor = extendedColors.surface,
+                containerColor = colorScheme.surfaceContainerHigh,
             ),
         ) {
-            if (!hasMapsKey) {
-                MapUnavailablePlaceholder()
+            if (!errorMessage.isNullOrBlank()) {
+                MapErrorPlaceholder(errorMessage)
             } else {
-                val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(cameraTarget, defaultZoom)
-                }
-
-                LaunchedEffect(cameraTarget.latitude, cameraTarget.longitude) {
-                    cameraPositionState.position = CameraPosition.fromLatLngZoom(cameraTarget, defaultZoom)
-                }
-
                 Box(modifier = Modifier.fillMaxSize()) {
-                    GoogleMap(
+                    OsmMapView(
                         modifier = Modifier.fillMaxSize(),
-                        cameraPositionState = cameraPositionState,
-                        onMapClick = { latLng ->
-                            if (enabled) onLocationPicked(latLng.latitude, latLng.longitude)
-                        },
-                        uiSettings = MapUiSettings(
-                            zoomControlsEnabled = false,
-                            mapToolbarEnabled = false,
-                            myLocationButtonEnabled = false,
-                        ),
-                    ) {
-                        selectedLocation?.let { location ->
-                            Marker(state = MarkerState(position = location))
-                        }
-                    }
+                        target = cameraTarget,
+                        zoom = defaultZoom,
+                        marker = if (hasSelection) cameraTarget else null,
+                        enabled = enabled,
+                        onLocationPicked = onLocationPicked,
+                    )
 
                     if (isLoading) {
                         Box(
@@ -122,14 +132,14 @@ internal fun MapPreviewCard(
                                 .background(Color.Black.copy(alpha = 0.12f)),
                             contentAlignment = Alignment.Center,
                         ) {
-                            CircularProgressIndicator(color = extendedColors.primary)
+                            CircularProgressIndicator(color = colorScheme.primary)
                         }
                     }
                 }
             }
         }
 
-        if (selectedLocation != null) {
+        if (hasSelection && errorMessage.isNullOrBlank()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(start = 4.dp, top = 4.dp),
@@ -137,17 +147,17 @@ internal fun MapPreviewCard(
                 Icon(
                     imageVector = Icons.Filled.CheckCircle,
                     contentDescription = null,
-                    tint = extendedColors.success,
+                    tint = colorScheme.primary,
                     modifier = Modifier.size(14.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = stringResource(
                         R.string.address_map_coordinates,
-                        selectedLocation.latitude,
-                        selectedLocation.longitude,
+                        latitude,
+                        longitude,
                     ),
-                    color = extendedColors.textSecondary,
+                    color = colorScheme.onSurfaceVariant,
                     fontSize = 12.sp,
                 )
             }
@@ -155,14 +165,97 @@ internal fun MapPreviewCard(
     }
 }
 
+
 @Composable
-private fun MapUnavailablePlaceholder() {
-    val extendedColors = LocalExtendedColors.current
+private fun OsmMapView(
+    modifier: Modifier,
+    target: GeoPoint,
+    zoom: Double,
+    marker: GeoPoint?,
+    enabled: Boolean,
+    onLocationPicked: (Double, Double) -> Unit,
+) {
+    val context = LocalContext.current
+
+    val mapView = remember(target.latitude, target.longitude, zoom) {
+
+        Configuration.getInstance().load(
+            context,
+            PreferenceManager.getDefaultSharedPreferences(context),
+        )
+        Configuration.getInstance().userAgentValue = context.packageName
+
+        MapView(context).apply {
+            setTileSource(TileSourceFactory.MAPNIK)
+            setMultiTouchControls(true)
+            controller.setZoom(zoom)
+            controller.setCenter(target)
+        }
+    }
+
+    val markerOverlay = remember(mapView) { Marker(mapView) }
+
+    DisposableEffect(mapView) {
+        onDispose {
+            mapView.onDetach()
+        }
+    }
+
+    AndroidView(
+        modifier = modifier,
+        factory = {
+            mapView.overlays.add(
+                MapEventsOverlay(
+                    object : MapEventsReceiver {
+                        override fun singleTapConfirmedHelper(p: GeoPoint): Boolean {
+                            if (enabled) {
+                                onLocationPicked(p.latitude, p.longitude)
+                            }
+                            return true
+                        }
+
+                        override fun longPressHelper(p: GeoPoint): Boolean = false
+                    },
+                ),
+            )
+            mapView
+        },
+        update = { view ->
+            view.controller.setZoom(zoom)
+            view.controller.setCenter(target)
+
+            view.overlays.remove(markerOverlay)
+            if (marker != null) {
+                markerOverlay.position = marker
+                markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                view.overlays.add(markerOverlay)
+            }
+            view.invalidate()
+        },
+    )
+}
+
+@Composable
+private fun MapErrorPlaceholder(message: String) {
+    MapStatusPlaceholder(
+        title = stringResource(R.string.address_map_error_title),
+        subtitle = message,
+        iconTint = MaterialTheme.colorScheme.error,
+    )
+}
+
+@Composable
+private fun MapStatusPlaceholder(
+    title: String,
+    subtitle: String,
+    iconTint: Color,
+) {
+    val colorScheme = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(extendedColors.surfaceVariant),
+            .background(colorScheme.surfaceVariant),
     ) {
         Column(
             modifier = Modifier
@@ -175,27 +268,29 @@ private fun MapUnavailablePlaceholder() {
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(extendedColors.surface),
+                    .background(colorScheme.surface),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = Icons.Filled.Place,
                     contentDescription = null,
-                    tint = extendedColors.primary,
+                    tint = iconTint,
                 )
             }
             Text(
-                text = stringResource(R.string.address_map_picker_unavailable_title),
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
-                color = extendedColors.textPrimary,
+                color = colorScheme.onSurface,
             )
             Text(
-                text = stringResource(R.string.address_map_picker_unavailable_subtitle),
-                color = extendedColors.textSecondary,
+                text = subtitle,
+                color = colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 fontSize = 13.sp,
+                maxLines = 4,
+                overflow = TextOverflow.Ellipsis,
             )
         }
     }

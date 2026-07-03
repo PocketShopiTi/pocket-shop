@@ -13,6 +13,10 @@ sealed interface AddressError : Error {
     data object LocationPermissionDenied : AddressError
     data object CurrentLocationUnavailable : AddressError
     data class Remote(val error: PocketDataError.Remote) : AddressError
+    data class MapsService(
+        val remoteError: PocketDataError.Remote? = null,
+        val detailMessage: String? = null,
+    ) : AddressError
     data class Shopify(val messages: List<String>) : AddressError
 }
 
@@ -34,6 +38,17 @@ fun AddressError.toUiMessage(context: Context): String = when (this) {
 
     is AddressError.Remote ->
         error.toUserMessage(context)
+
+    is AddressError.MapsService -> {
+        val baseMessage = remoteError?.toUserMessage(context)
+            ?: context.getString(R.string.address_error_maps_service)
+        val detail = detailMessage?.trim().orEmpty()
+        if (detail.isBlank()) {
+            baseMessage
+        } else {
+            "$baseMessage: $detail"
+        }
+    }
 
     is AddressError.Shopify ->
         messages.firstOrNull()?.takeIf { it.isNotBlank() }

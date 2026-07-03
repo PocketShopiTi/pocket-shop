@@ -33,6 +33,7 @@ class AddressRepositoryImpl @Inject constructor(
     private val currentLocationDataSource: CurrentLocationDataSource,
     private val tokenProvider: CustomerAccessTokenProvider,
     @Named("mapsApiKey") private val mapsApiKey: String,
+    private val strings: AddressRepositoryStrings,
 ) : AddressRepository {
 
     override suspend fun getAddresses(): PocketResult<AddressBook, AddressError> {
@@ -44,9 +45,7 @@ class AddressRepositoryImpl @Inject constructor(
             is PocketResult.Error -> PocketResult.Error(result.error.toAddressError())
             is PocketResult.Success -> {
                 val customer = result.data.customer ?: return PocketResult.Error(
-                    AddressError.Shopify(
-                        listOf("Customer account was not found for this token."),
-                    ),
+                    AddressError.Shopify(listOf(strings.customerAccountNotFound)),
                 )
                 val defaultAddressId = customer.defaultAddress?.id
                 val addresses = customer.addresses.nodes
@@ -99,9 +98,7 @@ class AddressRepositoryImpl @Inject constructor(
                 is PocketResult.Error -> return PocketResult.Error(result.error.toAddressError())
                 is PocketResult.Success -> {
                     val payload = result.data.customerAddressCreate ?: return PocketResult.Error(
-                        AddressError.Shopify(
-                            listOf("Shopify did not return the saved address."),
-                        ),
+                        AddressError.Shopify(listOf(strings.missingSavedAddress)),
                     )
                     val userErrors = payload.customerUserErrors
                         .map { it.message }
@@ -110,9 +107,7 @@ class AddressRepositoryImpl @Inject constructor(
                         return PocketResult.Error(AddressError.Shopify(userErrors))
                     }
                     val customerAddress = payload.customerAddress ?: return PocketResult.Error(
-                        AddressError.Shopify(
-                            listOf("Shopify did not return the saved address."),
-                        ),
+                        AddressError.Shopify(listOf(strings.missingSavedAddress)),
                     )
                     customerAddress.toDomain(isDefault = draft.isDefault)
                 }
@@ -122,9 +117,7 @@ class AddressRepositoryImpl @Inject constructor(
                 is PocketResult.Error -> return PocketResult.Error(result.error.toAddressError())
                 is PocketResult.Success -> {
                     val payload = result.data.customerAddressUpdate ?: return PocketResult.Error(
-                        AddressError.Shopify(
-                            listOf("Shopify did not return the updated address."),
-                        ),
+                        AddressError.Shopify(listOf(strings.missingUpdatedAddress)),
                     )
                     val userErrors = payload.customerUserErrors
                         .map { it.message }
@@ -133,9 +126,7 @@ class AddressRepositoryImpl @Inject constructor(
                         return PocketResult.Error(AddressError.Shopify(userErrors))
                     }
                     val customerAddress = payload.customerAddress ?: return PocketResult.Error(
-                        AddressError.Shopify(
-                            listOf("Shopify did not return the updated address."),
-                        ),
+                        AddressError.Shopify(listOf(strings.missingUpdatedAddress)),
                     )
                     customerAddress.toDomain(isDefault = draft.isDefault)
                 }
@@ -161,7 +152,7 @@ class AddressRepositoryImpl @Inject constructor(
             is PocketResult.Error -> PocketResult.Error(result.error.toAddressError())
             is PocketResult.Success -> {
                 val payload = result.data.customerAddressDelete ?: return PocketResult.Error(
-                    AddressError.Shopify(listOf("Shopify did not confirm the deleted address.")),
+                    AddressError.Shopify(listOf(strings.missingDeletedAddress)),
                 )
                 val userErrors = payload.customerUserErrors
                     .map { it.message }
@@ -184,7 +175,7 @@ class AddressRepositoryImpl @Inject constructor(
             is PocketResult.Error -> PocketResult.Error(result.error.toAddressError())
             is PocketResult.Success -> {
                 val payload = result.data.customerDefaultAddressUpdate ?: return PocketResult.Error(
-                    AddressError.Shopify(listOf("Shopify did not confirm the default address update.")),
+                    AddressError.Shopify(listOf(strings.missingDefaultUpdate)),
                 )
                 val userErrors = payload.customerUserErrors
                     .map { it.message }
@@ -201,10 +192,6 @@ class AddressRepositoryImpl @Inject constructor(
     override suspend fun searchSuggestions(
         query: String,
     ): PocketResult<List<AddressLocationSuggestion>, AddressError> {
-        if (mapsApiKey.isBlank()) {
-            return PocketResult.Error(AddressError.MissingMapsApiKey)
-        }
-
         if (query.isBlank()) {
             return PocketResult.Success(emptyList())
         }
@@ -218,10 +205,6 @@ class AddressRepositoryImpl @Inject constructor(
     override suspend fun resolveSuggestion(
         placeId: String,
     ): PocketResult<AddressLocationDetails, AddressError> {
-        if (mapsApiKey.isBlank()) {
-            return PocketResult.Error(AddressError.MissingMapsApiKey)
-        }
-
         return when (val result = addressLocationRemoteDataSource.resolveSuggestion(placeId, mapsApiKey)) {
             is PocketResult.Error -> PocketResult.Error(result.error.toAddressError())
             is PocketResult.Success -> result.data.toDomainDetails()
@@ -232,10 +215,6 @@ class AddressRepositoryImpl @Inject constructor(
         latitude: Double,
         longitude: Double,
     ): PocketResult<AddressLocationDetails, AddressError> {
-        if (mapsApiKey.isBlank()) {
-            return PocketResult.Error(AddressError.MissingMapsApiKey)
-        }
-
         return when (val result = addressLocationRemoteDataSource.reverseGeocode(latitude, longitude, mapsApiKey)) {
             is PocketResult.Error -> PocketResult.Error(result.error.toAddressError())
             is PocketResult.Success -> result.data.toDomainGeocodeDetails()
@@ -277,13 +256,19 @@ class AddressRepositoryImpl @Inject constructor(
             }
 
             "OVER_QUERY_LIMIT" ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.TOO_MANY_REQUESTS))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.TOO_MANY_REQUESTS),
+                )
 
             "REQUEST_DENIED", "INVALID_REQUEST" ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.SERVER))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.SERVER),
+                )
 
             else ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.UNKNOWN))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.UNKNOWN),
+                )
         }
     }
 
@@ -299,13 +284,19 @@ class AddressRepositoryImpl @Inject constructor(
                 PocketResult.Error(AddressError.LocationNotFound)
 
             "OVER_QUERY_LIMIT" ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.TOO_MANY_REQUESTS))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.TOO_MANY_REQUESTS),
+                )
 
             "REQUEST_DENIED", "INVALID_REQUEST" ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.SERVER))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.SERVER),
+                )
 
             else ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.UNKNOWN))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.UNKNOWN),
+                )
         }
     }
 
@@ -321,13 +312,19 @@ class AddressRepositoryImpl @Inject constructor(
                 PocketResult.Error(AddressError.LocationNotFound)
 
             "OVER_QUERY_LIMIT" ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.TOO_MANY_REQUESTS))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.TOO_MANY_REQUESTS),
+                )
 
             "REQUEST_DENIED", "INVALID_REQUEST" ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.SERVER))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.SERVER),
+                )
 
             else ->
-                PocketResult.Error(AddressError.Remote(PocketDataError.Remote.UNKNOWN))
+                PocketResult.Error(
+                    AddressError.Remote(PocketDataError.Remote.UNKNOWN),
+                )
         }
     }
 
@@ -429,10 +426,7 @@ class AddressRepositoryImpl @Inject constructor(
             firstName = present(firstName.trim()),
             lastName = present(lastName.trim()),
             phone = optional(phone),
-            // Prefer provinceCode when available (codes are less likely to be rejected by Shopify),
-            // otherwise fall back to free-text province name. The generated MailingAddressInput
-            // only accepts a `province` field, so we send the code in that field when present.
-            province = optional(provinceCode.trim().ifBlank { province.trim() }),
+            province = Optional.Absent,
             zip = present(zip.trim()),
         )
     }

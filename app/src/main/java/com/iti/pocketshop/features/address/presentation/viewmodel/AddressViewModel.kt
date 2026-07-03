@@ -19,6 +19,7 @@ import com.iti.pocketshop.features.address.domain.usecase.SetDefaultAddressUseCa
 import com.iti.pocketshop.features.address.presentation.action.AddressAction
 import com.iti.pocketshop.features.address.presentation.state.AddressEditorState
 import com.iti.pocketshop.features.address.presentation.state.AddressState
+import com.iti.pocketshop.features.address.utils.AndroidAddressValidationStrings
 import com.iti.pocketshop.features.address.utils.validateAddressEditor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -51,6 +52,7 @@ class AddressViewModel @Inject constructor(
     private var mutationJob: Job? = null
     private var locationSearchJob: Job? = null
     private var locationResolveJob: Job? = null
+    private val validationStrings = AndroidAddressValidationStrings(appContext)
 
     init {
         refreshAddresses()
@@ -79,6 +81,7 @@ class AddressViewModel @Inject constructor(
             is AddressAction.FieldChanged -> onFieldChanged(action)
 
             AddressAction.ToggleDefault,
+            is AddressAction.PhoneCountryChanged,
             is AddressAction.DeleteClicked,
             AddressAction.CancelDelete,
             AddressAction.DismissError,
@@ -151,7 +154,7 @@ class AddressViewModel @Inject constructor(
         }
 
         val editor = _state.value.editor
-        val validationErrors = validateAddressEditor(editor)
+        val validationErrors = validateAddressEditor(editor, validationStrings)
         if (validationErrors.isNotEmpty()) {
             _state.update { current ->
                 current.copy(
@@ -391,6 +394,7 @@ class AddressViewModel @Inject constructor(
                             isLocationSearching = false,
                             locationSuggestions = emptyList(),
                         ),
+                        error = result.error,
                     )
                 }
 
@@ -439,7 +443,10 @@ class AddressViewModel @Inject constructor(
 
                 is PocketResult.Success -> _state.update { current ->
                     current.copy(
-                        editor = current.editor.withLocationSelection(result.data),
+                            editor = current.editor.withLocationSelection(
+                            result.data,
+                            updateSearchQuery = true,
+                        ),
                         error = null,
                     )
                 }
@@ -496,6 +503,7 @@ class AddressViewModel @Inject constructor(
                     isLocationSearching = false,
                     isLocationResolving = false,
                     locationSuggestions = emptyList(),
+                    hasSearchResult = false,
                 ),
             )
         }

@@ -30,8 +30,12 @@ internal fun AddressFieldTextField(
     label: String,
     error: String?,
     enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    placeholder: String? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
+    prefixText: String? = null,
+    readOnly: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text,
     onValueChange: (String) -> Unit,
 ) {
@@ -77,10 +81,21 @@ internal fun AddressFieldTextField(
         OutlinedTextField(
             value = value,
             onValueChange = onValueChange,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             enabled = enabled,
+            readOnly = readOnly,
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
+            placeholder = placeholder?.takeIf { it.isNotBlank() }?.let { text ->
+                {
+                    Text(text = text)
+                }
+            },
+            prefix = prefixText?.takeIf { it.isNotBlank() }?.let { prefix ->
+                {
+                    Text(text = prefix)
+                }
+            },
             shape = RoundedCornerShape(16.dp),
             isError = error != null,
             supportingText = error?.let { text ->

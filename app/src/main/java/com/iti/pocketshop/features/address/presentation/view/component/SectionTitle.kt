@@ -14,32 +14,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @Composable
 internal fun SectionTitle(
     title: String,
     subtitle: String? = null,
 ) {
-    val extendedColors = LocalExtendedColors.current
+    val colorScheme = MaterialTheme.colorScheme
 
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Box(
             modifier = Modifier
                 .background(
-                    color = extendedColors.primary.copy(alpha = 0.12f),
+                    color = colorScheme.primaryContainer,
                     shape = RoundedCornerShape(999.dp),
                 )
                 .border(
                     width = 1.dp,
-                    color = extendedColors.primary.copy(alpha = 0.22f),
+                    color = colorScheme.outlineVariant,
                     shape = RoundedCornerShape(999.dp),
                 )
                 .padding(horizontal = 14.dp, vertical = 7.dp),
         ) {
             Text(
                 text = title,
-                color = extendedColors.primary,
+                color = colorScheme.onPrimaryContainer,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 0.8.sp,

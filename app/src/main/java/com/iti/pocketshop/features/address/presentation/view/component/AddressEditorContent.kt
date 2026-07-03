@@ -19,15 +19,21 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.iti.pocketshop.BuildConfig
 import com.iti.pocketshop.R
+import com.iti.pocketshop.features.address.domain.error.AddressError
+import com.iti.pocketshop.features.address.domain.error.toUiMessage
 import com.iti.pocketshop.features.address.presentation.action.AddressAction
 import com.iti.pocketshop.features.address.presentation.state.AddressField
 import com.iti.pocketshop.features.address.presentation.state.AddressState
@@ -42,8 +48,18 @@ internal fun AddressEditorContent(
     val scrollState = rememberScrollState()
     val isBusy = state.isLoading || state.isSaving
     val locationBusy = editor.isLocationSearching || editor.isLocationResolving
-    val hasMapsKey = BuildConfig.MAPS_API_KEY.isNotBlank()
+    val context = LocalContext.current
+    var isMapExpanded by rememberSaveable { mutableStateOf(false) }
     val extendedColors = LocalExtendedColors.current
+    val mapErrorMessage = when (val error = state.error) {
+        is AddressError.MapsService -> error.toUiMessage(context)
+        is AddressError.Remote -> error.toUiMessage(context)
+        AddressError.LocationNotFound -> error.toUiMessage(context)
+        AddressError.MissingMapsApiKey -> error.toUiMessage(context)
+        AddressError.CurrentLocationUnavailable -> error.toUiMessage(context)
+        AddressError.LocationPermissionDenied -> error.toUiMessage(context)
+        else -> null
+    }
 
     Column(
         modifier = Modifier
@@ -54,6 +70,25 @@ internal fun AddressEditorContent(
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
+        LocationSearchSection(
+            editor = editor,
+            enabled = !isBusy,
+            onAction = onAction,
+        )
+
+        MapPreviewCard(
+            latitude = editor.latitude,
+            longitude = editor.longitude,
+            isLoading = editor.isLocationResolving,
+            enabled = !isBusy,
+            isExpanded = isMapExpanded,
+            onToggleExpanded = { isMapExpanded = !isMapExpanded },
+            errorMessage = mapErrorMessage,
+            onLocationPicked = { latitude, longitude ->
+                onAction(AddressAction.MapLocationPicked(latitude, longitude))
+            },
+        )
+
         SectionTitle(
             title = stringResource(R.string.address_section_recipient),
         )
@@ -66,6 +101,7 @@ internal fun AddressEditorContent(
                     error = editor.validationErrors[AddressField.FIRST_NAME],
                     enabled = !isBusy,
                     keyboardType = KeyboardType.Text,
+                    placeholder = stringResource(R.string.address_placeholder_first_name),
                     leadingIcon = {
                         Icon(
                             Icons.Outlined.Person,
@@ -83,6 +119,7 @@ internal fun AddressEditorContent(
                     error = editor.validationErrors[AddressField.LAST_NAME],
                     enabled = !isBusy,
                     keyboardType = KeyboardType.Text,
+                    placeholder = stringResource(R.string.address_placeholder_last_name),
                     leadingIcon = {
                         Icon(
                             Icons.Outlined.Person,
@@ -95,41 +132,54 @@ internal fun AddressEditorContent(
             },
         )
 
-        AddressFieldTextField(
-            value = editor.phone,
-            label = stringResource(R.string.address_label_phone_number),
-            error = editor.validationErrors[AddressField.PHONE],
-            enabled = !isBusy,
-            keyboardType = KeyboardType.Phone,
-            leadingIcon = {
-                Icon(
-                    Icons.Outlined.Phone,
-                    contentDescription = null,
-                    tint = extendedColors.textSecondary,
-                )
-            },
-            onValueChange = { onAction(AddressAction.FieldChanged(AddressField.PHONE, it)) },
-        )
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            PhoneCountryCodeField(
+                selectedCountryCode = editor.phoneCountryCode,
+                enabled = !isBusy,
+                onCountrySelected = { countryCode ->
+                    onAction(AddressAction.PhoneCountryChanged(countryCode))
+                },
+            )
 
-        AddressFieldTextField(
-            value = editor.country,
-            label = stringResource(R.string.address_label_country),
-            error = editor.validationErrors[AddressField.COUNTRY],
-            enabled = !isBusy,
-            keyboardType = KeyboardType.Text,
-            leadingIcon = {
-                Icon(
-                    Icons.Filled.LocationOn,
-                    contentDescription = null,
-                    tint = extendedColors.textSecondary,
-                )
-            },
-            onValueChange = { onAction(AddressAction.FieldChanged(AddressField.COUNTRY, it)) },
-        )
+            AddressFieldTextField(
+                value = editor.phone,
+                label = stringResource(R.string.address_label_phone_number),
+                error = editor.validationErrors[AddressField.PHONE],
+                enabled = !isBusy,
+                prefixText = editor.phoneCountryCode.dialingCode.takeIf { it.isNotBlank() },
+                keyboardType = KeyboardType.Phone,
+                placeholder = stringResource(R.string.address_placeholder_phone_number),
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.Phone,
+                        contentDescription = null,
+                        tint = extendedColors.textSecondary,
+                    )
+                },
+                onValueChange = { onAction(AddressAction.FieldChanged(AddressField.PHONE, it)) },
+            )
+        }
 
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             SectionTitle(
                 title = stringResource(R.string.address_section_address_details),
+            )
+
+            AddressFieldTextField(
+                value = editor.country,
+                label = stringResource(R.string.address_label_country),
+                error = editor.validationErrors[AddressField.COUNTRY],
+                enabled = !isBusy,
+                keyboardType = KeyboardType.Text,
+                placeholder = stringResource(R.string.address_placeholder_country),
+                leadingIcon = {
+                    Icon(
+                        Icons.Filled.LocationOn,
+                        contentDescription = null,
+                        tint = extendedColors.textSecondary,
+                    )
+                },
+                onValueChange = { onAction(AddressAction.FieldChanged(AddressField.COUNTRY, it)) },
             )
 
             AddressFieldTextField(
@@ -138,6 +188,7 @@ internal fun AddressEditorContent(
                 error = editor.validationErrors[AddressField.ADDRESS1],
                 enabled = !isBusy,
                 keyboardType = KeyboardType.Text,
+                placeholder = stringResource(R.string.address_placeholder_street_address),
                 leadingIcon = {
                     Icon(
                         Icons.Filled.Home,
@@ -154,6 +205,7 @@ internal fun AddressEditorContent(
                 error = null,
                 enabled = !isBusy,
                 keyboardType = KeyboardType.Text,
+                placeholder = stringResource(R.string.address_placeholder_apartment_suite),
                 leadingIcon = {
                     Icon(
                         Icons.Filled.Home,
@@ -172,6 +224,7 @@ internal fun AddressEditorContent(
                         error = editor.validationErrors[AddressField.CITY],
                         enabled = !isBusy,
                         keyboardType = KeyboardType.Text,
+                        placeholder = stringResource(R.string.address_placeholder_city),
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.LocationOn,
@@ -189,6 +242,7 @@ internal fun AddressEditorContent(
                         error = null,
                         enabled = !isBusy,
                         keyboardType = KeyboardType.Text,
+                        placeholder = stringResource(R.string.address_placeholder_state_province),
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.LocationOn,
@@ -209,6 +263,7 @@ internal fun AddressEditorContent(
                         error = editor.validationErrors[AddressField.ZIP],
                         enabled = !isBusy,
                         keyboardType = KeyboardType.Text,
+                        placeholder = stringResource(R.string.address_placeholder_postal_code),
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Email,
@@ -226,6 +281,7 @@ internal fun AddressEditorContent(
                         error = null,
                         enabled = !isBusy,
                         keyboardType = KeyboardType.Text,
+                        placeholder = stringResource(R.string.address_placeholder_company),
                         leadingIcon = {
                             Icon(
                                 Icons.Outlined.Person,
@@ -238,17 +294,6 @@ internal fun AddressEditorContent(
                 },
             )
         }
-
-        MapPreviewCard(
-            latitude = editor.latitude,
-            longitude = editor.longitude,
-            isLoading = editor.isLocationResolving,
-            enabled = !isBusy,
-            hasMapsKey = hasMapsKey,
-            onLocationPicked = { latitude, longitude ->
-                onAction(AddressAction.MapLocationPicked(latitude, longitude))
-            },
-        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),

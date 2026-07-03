@@ -105,7 +105,7 @@ class AddressReducerTest {
             firstName = firstName,
             lastName = lastName,
             company = company,
-            phone = "+15550001",
+            phone = "+442012345678",
             address1 = "24 Pemberton Gardens",
             address2 = "Flat 2",
             city = "London",

@@ -23,6 +23,19 @@
 
     <string name="address_label_first_name">First name</string>
     <string name="address_label_last_name">Last name</string>
+    <string name="address_label_phone_country_code">Phone country code</string>
+    <string name="address_phone_country_united_states">United States</string>
+    <string name="address_phone_country_canada">Canada</string>
+    <string name="address_phone_country_united_kingdom">United Kingdom</string>
+    <string name="address_phone_country_egypt">Egypt</string>
+    <string name="address_phone_country_saudi_arabia">Saudi Arabia</string>
+    <string name="address_phone_country_international">International</string>
+    <string name="address_phone_country_flag_united_states">🇺🇸</string>
+    <string name="address_phone_country_flag_canada">🇨🇦</string>
+    <string name="address_phone_country_flag_united_kingdom">🇬🇧</string>
+    <string name="address_phone_country_flag_egypt">🇪🇬</string>
+    <string name="address_phone_country_flag_saudi_arabia">🇸🇦</string>
+    <string name="address_phone_country_flag_international">🌐</string>
     <string name="address_label_phone_number">Phone number</string>
     <string name="address_label_country">Country</string>
     <string name="address_label_street_address">Street address</string>
@@ -35,9 +48,17 @@
     <string name="address_set_default_title">Set as default</string>
     <string name="address_set_default_subtitle">Use this for future deliveries.</string>
 
+    <string name="address_section_location">Location details</string>
+    <string name="address_location_search_label">Search location</string>
+    <string name="address_location_search_hint">Search for an address, city, or landmark</string>
+    <string name="address_location_searching">Searching locations...</string>
+    <string name="address_location_no_results">No matching locations found.</string>
+    <string name="address_map_expand">Expand map</string>
+    <string name="address_map_collapse">Collapse map</string>
+
     <string name="address_map_title">Location preview</string>
-    <string name="address_map_picker_unavailable_title">Map picker is unavailable</string>
-    <string name="address_map_picker_unavailable_subtitle">Add MAPS_API_KEY to enable Google Maps on this screen.</string>
+    <string name="address_map_picker_unavailable_title">Location preview is unavailable</string>
+    <string name="address_map_picker_unavailable_subtitle">We could not load the location preview right now.</string>
     <string name="address_map_coordinates">Lat %1$.4f, Lng %2$.4f</string>
     <string name="address_map_default_latitude">30.0444</string>
     <string name="address_map_default_longitude">31.2357</string>
@@ -63,10 +84,42 @@
     <string name="address_message_deleted">Address deleted.</string>
     <string name="address_message_default_updated">Default address updated.</string>
 
+    <string name="address_validation_first_name_required">First name is required.</string>
+    <string name="address_validation_last_name_required">Last name is required.</string>
+    <string name="address_validation_street_address_required">Street address is required.</string>
+    <string name="address_validation_city_required">City is required.</string>
+    <string name="address_validation_country_required">Country is required.</string>
+    <string name="address_validation_phone_required">Phone number is required.</string>
+    <string name="address_validation_phone_invalid_international">Enter a valid international phone number.</string>
+    <string name="address_validation_phone_invalid_for_country">Enter a valid phone number for %1$s.</string>
+    <string name="address_validation_postal_code_required">Postal code is required.</string>
+    <string name="address_validation_postal_code_invalid_for_country">Enter a valid postal code for %1$s.</string>
+    <string name="address_validation_selected_country_fallback">the selected country</string>
+
+    <string name="address_error_customer_account_missing_token">Customer account token is not available yet.</string>
+    <string name="address_error_customer_account_not_found">Customer account was not found for this token.</string>
+    <string name="address_error_customer_account_missing_saved_address">Shopify did not return the saved address.</string>
+    <string name="address_error_customer_account_missing_updated_address">Shopify did not return the updated address.</string>
+    <string name="address_error_customer_account_missing_deleted_address">Shopify did not confirm the deleted address.</string>
+    <string name="address_error_customer_account_missing_default_update">Shopify did not confirm the default address update.</string>
+
     <string name="address_error_missing_customer_access_token">Customer account token is not available yet.</string>
-    <string name="address_error_missing_maps_api_key">Map support is not configured yet.</string>
+    <string name="address_error_missing_maps_api_key">Location support is not configured yet.</string>
+    <string name="address_error_maps_service">We could not load this location right now. Please try again.</string>
     <string name="address_error_location_not_found">We could not identify an address for that location.</string>
     <string name="address_error_location_permission_denied">Location permission was denied. You can still pick a location on the map.</string>
     <string name="address_error_current_location_unavailable">We could not get your current location. You can still pick a location on the map.</string>
     <string name="address_error_save_failed">We could not save this address.</string>
+    <string name="address_map_error_title">Location error</string>
+
+    <string name="address_placeholder_first_name">First name</string>
+    <string name="address_placeholder_last_name">Last name</string>
+    <string name="address_placeholder_phone_number">Phone number</string>
+    <string name="address_placeholder_country">Country</string>
+    <string name="address_placeholder_street_address">Street address</string>
+    <string name="address_placeholder_apartment_suite">Apartment, suite, floor, etc.</string>
+    <string name="address_placeholder_city">City</string>
+    <string name="address_placeholder_state_province">State / Province</string>
+    <string name="address_placeholder_postal_code">Postal code</string>
+    <string name="address_placeholder_company">Company (optional)</string>
 </resources>

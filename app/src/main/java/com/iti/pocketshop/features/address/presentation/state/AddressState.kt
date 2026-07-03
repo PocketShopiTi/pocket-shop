@@ -38,6 +38,8 @@ data class AddressEditorState(
     val lastName: String = "",
     val company: String = "",
     val phone: String = "",
+    val phoneCountryCode: PhoneCountryCode = PhoneCountryCode.default(),
+    val phoneCountryCodeTouched: Boolean = false,
     val address1: String = "",
     val address2: String = "",
     val city: String = "",
@@ -52,6 +54,7 @@ data class AddressEditorState(
     val locationSuggestions: List<AddressLocationSuggestion> = emptyList(),
     val isLocationSearching: Boolean = false,
     val isLocationResolving: Boolean = false,
+    val hasSearchResult: Boolean = false,
     val isDefault: Boolean = false,
     val validationErrors: Map<AddressField, String> = emptyMap(),
 ) {
@@ -63,12 +66,11 @@ data class AddressEditorState(
             firstName = firstName.trim(),
             lastName = lastName.trim(),
             company = company.trim(),
-            phone = phone.trim(),
+            phone = phoneCountryCode.toE164(phone.trim()) ?: phone.trim(),
             address1 = address1.trim(),
             address2 = address2.trim(),
             city = city.trim(),
             province = province.trim(),
-            provinceCode = provinceCode.trim(),
             zip = zip.trim(),
             country = country.trim(),
             isDefault = isDefault,
@@ -79,6 +81,7 @@ data class AddressEditorState(
         return copy(
             locationSuggestions = suggestions,
             isLocationSearching = false,
+            hasSearchResult = true,
         )
     }
 
@@ -87,6 +90,7 @@ data class AddressEditorState(
             locationSearchQuery = query,
             isLocationSearching = isSearching,
             locationSuggestions = emptyList(),
+            hasSearchResult = false,
         )
     }
 
@@ -97,34 +101,55 @@ data class AddressEditorState(
         )
     }
 
-    fun withLocationSelection(details: AddressLocationDetails): AddressEditorState {
+    fun withLocationSelection(
+        details: AddressLocationDetails,
+        updateSearchQuery: Boolean = false,
+    ): AddressEditorState {
         val updatedErrors = validationErrors - setOf(
             AddressField.ADDRESS1,
             AddressField.CITY,
             AddressField.PROVINCE,
-            AddressField.ZIP,
             AddressField.COUNTRY,
+            AddressField.PHONE,
         )
 
         return copy(
             address1 = details.street.ifBlank { address1 },
             city = details.city.ifBlank { city },
             province = details.province.ifBlank { province },
-            zip = details.postalCode.ifBlank { zip },
             country = details.country.ifBlank { country },
+            phoneCountryCode = if (phoneCountryCodeTouched) {
+                phoneCountryCode
+            } else {
+                PhoneCountryCode.fromCountryCode(details.countryCode)
+                    ?: PhoneCountryCode.fromCountry(details.country)
+            },
             formattedArea = details.formattedArea.ifBlank { formattedArea },
             latitude = details.latitude,
             longitude = details.longitude,
-            locationSearchQuery = details.formattedAddress.ifBlank { locationSearchQuery },
+            locationSearchQuery = if (updateSearchQuery) {
+                details.formattedAddress.ifBlank { locationSearchQuery }
+            } else {
+                locationSearchQuery
+            },
             locationSuggestions = emptyList(),
             isLocationSearching = false,
             isLocationResolving = false,
+            hasSearchResult = false,
             validationErrors = updatedErrors,
         )
     }
 
     fun withValidationErrors(errors: Map<AddressField, String>): AddressEditorState {
         return copy(validationErrors = errors)
+    }
+
+    fun withPhoneCountryCode(countryCode: PhoneCountryCode): AddressEditorState {
+        return copy(
+            phoneCountryCode = countryCode,
+            phoneCountryCodeTouched = true,
+            validationErrors = validationErrors - AddressField.PHONE,
+        )
     }
 
     fun clearFieldError(field: AddressField): AddressEditorState {
@@ -136,13 +161,20 @@ data class AddressEditorState(
             AddressField.FIRST_NAME -> copy(firstName = value)
             AddressField.LAST_NAME -> copy(lastName = value)
             AddressField.COMPANY -> copy(company = value)
-            AddressField.PHONE -> copy(phone = value)
+            AddressField.PHONE -> copy(phone = phoneCountryCode.displayNumber(value))
             AddressField.ADDRESS1 -> copy(address1 = value)
             AddressField.ADDRESS2 -> copy(address2 = value)
             AddressField.CITY -> copy(city = value)
             AddressField.PROVINCE -> copy(province = value, provinceCode = value)
             AddressField.ZIP -> copy(zip = value)
-            AddressField.COUNTRY -> copy(country = value)
+            AddressField.COUNTRY -> copy(
+                country = value,
+                phoneCountryCode = if (phoneCountryCodeTouched) {
+                    phoneCountryCode
+                } else {
+                    PhoneCountryCode.fromCountry(value)
+                },
+            ).clearFieldError(AddressField.PHONE)
         }
         return updated.clearFieldError(field)
     }
@@ -153,13 +185,20 @@ data class AddressEditorState(
         }
 
         fun fromAddress(address: Address): AddressEditorState {
+            val phoneCountryCode = PhoneCountryCode.fromSavedPhone(
+                phone = address.phone,
+                countryCode = address.countryCode,
+                country = address.country,
+            )
+
             return AddressEditorState(
                 visible = true,
                 addressId = address.id,
                 firstName = address.firstName,
                 lastName = address.lastName,
                 company = address.company,
-                phone = address.phone,
+                phone = phoneCountryCode.displayNumber(address.phone),
+                phoneCountryCode = phoneCountryCode,
                 address1 = address.address1,
                 address2 = address.address2,
                 city = address.city,

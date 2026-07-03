@@ -179,6 +179,7 @@ class AddressRepositoryLocationMethodsTest {
             currentLocationDataSource = currentLocationDataSource,
             tokenProvider = FakeCustomerAccessTokenProvider("customer-token"),
             mapsApiKey = "maps-key",
+            strings = TestAddressRepositoryStrings,
         )
     }
 
@@ -256,6 +257,15 @@ class AddressRepositoryLocationMethodsTest {
     private class FakeCustomerAccessTokenProvider(
         private val token: String,
     ) : CustomerAccessTokenProvider {
-        override fun currentCustomerAccessToken(): String? = token
+        override suspend fun currentCustomerAccessToken(): String? = token
+    }
+
+    private object TestAddressRepositoryStrings : AddressRepositoryStrings {
+        override val missingCustomerAccessToken: String = "Customer account token is not available yet."
+        override val customerAccountNotFound: String = "Customer account was not found for this token."
+        override val missingSavedAddress: String = "Shopify did not return the saved address."
+        override val missingUpdatedAddress: String = "Shopify did not return the updated address."
+        override val missingDeletedAddress: String = "Shopify did not confirm the deleted address."
+        override val missingDefaultUpdate: String = "Shopify did not confirm the default address update."
     }
 }

@@ -15,7 +15,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import com.iti.pocketshop.BuildConfig
 import com.iti.pocketshop.features.address.domain.error.toUiMessage
 import com.iti.pocketshop.features.address.presentation.action.AddressAction
 import com.iti.pocketshop.features.address.presentation.viewmodel.AddressViewModel
@@ -27,7 +26,6 @@ fun AddressRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val hasMapsKey = BuildConfig.MAPS_API_KEY.isNotBlank()
     var hasRequestedLocationPermission by rememberSaveable(
         state.editor.visible,
         state.editor.isEditing,
@@ -41,8 +39,8 @@ fun AddressRoot(
         viewModel.onAction(AddressAction.LocationPermissionResult(granted))
     }
 
-    LaunchedEffect(state.editor.visible, state.editor.isEditing, hasMapsKey) {
-        val shouldRequestPermission = state.editor.visible && !state.editor.isEditing && hasMapsKey
+    LaunchedEffect(state.editor.visible, state.editor.isEditing) {
+        val shouldRequestPermission = state.editor.visible && !state.editor.isEditing
         if (shouldRequestPermission && !hasRequestedLocationPermission) {
             hasRequestedLocationPermission = true
             val permissionGranted = hasLocationPermission(context)

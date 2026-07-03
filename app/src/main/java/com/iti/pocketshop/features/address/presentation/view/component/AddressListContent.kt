@@ -2,8 +2,10 @@ package com.iti.pocketshop.features.address.presentation.view.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,51 +26,57 @@ internal fun AddressListContent(
         return
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        if (state.addresses.isEmpty()) {
-            EmptyAddressState(
-                customerName = state.customerName,
-                modifier = Modifier.align(Alignment.Center),
-                enabled = !state.isSaving,
-                onAddAddress = { onAction(AddressAction.AddAddressClicked) },
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    start = 20.dp,
-                    top = 10.dp,
-                    end = 20.dp,
-                    bottom = 110.dp,
-                ),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-            ) {
-                item {
-                    SummaryCard(
-                        customerName = state.customerName,
-                        addressCount = state.addresses.size,
-                        defaultAddressId = state.defaultAddressId,
-                    )
-                }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+        ) {
+            if (state.addresses.isEmpty()) {
+                EmptyAddressState(
+                    customerName = state.customerName,
+                    modifier = Modifier.align(Alignment.Center),
+                    enabled = !state.isSaving,
+                    onAddAddress = { onAction(AddressAction.AddAddressClicked) },
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        start = 20.dp,
+                        top = 10.dp,
+                        end = 20.dp,
+                        bottom = 20.dp,
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                ) {
+                    item {
+                        SummaryCard(
+                            customerName = state.customerName,
+                            addressCount = state.addresses.size,
+                            defaultAddressId = state.defaultAddressId,
+                        )
+                    }
 
-                items(
-                    items = state.addresses,
-                    key = { address -> address.id },
-                ) { address ->
-                    AddressCard(
-                        address = address,
-                        enabled = !state.isLoading && !state.isSaving,
-                        onEdit = { onAction(AddressAction.EditAddressClicked(address.id)) },
-                        onDelete = { onAction(AddressAction.DeleteClicked(address.id)) },
-                        onMakeDefault = { onAction(AddressAction.SetDefaultClicked(address.id)) },
-                    )
+                    items(
+                        items = state.addresses,
+                        key = { address -> address.id },
+                    ) { address ->
+                        AddressCard(
+                            address = address,
+                            enabled = !state.isLoading && !state.isSaving,
+                            onEdit = { onAction(AddressAction.EditAddressClicked(address.id)) },
+                            onDelete = { onAction(AddressAction.DeleteClicked(address.id)) },
+                            onMakeDefault = { onAction(AddressAction.SetDefaultClicked(address.id)) },
+                        )
+                    }
                 }
             }
         }
 
         BottomAddAddressButton(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 16.dp),
             enabled = !state.isSaving,
             onClick = { onAction(AddressAction.AddAddressClicked) },

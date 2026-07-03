@@ -195,4 +195,6 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     //noinspection LoginCredentials
     implementation(libs.googleid)
+    implementation(libs.osmdroid.android)
+
 }
