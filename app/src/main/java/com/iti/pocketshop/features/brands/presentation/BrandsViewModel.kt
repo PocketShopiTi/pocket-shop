@@ -46,8 +46,8 @@ class BrandsViewModel @Inject constructor(
                         filteredBrands = if (action.query.isEmpty()) {
                             it.brands
                         } else {
-                            it.brands.filter { category ->
-                                category.title.contains(action.query, ignoreCase = true)
+                            it.brands.filter { brandItem ->
+                                brandItem.title.contains(action.query, ignoreCase = true)
                             }
                         }
                     )

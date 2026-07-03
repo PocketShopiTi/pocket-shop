@@ -11,15 +11,15 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class CategoriesModule {
+abstract class BrandsModule {
 
     @Binds
-    abstract fun bindCategoriesRemoteSource(
+    abstract fun bindBrandsRemoteSource(
         impl: BrandsRemoteSourceImpl
     ): BrandsRemoteSource
 
     @Binds
-    abstract fun bindCategoriesRepository(
+    abstract fun bindBrandsRepository(
         impl: BrandsRepositoryImpl
     ): BrandsRepository
 }

@@ -32,18 +32,18 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.brands.presentation.components.CategoryCard
+import com.iti.pocketshop.features.brands.presentation.components.BrandCard
 import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 
 @Composable
-fun CategoriesRoot(
+fun BrandsRoot(
     onBack: () -> Unit,
     onBrandClick: (ProductListRouteInfo.Brands) -> Unit,
     viewModel: BrandsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    CategoriesScreen(
+    BrandsScreen(
         state = state,
         onAction = viewModel::onAction,
         onBack = onBack,
@@ -52,7 +52,7 @@ fun CategoriesRoot(
 }
 
 @Composable
-fun CategoriesScreen(
+fun BrandsScreen(
     state: BrandsState,
     onAction: (BrandsAction) -> Unit,
     onBack: () -> Unit,
@@ -137,8 +137,8 @@ fun CategoriesScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(state.filteredBrands, key = { it.id }) { category ->
-                        CategoryCard(
-                            category = category,
+                        BrandCard(
+                            brandItem = category,
                             onClick = { onBrandClick(ProductListRouteInfo.Brands(category.title)) }
                         )
                     }

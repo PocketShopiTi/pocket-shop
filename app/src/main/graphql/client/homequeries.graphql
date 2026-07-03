@@ -4,7 +4,7 @@ query HomeQuery(
     $newArrivalCount: Int!
     $brandCount: Int!
 ) {
-    # 1. Categories
+    # 1. Brands
     brands: collections(first: $brandCount) {
         nodes {
             id

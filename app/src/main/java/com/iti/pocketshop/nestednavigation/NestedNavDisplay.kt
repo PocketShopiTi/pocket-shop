@@ -34,7 +34,7 @@ fun NestedNavDisplay(
     currentRootRoute: NavKey?,
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
-    openCategories: () -> Unit,
+    openBrands: () -> Unit,
     openProductList: (ProductListRouteInfo) -> Unit,
     logout: () -> Unit,
     openProductDetails: (String) -> Unit,
@@ -109,7 +109,7 @@ fun NestedNavDisplay(
                     HomeRoot(
                         openProductDetails = openProductDetails,
                         openSearch = openSearch,
-                        openCategories = openCategories,
+                        openBrands = openBrands,
                         openProductList = openProductList
                     )
                 }

@@ -8,7 +8,6 @@ fun GetBrandsQuery.Node.toDomain(): BrandItem {
         id = id,
         title = title,
         handle = handle,
-        itemCount = 0, // Not available in Storefront API
         imageUrl = image?.url,
         imageAlt = image?.altText
     )

@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeRoot(
     openSearch: () -> Unit,
-    openCategories: () -> Unit,
+    openBrands: () -> Unit,
     openProductList: (ProductListRouteInfo) -> Unit,
     openProductDetails: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
@@ -45,7 +45,7 @@ fun HomeRoot(
 
     HomeScreen(
         openSearch = openSearch,
-        openCategories = openCategories,
+        openBrands = openBrands,
         openProductList = openProductList,
         openProductDetails = openProductDetails,
         state = state,
@@ -56,7 +56,7 @@ fun HomeRoot(
 @Composable
 private fun HomeScreen(
     openSearch: () -> Unit,
-    openCategories: () -> Unit,
+    openBrands: () -> Unit,
     openProductList: (ProductListRouteInfo) -> Unit,
     openProductDetails: (String) -> Unit,
     state: HomeState,
@@ -98,21 +98,21 @@ private fun HomeScreen(
                     }
                 }
 
-                // Categories
+                // Brands
                 if (state.brands.isNotEmpty()) {
                     item { Spacer(Modifier.height(24.dp)) }
                     item {
                         SectionHeader(
                             title = stringResource(R.string.shop_by_brand),
-                            onSeeAllClick = openCategories,
+                            onSeeAllClick = openBrands,
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
                     }
                     item { Spacer(Modifier.height(12.dp)) }
                     item {
                         BrandRow(
-                            categories = state.brands,
-                            onCategoryClick = { brand ->
+                            brands = state.brands,
+                            onBrandClick = { brand ->
                                 openProductList(ProductListRouteInfo.Brands(brand.title))
                             }
                         )

@@ -69,7 +69,7 @@ sealed interface Route : NavKey {
     }
 
     @Serializable
-    data object Categories : Route
+    data object Brands : Route
 
     @Serializable
     data class ProductList(

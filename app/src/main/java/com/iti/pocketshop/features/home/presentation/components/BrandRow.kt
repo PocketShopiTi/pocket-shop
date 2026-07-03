@@ -11,17 +11,17 @@ import com.iti.pocketshop.features.home.domain.models.Brand
 
 @Composable
 fun BrandRow(
-    categories: List<Brand>,
-    onCategoryClick: (Brand) -> Unit
+    brands: List<Brand>,
+    onBrandClick: (Brand) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(categories, key = { it.id }) { category ->
+        items(brands, key = { it.id }) { brand ->
             BrandChip(
-                brand = category,
-                onClick = { onCategoryClick(category) },
+                brand = brand,
+                onClick = { onBrandClick(brand) },
                 modifier = Modifier.animateItem()
             )
         }
