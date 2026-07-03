@@ -311,4 +311,12 @@
     <string name="items_count">%1$d items</string>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
+
+    <string name="payment_pay_now">Pay now</string>
+    <string name="payment_merchant_name">Pocket Shop</string>
+    <string name="payment_completed">Payment completed successfully</string>
+    <string name="payment_canceled">Payment was canceled</string>
+    <string name="payment_failed">Payment failed. Please try again</string>
+    <string name="cart_currency_egp">EGP</string>
+    <string name="cart_currency_usd">USD</string>
 </resources>

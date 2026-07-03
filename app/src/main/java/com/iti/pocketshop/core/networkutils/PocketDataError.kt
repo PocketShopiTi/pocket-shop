@@ -37,6 +37,11 @@ sealed interface PocketDataError : Error {
         TOKEN_NOT_VALID,
     }
 
+    enum class Payment : PocketDataError {
+        CANCELED,
+        FAILED,
+    }
+
     enum class Firestore : PocketDataError {
         PERMISSION_DENIED,
         NOT_FOUND,
@@ -71,6 +76,10 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Auth.NO_INTERNET -> context.getString(R.string.error_network)
     PocketDataError.Auth.USER_DISABLED -> context.getString(R.string.error_user_disabled)
     PocketDataError.Auth.UNKNOWN -> context.getString(R.string.error_unknown)
+
+    // Payment
+    PocketDataError.Payment.CANCELED -> context.getString(R.string.payment_canceled)
+    PocketDataError.Payment.FAILED -> context.getString(R.string.payment_failed)
 
     // Firestore
     PocketDataError.Firestore.PERMISSION_DENIED -> context.getString(R.string.firestore_permission_denied)
