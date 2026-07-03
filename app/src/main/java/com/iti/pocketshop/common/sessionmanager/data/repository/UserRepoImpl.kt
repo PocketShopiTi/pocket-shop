@@ -37,7 +37,11 @@ class UserRepoImpl @Inject constructor(
         firebase.observeAuthState().map { it?.toUserSession() }
 
     override suspend fun signOut(): PocketResult<Unit, PocketDataError.Auth> {
-        return firebase.signOut()
+        return if (isAnonymous) {
+            PocketResult.Success(Unit)
+        } else {
+            firebase.signOut()
+        }
     }
 
     override suspend fun isUserNotAnonymous(): Boolean {

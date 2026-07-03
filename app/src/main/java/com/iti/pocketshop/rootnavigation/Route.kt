@@ -66,4 +66,10 @@ sealed interface Route : NavKey {
         @Serializable
         data object Filters : Route
     }
+
+    @Serializable
+    data object Categories : Route
+
+    @Serializable
+    data class ProductList(val type: String) : Route
 }

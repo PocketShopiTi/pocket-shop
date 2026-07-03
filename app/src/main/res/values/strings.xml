@@ -74,9 +74,9 @@
     <string name="something_went_wrong">Something went wrong, Please try again</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
-    <string name="shop_by_category">Shop by Category</string>
+    <string name="shop_by_brand">Shop by Brand</string>
     <string name="featured">Featured</string>
-    <string name="best_sellers">Best Sellers</string>
+    <string name="trending">Trending</string>
     <string name="on_fire_emoji">🔥</string>
     <string name="new_arrivals">New Arrivals</string>
     <string name="new_items">NEW</string>
@@ -306,4 +306,9 @@
     <string name="passwords_must_match">Passwords must match</string>
     <string name="enter_last_name">Enter last name</string>
     <string name="please_enter_your_last_name">Please enter your last name</string>
+    <string name="brands">Brands</string>
+    <string name="brands_available">%1$d brands available</string>
+    <string name="items_count">%1$d items</string>
+    <string name="back">Back</string>
+    <string name="clear_search">Clear search</string>
 </resources>

@@ -3,8 +3,11 @@ package com.iti.pocketshop.features.auth.login.presentation
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.favorites.domain.usecase.SyncFavoritesUseCase
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.auth.login.domain.model.LoginOutcome
 import com.iti.pocketshop.features.auth.login.domain.usecase.ContinueAsGuestUseCase
 import com.iti.pocketshop.features.auth.login.domain.usecase.LoginWithEmailUseCase
@@ -28,6 +31,7 @@ class LoginViewModel @Inject constructor(
     private val loginWithEmailUseCase: LoginWithEmailUseCase,
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val continueAsGuestUseCase: ContinueAsGuestUseCase,
+    private val syncFavorites: SyncFavoritesUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -89,13 +93,22 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is PocketResult.Success -> {
-                    _state.update { it.copy(isLoading = false) }
-                    _events.send(
-                        when (result.data) {
-                            LoginOutcome.Ready -> LoginEvent.NavigateHome
-                            LoginOutcome.NeedsEmailVerification -> LoginEvent.NavigateVerification
+                    syncFavorites()
+                        .onSuccess {
+                            _state.update { it.copy(isLoading = false) }
+                            _events.send(
+                                when (result.data) {
+                                    LoginOutcome.Ready -> LoginEvent.NavigateHome
+                                    LoginOutcome.NeedsEmailVerification -> LoginEvent.NavigateVerification
+                                }
+                            )
                         }
-                    )
+                        .onError { error ->
+                            _state.update {
+                                it.copy(isLoading = false, generalError = error)
+                            }
+                        }
+
                 }
             }
         }

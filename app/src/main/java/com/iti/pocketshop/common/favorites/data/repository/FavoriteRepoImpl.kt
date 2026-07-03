@@ -97,7 +97,7 @@ class FavoriteRepoImpl @Inject constructor(
                     ?.toEntity()
             }
 
-            favoriteDao.clearFavorites(userId)
+            favoriteDao.clearFavorites()
             favoriteDao.insertAllFavorite(favoriteProductEntities)
 
             val products = favoriteProductEntities.map { it.toDomain() }
@@ -109,7 +109,6 @@ class FavoriteRepoImpl @Inject constructor(
     }
 
     override suspend fun clearLocalFavorites() {
-        val userId = userRepo.currentUser?.uid ?: return
-        favoriteDao.clearFavorites(userId)
+        favoriteDao.clearFavorites()
     }
 }

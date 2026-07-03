@@ -33,6 +33,8 @@ fun NestedNavDisplay(
     currentRootRoute: NavKey?,
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
+    openCategories: () -> Unit,
+    openProductList: (String) -> Unit,
     logout: () -> Unit,
     openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
@@ -105,7 +107,9 @@ fun NestedNavDisplay(
                 entry<Route.NestedNav.Home> {
                     HomeRoot(
                         openProductDetails = openProductDetails,
-                        openSearch = openSearch
+                        openSearch = openSearch,
+                        openCategories = openCategories,
+                        openProductList = openProductList
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {
