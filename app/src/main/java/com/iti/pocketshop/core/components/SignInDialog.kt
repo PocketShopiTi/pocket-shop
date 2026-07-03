@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,7 +29,6 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.toUserMessage
 
 @Composable
 fun SignInDialog(
@@ -52,14 +49,11 @@ fun SignInDialog(
             Surface(
                 shape = MaterialTheme.shapes.large,
                 tonalElevation = 8.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
+                modifier = Modifier,
             ) {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
+                        .padding(20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     val composition by rememberLottieComposition(
@@ -74,14 +68,11 @@ fun SignInDialog(
                         composition = composition,
                         progress = { progress },
                         modifier = Modifier
-                            .size(180.dp)
-                            .padding(bottom = 8.dp),
+                            .size(180.dp),
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
                     Text(
-                        text = "Sign in to continue",
+                        text = stringResource(R.string.sign_in_to_continue),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -105,7 +96,6 @@ fun SignInDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
-                        shape = RoundedCornerShape(12.dp),
                     ) {
                         Text(text = stringResource(R.string.go_to_login))
                     }
@@ -116,6 +106,8 @@ fun SignInDialog(
                         onClick = {
                             isDialogShown = false
                         },
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
                         Text(text = stringResource(R.string.not_now))
                     }

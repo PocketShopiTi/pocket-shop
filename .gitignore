@@ -15,3 +15,7 @@
 local.properties
 
 /.idea
+
+.agents/
+
+Constants.kt

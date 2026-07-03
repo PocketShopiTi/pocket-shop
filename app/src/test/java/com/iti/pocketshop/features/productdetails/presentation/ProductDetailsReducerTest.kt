@@ -60,16 +60,12 @@ class ProductDetailsReducerTest {
     @Test
     fun `favorite and description toggles are independent`() {
         val favorite = reduceProductDetails(
-            state = ProductDetailsState(),
-            action = ProductDetailsAction.ToggleFavorite,
-        )
-        val expanded = reduceProductDetails(
-            state = favorite,
+            state = ProductDetailsState(isFavorite = true),
             action = ProductDetailsAction.ToggleDescription,
         )
 
-        assertTrue(expanded.isFavorite)
-        assertTrue(expanded.isDescriptionExpanded)
+        assertTrue(favorite.isFavorite)
+        assertTrue(favorite.isDescriptionExpanded)
         assertFalse(ProductDetailsState().isFavorite)
     }
 

@@ -4,8 +4,8 @@ import android.util.Log
 import com.apollographql.apollo.ApolloCall
 import com.apollographql.apollo.api.ApolloResponse
 import com.apollographql.apollo.api.Operation
-import com.apollographql.apollo.exception.ApolloNetworkException
 import com.apollographql.apollo.exception.ApolloHttpException
+import com.apollographql.apollo.exception.ApolloNetworkException
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import java.net.SocketTimeoutException
@@ -45,7 +45,7 @@ fun <D : Operation.Data> ApolloResponse<D>.toResult(): PocketResult<D, PocketDat
         }
     }
 
-    val d = data ?: return PocketResult.Error(PocketDataError.Remote.SERIALIZATION)
+    val d = data ?: return PocketResult.Error(PocketDataError.Remote.NO_INTERNET)
     return PocketResult.Success(d)
 }
 

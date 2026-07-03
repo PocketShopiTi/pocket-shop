@@ -1,5 +1,7 @@
 package com.iti.pocketshop.features.home.domain.models
 
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
+
 
 data class Product(
     val id: String,
@@ -13,3 +15,10 @@ data class Product(
     val imageAlt: String?
 )
 
+fun Product.toFavoriteProduct(): FavoriteProduct {
+    return FavoriteProduct(
+        id = id,
+        title = title,
+        imageUrl = imageUrl
+    )
+}

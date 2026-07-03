@@ -18,6 +18,7 @@ internal fun ProductContent(
     product: ProductDetails,
     state: ProductDetailsState,
     onAction: (ProductDetailsAction) -> Unit,
+    onFavoriteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -31,6 +32,7 @@ internal fun ProductContent(
                 selectedIndex = state.selectedImageIndex,
                 isFavorite = state.isFavorite,
                 onAction = onAction,
+                onFavoriteClick = onFavoriteClick
             )
         }
         item {
