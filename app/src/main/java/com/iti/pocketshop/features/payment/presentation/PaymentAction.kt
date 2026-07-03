@@ -4,8 +4,11 @@ import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 
 sealed interface PaymentAction {
     data class Pay(val amountMinor: Long, val currency: PaymentCurrency) : PaymentAction
-    data object SheetCompleted : PaymentAction
-    data object SheetCanceled : PaymentAction
-    data object SheetFailed : PaymentAction
+    data class PaymobCheckoutFinished(
+        val success: Boolean,
+        val transactionId: String?,
+    ) : PaymentAction
+
+    data object PaymobCheckoutDismissed : PaymentAction
     data object DismissError : PaymentAction
 }

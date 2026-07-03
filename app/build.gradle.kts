@@ -82,13 +82,8 @@ android {
         )
         buildConfigField(
             "String",
-            "STRIPE_PUBLISHABLE_KEY",
-            "\"${localProperties.getProperty("STRIPE_PUBLISHABLE_KEY", "")}\""
-        )
-        buildConfigField(
-            "String",
-            "STRIPE_SECRET_KEY",
-            "\"${localProperties.getProperty("STRIPE_SECRET_KEY", "")}\""
+            "PAYMOB_SECRET_KEY",
+            "\"${localProperties.getProperty("PAYMOB_SECRET_KEY", "")}\""
         )
     }
 
@@ -181,10 +176,6 @@ dependencies {
     implementation(libs.apollo.runtime)
     implementation(libs.logging.interceptor)
 
-    // Stripe payment sheet
-    implementation(libs.stripe.android)
-    implementation(libs.financial.connections)
-    
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)

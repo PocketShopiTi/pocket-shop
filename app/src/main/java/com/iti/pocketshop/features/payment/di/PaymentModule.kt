@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.payment.di
 
-import com.iti.pocketshop.features.payment.data.remote.StripePaymentDataSource
-import com.iti.pocketshop.features.payment.data.remote.StripePaymentDataSourceImpl
+import com.iti.pocketshop.features.payment.data.remote.PaymobPaymentDataSource
+import com.iti.pocketshop.features.payment.data.remote.PaymobPaymentDataSourceImpl
 import com.iti.pocketshop.features.payment.data.repository.PaymentRepositoryImpl
 import com.iti.pocketshop.features.payment.domain.repository.PaymentRepository
 import dagger.Binds
@@ -33,11 +33,13 @@ abstract class PaymentModule {
 
     @Binds
     @Singleton
-    abstract fun bindStripePaymentDataSource(
-        stripePaymentDataSourceImpl: StripePaymentDataSourceImpl,
-    ): StripePaymentDataSource
+    abstract fun bindPaymobPaymentDataSource(
+        paymobPaymentDataSourceImpl: PaymobPaymentDataSourceImpl,
+    ): PaymobPaymentDataSource
 
     companion object {
+        // No Logging plugin on purpose: requests carry the secret key in the
+        // Authorization header and must never reach logcat (AGENTS.md §0.5).
         @Provides
         @Singleton
         @PaymentHttpClient
@@ -45,7 +47,10 @@ abstract class PaymentModule {
             expectSuccess = true
             install(ContentNegotiation) {
                 json(
-                    Json { ignoreUnknownKeys = true }
+                    Json {
+                        ignoreUnknownKeys = true
+                        isLenient = true
+                    }
                 )
             }
         }

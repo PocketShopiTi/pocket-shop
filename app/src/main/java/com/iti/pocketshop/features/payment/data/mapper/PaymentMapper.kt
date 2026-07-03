@@ -1,11 +1,17 @@
 package com.iti.pocketshop.features.payment.data.mapper
 
-import com.iti.pocketshop.features.payment.data.dto.PaymentIntentDto
-import com.iti.pocketshop.features.payment.domain.models.PaymentIntentSession
+import com.iti.pocketshop.features.payment.data.dto.PaymobIntentionResponseDto
+import com.iti.pocketshop.features.payment.domain.models.PaymobPaymentSession
 
-fun PaymentIntentDto.toDomain(publishableKey: String): PaymentIntentSession =
-    PaymentIntentSession(
-        paymentIntentId = id,
+private const val UNIFIED_CHECKOUT_URL = "https://accept.paymob.com/unifiedcheckout/"
+
+fun PaymobIntentionResponseDto.toDomain(
+    publicKey: String,
+    redirectUrl: String,
+): PaymobPaymentSession =
+    PaymobPaymentSession(
+        intentionId = id,
         clientSecret = clientSecret,
-        publishableKey = publishableKey,
+        checkoutUrl = "$UNIFIED_CHECKOUT_URL?publicKey=$publicKey&clientSecret=$clientSecret",
+        redirectUrl = redirectUrl,
     )

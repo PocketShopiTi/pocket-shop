@@ -3,11 +3,11 @@ package com.iti.pocketshop.features.payment.domain.repository
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
-import com.iti.pocketshop.features.payment.domain.models.PaymentIntentSession
+import com.iti.pocketshop.features.payment.domain.models.PaymobPaymentSession
 
 interface PaymentRepository {
-    suspend fun createPaymentIntent(
+    suspend fun createPaymobIntention(
         amountMinor: Long,
         currency: PaymentCurrency,
-    ): PocketResult<PaymentIntentSession, PocketDataError.Remote>
+    ): PocketResult<PaymobPaymentSession, PocketDataError.Remote>
 }
