@@ -1,0 +1,11 @@
+query GetProductList($first: Int!, $after: String, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
+    products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
+        nodes {
+            ...ProductFields
+        }
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
+    }
+}
