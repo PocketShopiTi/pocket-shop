@@ -17,6 +17,7 @@ sealed interface PocketDataError : Error {
         SERVER,
         SERIALIZATION,
         UNKNOWN,
+        INVALID_COUPON,
         EMPTY_RESULT
     }
 
@@ -55,10 +56,11 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.SERVER -> context.getString(R.string.server_error)
     PocketDataError.Remote.SERIALIZATION -> context.getString(R.string.failed_to_process_response)
     PocketDataError.Remote.UNKNOWN -> context.getString(R.string.something_went_wrong)
+    PocketDataError.Remote.INVALID_COUPON -> context.getString(R.string.invalid_coupon)
     PocketDataError.Remote.EMPTY_RESULT -> context.getString(R.string.no_results_found)
 
     // Auth
-    PocketDataError.Auth.INVALID_EMAIL-> context.getString(R.string.auth_invalid_email)
+    PocketDataError.Auth.INVALID_EMAIL -> context.getString(R.string.auth_invalid_email)
     PocketDataError.Auth.INVALID_CREDENTIALS -> context.getString(R.string.auth_invalid_credentials)
     PocketDataError.Auth.USER_NOT_FOUND -> context.getString(R.string.auth_user_not_found)
     PocketDataError.Auth.EMAIL_ALREADY_IN_USE -> context.getString(R.string.auth_email_already_in_use)
