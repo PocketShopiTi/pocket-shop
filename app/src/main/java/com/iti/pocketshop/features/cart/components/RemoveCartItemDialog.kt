@@ -15,19 +15,19 @@ fun RemoveCartItemDialog(
     AlertDialog(
         onDismissRequest = onDismiss,
         title = {
-            Text(text = "Remove Item")
+            Text(text = stringResource(id = R.string.remove_item_title))
         },
         text = {
-            Text(text = "Are you sure you want to remove this item from your cart?")
+            Text(text = stringResource(id = R.string.remove_item_message))
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text(text = "Remove")
+                Text(text = stringResource(id = R.string.remove))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = "Cancel")
+                Text(text = stringResource(id = R.string.cancel))
             }
         }
     )

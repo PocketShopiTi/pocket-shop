@@ -17,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.R
 import java.util.Locale
 
 @Composable
@@ -33,11 +35,11 @@ fun OrderSummaryCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(20.dp)
     ) {
         Text(
-            text = "Order summary",
+            text = stringResource(id = R.string.order_summary),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
@@ -45,20 +47,20 @@ fun OrderSummaryCard(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        SummaryRow(title = "Subtotal", value = String.format(Locale.US, "$%.2f", subTotal))
+        SummaryRow(title = stringResource(id = R.string.subtotal), value = String.format(Locale.US, "$%.2f", subTotal))
         Spacer(modifier = Modifier.height(12.dp))
         
         SummaryRow(
-            title = "Discount (10%)", 
+            title = stringResource(id = R.string.discount_10), 
             value = String.format(Locale.US, "-$%.2f", discount),
-            valueColor = Color(0xFFC26642) // Brown color
+            valueColor = MaterialTheme.colorScheme.primary // Brown color
         )
         Spacer(modifier = Modifier.height(12.dp))
         
-        SummaryRow(title = "Shipping", value = if (shipping == 0.0) "Free" else String.format(Locale.US, "$%.2f", shipping))
+        SummaryRow(title = stringResource(id = R.string.shipping), value = if (shipping == 0.0) stringResource(id = R.string.free) else String.format(Locale.US, "$%.2f", shipping))
         
         Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(color = Color.LightGray.copy(alpha = 0.5f))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         Spacer(modifier = Modifier.height(16.dp))
         
         Row(
@@ -67,7 +69,7 @@ fun OrderSummaryCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Total",
+                text = stringResource(id = R.string.total),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -94,7 +96,7 @@ private fun SummaryRow(
         Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = value,

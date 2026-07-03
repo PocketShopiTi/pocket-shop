@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,21 +43,21 @@ fun CartEmptyState(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFF3F1ED)),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_cart), // Fallback if no box icon
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
-                tint = Color.Gray
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         
         Spacer(modifier = Modifier.height(24.dp))
         
         Text(
-            text = "Your cart is empty",
+            text = stringResource(id = R.string.cart_empty_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground
@@ -65,9 +66,9 @@ fun CartEmptyState(
         Spacer(modifier = Modifier.height(8.dp))
         
         Text(
-            text = "Add items to your cart by browsing our collection.",
+            text = stringResource(id = R.string.cart_empty_subtitle),
             style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 32.dp)
         )
@@ -78,13 +79,13 @@ fun CartEmptyState(
             onClick = onStartShoppingClick,
             shape = RoundedCornerShape(24.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFC26642) // Brown color from screenshot
+                containerColor = MaterialTheme.colorScheme.primary // Brown color from screenshot
             ),
             modifier = Modifier.padding(horizontal = 32.dp)
         ) {
             Text(
-                text = "Start shopping",
-                color = Color.White,
+                text = stringResource(id = R.string.start_shopping),
+                color = MaterialTheme.colorScheme.onPrimary,
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
