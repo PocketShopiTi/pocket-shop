@@ -1,8 +1,9 @@
 package com.iti.pocketshop.features.productlist.presentation
 
-import androidx.compose.foundation.clickable
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,9 +13,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,16 +34,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.home.presentation.components.ProductCard
-import com.iti.pocketshop.features.productlist.domain.ProductListType
 
 @Composable
 fun ProductListRoot(
@@ -109,7 +108,6 @@ private fun ProductListScreen(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
                             contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -118,7 +116,6 @@ private fun ProductListScreen(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                             contentDescription = stringResource(R.string.search),
-                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -130,7 +127,9 @@ private fun ProductListScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            if (isSearchActive) {
+            AnimatedVisibility(
+                visible = isSearchActive
+            ) {
                 OutlinedTextField(
                     value = state.searchQuery,
                     onValueChange = { onAction(ProductListAction.SearchProducts(it)) },
@@ -141,12 +140,18 @@ private fun ProductListScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     leadingIcon = {
-                        Icon(ImageVector.vectorResource(R.drawable.ic_search), contentDescription = null)
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.ic_search),
+                            contentDescription = null
+                        )
                     },
                     trailingIcon = {
                         if (state.searchQuery.isNotEmpty()) {
                             IconButton(onClick = { onAction(ProductListAction.SearchProducts("")) }) {
-                                Icon(ImageVector.vectorResource(R.drawable.ic_close), contentDescription = "Clear")
+                                Icon(
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_close),
+                                    contentDescription = stringResource(R.string.clear_search)
+                                )
                             }
                         }
                     }
@@ -158,39 +163,43 @@ private fun ProductListScreen(
                 onRefresh = { onAction(ProductListAction.Refresh) },
                 modifier = Modifier.fillMaxSize()
             ) {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                state = gridState,
-                contentPadding = PaddingValues(20.dp),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(state.filteredProducts, key = { it.id }) { product ->
-                    ProductCard(
-                        product = product,
-                        onClick = { onProductClick(product.id) },
-                        modifier = Modifier.animateItem()
-                    )
-                }
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    state = gridState,
+                    contentPadding = PaddingValues(20.dp),
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(state.filteredProducts, key = { it.id }) { product ->
+                        ProductCard(
+                            product = product,
+                            onClick = { onProductClick(product.id) },
+                            modifier = Modifier.animateItem(),
+                            isFavorite = false,
+                            onWishlistClick = {
+                                // todo
+                            }
+                        )
+                    }
 
-                // Loading more indicator
-                if (state.isLoadingMore) {
-                    item(span = { GridItemSpan(2) }) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(32.dp),
-                                strokeWidth = 3.dp
-                            )
+                    // Loading more indicator
+                    if (state.isLoadingMore) {
+                        item(span = { GridItemSpan(2) }) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(32.dp),
+                                    strokeWidth = 3.dp
+                                )
+                            }
                         }
                     }
                 }
-            }
             }
         }
     }

@@ -74,7 +74,7 @@
     <string name="something_went_wrong">Something went wrong, Please try again</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
-    <string name="shop_by_category">Shop by Category</string>
+    <string name="shop_by_brand">Shop by Brand</string>
     <string name="featured">Featured</string>
     <string name="trending">Trending</string>
     <string name="on_fire_emoji">🔥</string>
@@ -297,4 +297,5 @@
     <string name="brands_available">%1$d brands available</string>
     <string name="items_count">%1$d items</string>
     <string name="back">Back</string>
+    <string name="clear_search">Clear search</string>
 </resources>

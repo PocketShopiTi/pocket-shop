@@ -30,7 +30,6 @@ import com.iti.pocketshop.features.home.presentation.components.HeroBanner
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
 import com.iti.pocketshop.features.home.presentation.components.ProductRow
 import com.iti.pocketshop.features.home.presentation.components.SectionHeader
-import com.iti.pocketshop.features.wishlist.presentation.action.WishlistAction
 import kotlinx.coroutines.launch
 
 @Composable
@@ -103,7 +102,7 @@ private fun HomeScreen(
                     item { Spacer(Modifier.height(24.dp)) }
                     item {
                         SectionHeader(
-                            title = stringResource(R.string.shop_by_category),
+                            title = stringResource(R.string.shop_by_brand),
                             onSeeAllClick = openCategories,
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )

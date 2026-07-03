@@ -55,7 +55,7 @@ class ProductListViewModel @AssistedInject constructor(
                 _state.update {
                     it.copy(
                         searchQuery = action.query,
-                        filteredProducts = if (action.query.isEmpty()) {
+                        filteredProducts = if (action.query.isBlank()) {
                             it.products
                         } else {
                             it.products.filter { product ->
@@ -89,7 +89,8 @@ class ProductListViewModel @AssistedInject constructor(
             )
                 .onSuccess { page ->
                     _state.update {
-                        val newProducts = if (isRefresh) page.products else it.products + page.products
+                        val newProducts =
+                            if (isRefresh) page.products else it.products + page.products
                         it.copy(
                             products = newProducts,
                             filteredProducts = if (it.searchQuery.isEmpty()) newProducts else newProducts.filter { product ->
@@ -102,11 +103,11 @@ class ProductListViewModel @AssistedInject constructor(
                         )
                     }
                 }
-                .onError {
+                .onError { error ->
                     _state.update {
                         it.copy(isLoading = false, isLoadingMore = false)
                     }
-                    ErrorDialogController.sendEvent(it)
+                    ErrorDialogController.sendEvent(error)
                 }
         }
     }
