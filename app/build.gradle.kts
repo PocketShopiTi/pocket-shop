@@ -69,9 +69,27 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
-        buildConfigField("String", "STORE_FRONT_TOKEN", "\"${localProperties.getProperty("STORE_FRONT_TOKEN", "")}\"")
-        buildConfigField("String", "ADMIN_TOKEN", "\"${localProperties.getProperty("ADMIN_TOKEN", "")}\"")
+
+        buildConfigField(
+            "String",
+            "STORE_FRONT_TOKEN",
+            "\"${localProperties.getProperty("STORE_FRONT_TOKEN", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "ADMIN_TOKEN",
+            "\"${localProperties.getProperty("ADMIN_TOKEN", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "STRIPE_PUBLISHABLE_KEY",
+            "\"${localProperties.getProperty("STRIPE_PUBLISHABLE_KEY", "")}\""
+        )
+        buildConfigField(
+            "String",
+            "STRIPE_SECRET_KEY",
+            "\"${localProperties.getProperty("STRIPE_SECRET_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -163,6 +181,10 @@ dependencies {
     implementation(libs.apollo.runtime)
     implementation(libs.logging.interceptor)
 
+    // Stripe payment sheet
+    implementation(libs.stripe.android)
+    implementation(libs.financial.connections)
+    
     // nav3
     implementation(libs.androidx.navigation3)
     implementation(libs.androidx.navigation3.ui)
