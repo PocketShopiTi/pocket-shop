@@ -313,7 +313,8 @@
     <string name="clear_search">Clear search</string>
 
     <string name="payment_pay_now">Pay now</string>
-    <string name="payment_merchant_name">Pocket Shop</string>
+    <string name="payment_checkout_title">Checkout</string>
+    <string name="payment_checkout_close">Close checkout</string>
     <string name="payment_completed">Payment completed successfully</string>
     <string name="payment_canceled">Payment was canceled</string>
     <string name="payment_failed">Payment failed. Please try again</string>

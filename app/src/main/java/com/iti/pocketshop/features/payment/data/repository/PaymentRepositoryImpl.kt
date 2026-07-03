@@ -5,20 +5,26 @@ import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
 import com.iti.pocketshop.features.payment.data.mapper.toDomain
-import com.iti.pocketshop.features.payment.data.remote.StripePaymentDataSource
+import com.iti.pocketshop.features.payment.data.remote.PaymobPaymentDataSource
+import com.iti.pocketshop.features.payment.data.remote.PaymobPaymentDataSourceImpl
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
-import com.iti.pocketshop.features.payment.domain.models.PaymentIntentSession
+import com.iti.pocketshop.features.payment.domain.models.PaymobPaymentSession
 import com.iti.pocketshop.features.payment.domain.repository.PaymentRepository
 import javax.inject.Inject
 
 class PaymentRepositoryImpl @Inject constructor(
-    private val remote: StripePaymentDataSource,
+    private val remote: PaymobPaymentDataSource,
 ) : PaymentRepository {
 
-    override suspend fun createPaymentIntent(
+    override suspend fun createPaymobIntention(
         amountMinor: Long,
         currency: PaymentCurrency,
-    ): PocketResult<PaymentIntentSession, PocketDataError.Remote> =
-        remote.createPaymentIntent(amountMinor, currency.currencyCode)
-            .map { dto -> dto.toDomain(publishableKey = BuildConfig.STRIPE_PUBLISHABLE_KEY) }
+    ): PocketResult<PaymobPaymentSession, PocketDataError.Remote> =
+        remote.createIntention(amountMinor, currency.currencyCode)
+            .map { dto ->
+                dto.toDomain(
+                    publicKey = BuildConfig.PAYMOB_PUBLIC_KEY,
+                    redirectUrl = PaymobPaymentDataSourceImpl.REDIRECT_URL,
+                )
+            }
 }
