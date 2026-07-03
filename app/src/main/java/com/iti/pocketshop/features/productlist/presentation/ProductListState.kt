@@ -2,11 +2,10 @@ package com.iti.pocketshop.features.productlist.presentation
 
 import androidx.compose.runtime.Immutable
 import com.iti.pocketshop.features.home.domain.models.Product
-import com.iti.pocketshop.features.productlist.domain.ProductListType
 
 @Immutable
 data class ProductListState(
-    val listType: ProductListType = ProductListType.FEATURED,
+    val productListRouteInfo: ProductListRouteInfo = ProductListRouteInfo.None,
     val products: List<Product> = emptyList(),
     val filteredProducts: List<Product> = emptyList(),
     val searchQuery: String = "",

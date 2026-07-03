@@ -30,13 +30,14 @@ import com.iti.pocketshop.features.home.presentation.components.HeroBanner
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
 import com.iti.pocketshop.features.home.presentation.components.ProductRow
 import com.iti.pocketshop.features.home.presentation.components.SectionHeader
+import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeRoot(
     openSearch: () -> Unit,
     openCategories: () -> Unit,
-    openProductList: (String) -> Unit,
+    openProductList: (ProductListRouteInfo) -> Unit,
     openProductDetails: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -56,7 +57,7 @@ fun HomeRoot(
 private fun HomeScreen(
     openSearch: () -> Unit,
     openCategories: () -> Unit,
-    openProductList: (String) -> Unit,
+    openProductList: (ProductListRouteInfo) -> Unit,
     openProductDetails: (String) -> Unit,
     state: HomeState,
     onAction: (HomeAction) -> Unit,
@@ -111,8 +112,8 @@ private fun HomeScreen(
                     item {
                         BrandRow(
                             categories = state.brands,
-                            onCategoryClick = {
-
+                            onCategoryClick = { brand ->
+                                openProductList(ProductListRouteInfo.Brands(brand.title))
                             }
                         )
                     }
@@ -125,7 +126,7 @@ private fun HomeScreen(
                         SectionHeader(
                             title = stringResource(R.string.featured),
                             onSeeAllClick = {
-                                openProductList("FEATURED")
+                                openProductList(ProductListRouteInfo.Featured)
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
@@ -161,7 +162,7 @@ private fun HomeScreen(
                             title = stringResource(R.string.trending),
                             badge = stringResource(R.string.on_fire_emoji),
                             onSeeAllClick = {
-                                openProductList("TRENDING")
+                                openProductList(ProductListRouteInfo.Trending)
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
@@ -197,7 +198,7 @@ private fun HomeScreen(
                             title = stringResource(R.string.new_arrivals),
                             badge = stringResource(R.string.new_items),
                             onSeeAllClick = {
-                                openProductList("NEW_ARRIVALS")
+                                openProductList(ProductListRouteInfo.NewArrivals)
                             },
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )

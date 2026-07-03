@@ -16,12 +16,14 @@ class ProductListRepositoryImpl @Inject constructor(
         after: String?,
         sortKey: String,
         reverse: Boolean,
+        query: String?,
     ): PocketResult<ProductListPage, PocketDataError.Remote> {
         return remoteSource.getProducts(
             first = first,
             after = after,
             sortKey = sortKey,
             reverse = reverse,
+            query = query,
         )
     }
 }

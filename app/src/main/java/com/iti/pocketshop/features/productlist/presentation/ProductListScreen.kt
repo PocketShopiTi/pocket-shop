@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,23 +38,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.home.presentation.components.ProductCard
 
 @Composable
 fun ProductListRoot(
-    type: String,
+    routeInfo: ProductListRouteInfo,
     onBack: () -> Unit,
     onProductClick: (String) -> Unit,
-    viewModel: ProductListViewModel = hiltViewModel(
-        key = type,
-        creationCallback = { factory: ProductListViewModel.Factory ->
-            factory.create(type)
-        }
-    )
+    viewModel: ProductListViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(routeInfo) {
+        viewModel.onAction(ProductListAction.UpdateRouteInfo(routeInfo))
+    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     ProductListScreen(
@@ -66,7 +64,6 @@ fun ProductListRoot(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductListScreen(
     state: ProductListState,
@@ -98,7 +95,7 @@ private fun ProductListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(state.listType.titleResId),
+                        text = state.productListRouteInfo.screenTitle(),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )

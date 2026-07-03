@@ -170,8 +170,8 @@ fun RootNavDisplay() {
                     openCategories = {
                         rootBackStack.navigateSingleTop(Route.Categories)
                     },
-                    openProductList = { type ->
-                        rootBackStack.navigateSingleTop(Route.ProductList(type = type))
+                    openProductList = { routeInfo ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(routeInfo))
                     },
                 )
             }
@@ -208,12 +208,15 @@ fun RootNavDisplay() {
                 CategoriesRoot(
                     onBack = {
                         rootBackStack.removeLastOrNull()
+                    },
+                    onBrandClick = { brandName ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(brandName))
                     }
                 )
             }
             entry<Route.ProductList> {
                 ProductListRoot(
-                    type = it.type,
+                    routeInfo = it.routeInfo,
                     onBack = {
                         rootBackStack.removeLastOrNull()
                     },

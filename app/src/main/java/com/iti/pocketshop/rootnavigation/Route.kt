@@ -1,6 +1,7 @@
 package com.iti.pocketshop.rootnavigation
 
 import androidx.navigation3.runtime.NavKey
+import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import kotlinx.serialization.Serializable
 
 sealed interface Route : NavKey {
@@ -71,5 +72,7 @@ sealed interface Route : NavKey {
     data object Categories : Route
 
     @Serializable
-    data class ProductList(val type: String) : Route
+    data class ProductList(
+        val routeInfo: ProductListRouteInfo
+    ) : Route
 }

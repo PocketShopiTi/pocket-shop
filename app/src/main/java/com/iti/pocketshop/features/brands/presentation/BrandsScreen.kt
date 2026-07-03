@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,10 +33,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.brands.presentation.components.CategoryCard
+import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 
 @Composable
 fun CategoriesRoot(
     onBack: () -> Unit,
+    onBrandClick: (ProductListRouteInfo.Brands) -> Unit,
     viewModel: BrandsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -45,16 +46,17 @@ fun CategoriesRoot(
     CategoriesScreen(
         state = state,
         onAction = viewModel::onAction,
-        onBack = onBack
+        onBack = onBack,
+        onBrandClick = onBrandClick
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoriesScreen(
     state: BrandsState,
     onAction: (BrandsAction) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onBrandClick: (ProductListRouteInfo.Brands) -> Unit
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
 
@@ -73,7 +75,6 @@ fun CategoriesScreen(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
                             contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -82,7 +83,6 @@ fun CategoriesScreen(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                             contentDescription = stringResource(R.string.search),
-                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -139,7 +139,7 @@ fun CategoriesScreen(
                     items(state.filteredBrands, key = { it.id }) { category ->
                         CategoryCard(
                             category = category,
-                            onClick = { /* TODO navigate to products by brand */ }
+                            onClick = { onBrandClick(ProductListRouteInfo.Brands(category.title)) }
                         )
                     }
                 }

@@ -6,10 +6,6 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.productlist.domain.GetProductListUseCase
-import com.iti.pocketshop.features.productlist.domain.ProductListType
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,23 +13,16 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-@HiltViewModel(assistedFactory = ProductListViewModel.Factory::class)
-class ProductListViewModel @AssistedInject constructor(
+@HiltViewModel
+class ProductListViewModel @Inject constructor(
     private val getProductListUseCase: GetProductListUseCase,
-    @Assisted type: String,
 ) : ViewModel() {
-
-    @AssistedFactory
-    interface Factory {
-        fun create(type: String): ProductListViewModel
-    }
-
-    private val listType = ProductListType.fromString(type)
 
     private var hasLoadedInitialData = false
 
-    private val _state = MutableStateFlow(ProductListState(listType = listType))
+    private val _state = MutableStateFlow(ProductListState())
     val state = _state
         .onStart {
             if (!hasLoadedInitialData) {
@@ -44,11 +33,12 @@ class ProductListViewModel @AssistedInject constructor(
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = ProductListState(listType = listType)
+            initialValue = ProductListState()
         )
 
     fun onAction(action: ProductListAction) {
         when (action) {
+            is ProductListAction.UpdateRouteInfo -> updateRouteInfo(action.routeInfo)
             ProductListAction.LoadMore -> loadProducts(isRefresh = false)
             ProductListAction.Refresh -> loadProducts(isRefresh = true)
             is ProductListAction.SearchProducts -> {
@@ -68,6 +58,14 @@ class ProductListViewModel @AssistedInject constructor(
         }
     }
 
+    private fun updateRouteInfo(info: ProductListRouteInfo) {
+        _state.update {
+            it.copy(
+                productListRouteInfo = info
+            )
+        }
+    }
+
     private fun loadProducts(isRefresh: Boolean) {
         val currentState = _state.value
 
@@ -81,11 +79,14 @@ class ProductListViewModel @AssistedInject constructor(
                 else it.copy(isLoadingMore = true)
             }
 
+            val currentStateRouteInfo = _state.value.productListRouteInfo
+
             getProductListUseCase(
                 first = 20,
                 after = if (isRefresh) null else currentState.endCursor,
-                sortKey = listType.sortKey,
-                reverse = listType.reverse,
+                sortKey = currentStateRouteInfo.sortKey(),
+                reverse = currentStateRouteInfo.isReverse(),
+                query =  currentStateRouteInfo.query()
             )
                 .onSuccess { page ->
                     _state.update {

@@ -77,7 +77,7 @@ fun HeroBanner(
             ) {
                 Text(
                     text = stringResource(R.string.big_sale),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontWeight = FontWeight.Bold,
                     fontSize = 11.sp,
                     letterSpacing = 1.5.sp,
