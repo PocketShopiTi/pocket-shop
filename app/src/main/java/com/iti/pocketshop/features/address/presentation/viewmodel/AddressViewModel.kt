@@ -74,7 +74,10 @@ class AddressViewModel @Inject constructor(
             )
 
             AddressAction.ClearLocationSuggestions -> onClearLocationSuggestions(action)
-            is AddressAction.EditAddressClicked,
+            is AddressAction.EditAddressClicked -> {
+                onEditAdress(action)
+            }
+
             AddressAction.AddAddressClicked,
             AddressAction.CloseEditor -> onClickAction(action)
 
@@ -86,6 +89,49 @@ class AddressViewModel @Inject constructor(
             AddressAction.CancelDelete,
             AddressAction.DismissError,
             AddressAction.DismissMessage -> onStateOnlyAction(action)
+        }
+    }
+
+    private fun onEditAdress(action: AddressAction.EditAddressClicked) {
+        onClickAction(action)
+        val address = _state.value.addresses.firstOrNull { it.id == action.addressId }
+        if (address != null && (address.latitude == null || address.longitude == null)) {
+            val query = listOf(address.address1, address.city, address.country)
+                .filter { it.isNotBlank() }
+                .joinToString(", ")
+            if (query.isNotBlank()) {
+                viewModelScope.launch {
+                    when (val result = searchAddressSuggestionsUseCase(query)) {
+                        is PocketResult.Success -> {
+                            val suggestion = result.data.firstOrNull()
+                            if (suggestion != null) {
+                                val latLngStr = suggestion.placeId.substringBefore("|")
+                                val parts = latLngStr.split(",")
+                                if (parts.size >= 2) {
+                                    val lat = parts[0].toDoubleOrNull()
+                                    val lng = parts[1].toDoubleOrNull()
+                                    if (lat != null && lng != null) {
+                                        _state.update { current ->
+                                            if (current.editor.isEditing && current.editor.addressId == address.id) {
+                                                current.copy(
+                                                    editor = current.editor.copy(
+                                                        latitude = lat,
+                                                        longitude = lng,
+                                                    )
+                                                )
+                                            } else {
+                                                current
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        else -> {}
+                    }
+                }
+            }
         }
     }
 

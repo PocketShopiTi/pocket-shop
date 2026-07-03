@@ -177,7 +177,7 @@ private fun OsmMapView(
 ) {
     val context = LocalContext.current
 
-    val mapView = remember(target.latitude, target.longitude, zoom) {
+    val mapView = remember {
 
         Configuration.getInstance().load(
             context,
@@ -195,8 +195,19 @@ private fun OsmMapView(
 
     val markerOverlay = remember(mapView) { Marker(mapView) }
 
-    DisposableEffect(mapView) {
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner, mapView) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> mapView.onResume()
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             mapView.onDetach()
         }
     }
@@ -218,17 +229,21 @@ private fun OsmMapView(
                     },
                 ),
             )
+            mapView.onResume() // Kickstart rendering immediately
             mapView
         },
         update = { view ->
             view.controller.setZoom(zoom)
-            view.controller.setCenter(target)
+            view.post { view.controller.setCenter(target) }
 
-            view.overlays.remove(markerOverlay)
             if (marker != null) {
                 markerOverlay.position = marker
                 markerOverlay.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                view.overlays.add(markerOverlay)
+                if (!view.overlays.contains(markerOverlay)) {
+                    view.overlays.add(markerOverlay)
+                }
+            } else {
+                view.overlays.remove(markerOverlay)
             }
             view.invalidate()
         },
