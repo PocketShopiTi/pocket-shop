@@ -15,7 +15,7 @@ interface AddressRepositoryStrings {
 }
 
 class AndroidAddressRepositoryStrings @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : AddressRepositoryStrings {
     override val missingCustomerAccessToken: String
         get() = context.getString(R.string.address_error_customer_account_missing_token)

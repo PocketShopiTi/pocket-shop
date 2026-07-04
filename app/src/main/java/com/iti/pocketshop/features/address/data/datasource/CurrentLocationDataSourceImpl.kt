@@ -18,7 +18,7 @@ import kotlin.coroutines.resume
 
 @Singleton
 class CurrentLocationDataSourceImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) : CurrentLocationDataSource {
 
     private val fusedLocationClient by lazy {

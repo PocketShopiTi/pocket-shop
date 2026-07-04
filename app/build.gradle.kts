@@ -67,22 +67,11 @@ android {
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
-        val customerAccessToken = localProperties["CUSTOMER_ACCESS_TOKEN"]
-            ?.toString()
-            .orEmpty()
-            .replace("\"", "\\\"")
+
         val mapsApiKey = localProperties["MAPS_API_KEY"]
-            ?.toString()
-            .orEmpty()
-            .replace("\"", "\\\"")
-        buildConfigField("String", "CUSTOMER_ACCESS_TOKEN", "\"$customerAccessToken\"")
-        buildConfigField("String", "MAPS_API_KEY", "\"$mapsApiKey\"")
-        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey as? String ?: ""
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
-        buildConfigField("String", "STORE_FRONT_TOKEN", "\"${localProperties.getProperty("STORE_FRONT_TOKEN", "")}\"")
-        buildConfigField("String", "ADMIN_TOKEN", "\"${localProperties.getProperty("ADMIN_TOKEN", "")}\"")
     }
 
     buildTypes {
@@ -120,10 +109,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     //todo: remove these
-    implementation(libs.androidx.compose.material)
-    implementation(libs.androidx.compose.material3.lint)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.tv.material)
 
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)

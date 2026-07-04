@@ -1,7 +1,7 @@
 package com.iti.pocketshop.core.userdata
 
+import com.iti.pocketshop.common.sessionmanager.domain.usecase.GetAccessTokenUseCase
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.sessionmanager.domain.usecase.GetAccessTokenUseCase
 import javax.inject.Inject
 import javax.inject.Singleton
 

@@ -1,6 +1,5 @@
 package com.iti.pocketshop.core.di
 
-import com.iti.pocketshop.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,7 +9,6 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -32,10 +30,5 @@ object AddressLocationNetworkModule {
             }
         }
     }
-
-    @Provides
-    @Singleton
-    @Named("mapsApiKey")
-    fun provideMapsApiKey(): String =   BuildConfig.MAPS_API_KEY
 
 }
