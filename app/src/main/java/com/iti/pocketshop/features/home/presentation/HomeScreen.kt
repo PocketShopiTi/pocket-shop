@@ -20,17 +20,20 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import com.iti.pocketshop.features.home.presentation.components.BrandRow
+import com.iti.pocketshop.features.home.presentation.components.CategoriesRow
 import com.iti.pocketshop.features.home.presentation.components.EmptyHome
 import com.iti.pocketshop.features.home.presentation.components.HeroBanner
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
 import com.iti.pocketshop.features.home.presentation.components.ProductRow
 import com.iti.pocketshop.features.home.presentation.components.SectionHeader
 import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,7 +52,8 @@ fun HomeRoot(
         openProductList = openProductList,
         openProductDetails = openProductDetails,
         state = state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        user = LocalUser.current
     )
 }
 
@@ -61,12 +65,12 @@ private fun HomeScreen(
     openProductDetails: (String) -> Unit,
     state: HomeState,
     onAction: (HomeAction) -> Unit,
+    user: UserSession?,
+    scope: CoroutineScope = rememberCoroutineScope()
 ) {
     val isEmptyState =
         state.brands.isEmpty() &&
                 state.featuredProducts.isEmpty()
-    val user = LocalUser.current
-    val scope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -113,7 +117,28 @@ private fun HomeScreen(
                         BrandRow(
                             brands = state.brands,
                             onBrandClick = { brand ->
-                                openProductList(ProductListRouteInfo.Brands(brand.title))
+                                openProductList(ProductListRouteInfo.Brands(brand.brandName))
+                            }
+                        )
+                    }
+                }
+
+                // Categories
+                if (state.categories.isNotEmpty()) {
+                    item { Spacer(Modifier.height(24.dp)) }
+                    item {
+                        SectionHeader(
+                            title = stringResource(R.string.all_categories),
+                            onSeeAllClick = null,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                    item { Spacer(Modifier.height(12.dp)) }
+                    item {
+                        CategoriesRow(
+                            categories = state.categories,
+                            onCategoryClick = { category ->
+                                openProductList(ProductListRouteInfo.Category(category.catName))
                             }
                         )
                     }

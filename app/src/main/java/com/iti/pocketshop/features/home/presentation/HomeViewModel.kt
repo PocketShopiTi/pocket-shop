@@ -59,6 +59,7 @@ class HomeViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             brands = data.brands,
+                            categories = data.categories,
                             featuredProducts = data.featuredProducts,
                             bestSellers = data.bestSellers,
                             newArrivals = data.newArrivals

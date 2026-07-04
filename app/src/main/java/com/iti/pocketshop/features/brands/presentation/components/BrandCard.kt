@@ -47,9 +47,9 @@ fun BrandCard(
             if (brandItem.imageUrl != null) {
                 AsyncImage(
                     model = brandItem.imageUrl,
-                    contentDescription = brandItem.imageAlt,
+                    contentDescription = brandItem.title,
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(100.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -78,7 +78,6 @@ fun BrandCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
-                minLines = 2,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis
             )

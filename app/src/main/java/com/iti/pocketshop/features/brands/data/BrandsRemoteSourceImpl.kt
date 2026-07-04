@@ -18,7 +18,9 @@ class BrandsRemoteSourceImpl @Inject constructor(
             .query(GetBrandsQuery(first = first))
             .safeCall()
             .map { data ->
-                data.collections.nodes.map { it.toDomain() }
+                data.brands.nodes.map {
+                    it.toDomain()
+                }
             }
     }
 }

@@ -13,6 +13,11 @@ fun HomeQuery.Data.toDomain(): HomeData {
                 it.toDomain()
             },
 
+        categories =
+            categories.nodes.map {
+                it.toDomain()
+            },
+
         featuredProducts =
             featuredProducts.nodes.map {
                 it.productFields.toDomain()
@@ -71,9 +76,17 @@ fun ProductFields.MaxVariantPrice.toDomain(): Money {
 fun HomeQuery.Node.toDomain(): Brand {
     return Brand(
         id = id,
-        title = title,
+        brandName = brandName?.value ?: "-",
         handle = handle,
-        imageUrl = image?.url,
-        imageAlt = image?.altText
+        brandLogoUrl = brandLogo?.value,
+    )
+}
+
+fun HomeQuery.Node1.toDomain(): Category {
+    return Category(
+        id = id,
+        catName = CategoryName.getTypeByString(catName?.value ?: "-"),
+        handle = handle,
+        catLogoUrl = catLogo?.value,
     )
 }

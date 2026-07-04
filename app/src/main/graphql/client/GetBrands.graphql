@@ -1,13 +1,10 @@
 query GetBrands($first: Int!) {
-    collections(first: $first) {
+    brands: metaobjects(type: "brand", first: $first) {
         nodes {
             id
-            title
             handle
-            image {
-                url(transform: { maxWidth: 200, maxHeight: 200 })
-                altText
-            }
+            brandName: field(key: "name") { value }
+            brandLogo: field(key: "logo") { value }
         }
     }
 }

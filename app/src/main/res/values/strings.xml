@@ -311,4 +311,13 @@
     <string name="items_count">%1$d items</string>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
+    <string name="all_categories">All Categories</string>
+    <string name="men">Men</string>
+    <string name="women">Women</string>
+    <string name="kids">Kids</string>
+    <string name="baby">Baby</string>
+    <string name="shoes">Shoes</string>
+    <string name="bags">Bags</string>
+    <string name="accessories">Accessories</string>
+    <string name="pets">Pets</string>
 </resources>

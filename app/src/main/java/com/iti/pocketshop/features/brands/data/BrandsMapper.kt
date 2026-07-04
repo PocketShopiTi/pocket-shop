@@ -6,9 +6,8 @@ import com.iti.pocketshop.shopify.GetBrandsQuery
 fun GetBrandsQuery.Node.toDomain(): BrandItem {
     return BrandItem(
         id = id,
-        title = title,
+        title = brandName?.value ?: "-",
         handle = handle,
-        imageUrl = image?.url,
-        imageAlt = image?.altText
+        imageUrl = brandLogo?.value,
     )
 }

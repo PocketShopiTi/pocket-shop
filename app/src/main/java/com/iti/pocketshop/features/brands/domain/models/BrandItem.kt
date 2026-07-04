@@ -5,5 +5,4 @@ data class BrandItem(
     val title: String,
     val handle: String,
     val imageUrl: String?,
-    val imageAlt: String?
 )
