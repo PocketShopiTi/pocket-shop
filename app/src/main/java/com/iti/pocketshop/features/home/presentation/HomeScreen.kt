@@ -68,10 +68,6 @@ private fun HomeScreen(
     user: UserSession?,
     scope: CoroutineScope = rememberCoroutineScope()
 ) {
-    val isEmptyState =
-        state.brands.isEmpty() &&
-                state.featuredProducts.isEmpty()
-
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -93,7 +89,7 @@ private fun HomeScreen(
             ) {
                 // Hero banner
                 item {
-                    if (!isEmptyState) {
+                    if (!state.isEmptyState) {
                         HeroBanner(
                             openSales = {
                                 //TODO()
@@ -104,7 +100,7 @@ private fun HomeScreen(
 
                 // Brands
                 if (state.brands.isNotEmpty()) {
-                    item { Spacer(Modifier.height(24.dp)) }
+                    item { Spacer(Modifier.height(16.dp)) }
                     item {
                         SectionHeader(
                             title = stringResource(R.string.shop_by_brand),
@@ -112,7 +108,7 @@ private fun HomeScreen(
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
                     }
-                    item { Spacer(Modifier.height(12.dp)) }
+                    item { Spacer(Modifier.height(8.dp)) }
                     item {
                         BrandRow(
                             brands = state.brands,
@@ -125,7 +121,7 @@ private fun HomeScreen(
 
                 // Categories
                 if (state.categories.isNotEmpty()) {
-                    item { Spacer(Modifier.height(24.dp)) }
+                    item { Spacer(Modifier.height(16.dp)) }
                     item {
                         SectionHeader(
                             title = stringResource(R.string.all_categories),
@@ -133,7 +129,7 @@ private fun HomeScreen(
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
                     }
-                    item { Spacer(Modifier.height(12.dp)) }
+                    item { Spacer(Modifier.height(8.dp)) }
                     item {
                         CategoriesRow(
                             categories = state.categories,
@@ -146,7 +142,7 @@ private fun HomeScreen(
 
                 // Featured products
                 if (state.featuredProducts.isNotEmpty()) {
-                    item { Spacer(Modifier.height(28.dp)) }
+                    item { Spacer(Modifier.height(20.dp)) }
                     item {
                         SectionHeader(
                             title = stringResource(R.string.featured),
@@ -181,7 +177,7 @@ private fun HomeScreen(
 
                 // Best sellers
                 if (state.bestSellers.isNotEmpty()) {
-                    item { Spacer(Modifier.height(28.dp)) }
+                    item { Spacer(Modifier.height(20.dp)) }
                     item {
                         SectionHeader(
                             title = stringResource(R.string.trending),
@@ -217,7 +213,7 @@ private fun HomeScreen(
 
                 // New arrivals
                 if (state.newArrivals.isNotEmpty()) {
-                    item { Spacer(Modifier.height(28.dp)) }
+                    item { Spacer(Modifier.height(20.dp)) }
                     item {
                         SectionHeader(
                             title = stringResource(R.string.new_arrivals),
@@ -253,7 +249,7 @@ private fun HomeScreen(
                 }
 
                 // Empty state
-                if (isEmptyState) {
+                if (state.isEmptyState) {
                     item { EmptyHome(onRefresh = { onAction(HomeAction.FetchData) }) }
                 }
             }

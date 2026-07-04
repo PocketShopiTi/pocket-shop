@@ -54,10 +54,13 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchHomeData() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
             getHomeDataUseCase()
                 .onSuccess { data ->
                     _state.update {
                         it.copy(
+                            isLoading = false,
+                            isEmptyState = data.brands.isEmpty() && data.featuredProducts.isEmpty() && data.bestSellers.isEmpty() && data.newArrivals.isEmpty(),
                             brands = data.brands,
                             categories = data.categories,
                             featuredProducts = data.featuredProducts,
@@ -66,8 +69,9 @@ class HomeViewModel @Inject constructor(
                         )
                     }
                 }
-                .onError {
-                    ErrorDialogController.sendEvent(it)
+                .onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                    ErrorDialogController.sendEvent(error)
                 }
         }
     }

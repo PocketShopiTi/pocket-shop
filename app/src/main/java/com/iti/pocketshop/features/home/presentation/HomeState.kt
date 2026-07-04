@@ -8,6 +8,7 @@ import com.iti.pocketshop.features.home.domain.models.Product
 @Immutable
 data class HomeState(
     val isLoading: Boolean = false,
+    val isEmptyState: Boolean = false,
     val brands: List<Brand> = emptyList(),
     val categories: List<Category> = emptyList(),
     val featuredProducts: List<Product> = emptyList(),

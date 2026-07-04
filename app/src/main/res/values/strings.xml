@@ -320,4 +320,5 @@
     <string name="bags">Bags</string>
     <string name="accessories">Accessories</string>
     <string name="pets">Pets</string>
+    <string name="try_searching_for_something_else">Try searching for something else.</string>
 </resources>
