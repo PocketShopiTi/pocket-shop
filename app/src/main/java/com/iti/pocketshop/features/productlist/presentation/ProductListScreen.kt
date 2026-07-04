@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -15,11 +17,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,6 +34,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,41 +42,75 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
+import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
+import com.iti.pocketshop.core.components.RemoveFavoriteDialog
+import com.iti.pocketshop.core.components.SignInDialogController
+import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import com.iti.pocketshop.features.home.presentation.components.ProductCard
+import com.iti.pocketshop.features.home.presentation.models.UIProduct
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductListRoot(
-    type: String,
+    routeInfo: ProductListRouteInfo,
     onBack: () -> Unit,
     onProductClick: (String) -> Unit,
-    viewModel: ProductListViewModel = hiltViewModel(
-        key = type,
-        creationCallback = { factory: ProductListViewModel.Factory ->
-            factory.create(type)
-        }
-    )
+    viewModel: ProductListViewModel = hiltViewModel()
 ) {
+    LaunchedEffect(routeInfo) {
+        viewModel.onAction(ProductListAction.UpdateRouteInfo(routeInfo))
+    }
+
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val user = LocalUser.current
+    val scope = rememberCoroutineScope()
 
     ProductListScreen(
         state = state,
         onAction = viewModel::onAction,
         onBack = onBack,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onWishlistClick = { uiProduct ->
+            val original = uiProduct.originalProduct
+            if (user?.isAnonymous == true) {
+                scope.launch {
+                    SignInDialogController.sendEvent(true)
+                }
+            } else if (uiProduct.isFavorite) {
+                scope.launch {
+                    DeleteFavoriteDialogController.sendEvent(original.toFavoriteProduct())
+                }
+            } else {
+                viewModel.onAction(ProductListAction.ToggleFavorite(original.toFavoriteProduct()))
+            }
+        }
+    )
+
+    RemoveFavoriteDialog(
+        onConfirm = {
+            viewModel.onAction(ProductListAction.ToggleFavorite(it))
+        }
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductListScreen(
     state: ProductListState,
     onAction: (ProductListAction) -> Unit,
     onBack: () -> Unit,
-    onProductClick: (String) -> Unit
+    onProductClick: (String) -> Unit,
+    onWishlistClick: (UIProduct) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
 
@@ -98,7 +136,7 @@ private fun ProductListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = stringResource(state.listType.titleResId),
+                        text = state.productListRouteInfo.screenTitle(),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
@@ -163,44 +201,109 @@ private fun ProductListScreen(
                 onRefresh = { onAction(ProductListAction.Refresh) },
                 modifier = Modifier.fillMaxSize()
             ) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    state = gridState,
-                    contentPadding = PaddingValues(20.dp),
-                    horizontalArrangement = Arrangement.spacedBy(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(state.filteredProducts, key = { it.id }) { product ->
-                        ProductCard(
-                            product = product,
-                            onClick = { onProductClick(product.id) },
-                            modifier = Modifier.animateItem(),
-                            isFavorite = false,
-                            onWishlistClick = {
-                                // todo
-                            }
-                        )
-                    }
+                if (state.filteredProducts.isEmpty() && !state.isLoading) {
+                    EmptyProductList(
+                        isSearch = state.searchQuery.isNotEmpty(),
+                        onRefresh = { onAction(ProductListAction.Refresh) }
+                    )
+                } else {
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        state = gridState,
+                        contentPadding = PaddingValues(20.dp),
+                        horizontalArrangement = Arrangement.spacedBy(14.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp),
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(state.filteredProducts, key = { it.id }) { product ->
+                            ProductCard(
+                                product = product,
+                                onClick = { onProductClick(product.id) },
+                                modifier = Modifier.animateItem(),
+                                onWishlistClick = onWishlistClick
+                            )
+                        }
 
-                    // Loading more indicator
-                    if (state.isLoadingMore) {
-                        item(span = { GridItemSpan(2) }) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(32.dp),
-                                    strokeWidth = 3.dp
-                                )
+                        // Loading more indicator
+                        if (state.isLoadingMore) {
+                            item(span = { GridItemSpan(2) }) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(32.dp),
+                                        strokeWidth = 3.dp
+                                    )
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+fun EmptyProductList(
+    isSearch: Boolean,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val composition by rememberLottieComposition(
+        LottieCompositionSpec.RawRes(R.raw.lottie_empty_list)
+    )
+    val progress by animateLottieCompositionAsState(
+        composition = composition,
+        iterations = LottieConstants.IterateForever,
+    )
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        LottieAnimation(
+            composition = composition,
+            progress = { progress },
+            modifier = Modifier.size(260.dp)
+        )
+        Text(
+            text = stringResource(
+                if (isSearch) R.string.no_results_found
+                else R.string.nothing_to_show_yet
+            ),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = stringResource(
+                if (isSearch) R.string.try_searching_for_something_else
+                else R.string.pull_down_to_refresh_or_tap_below
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Spacer(Modifier.height(16.dp))
+        OutlinedButton(
+            onClick = onRefresh,
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Text(
+                text = stringResource(R.string.refresh),
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+        Spacer(Modifier.height(80.dp))
     }
 }

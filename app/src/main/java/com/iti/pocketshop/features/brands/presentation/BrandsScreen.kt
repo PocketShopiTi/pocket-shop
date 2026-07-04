@@ -1,22 +1,16 @@
-package com.iti.pocketshop.features.categories.presentation
+package com.iti.pocketshop.features.brands.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.foundation.clickable
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -38,28 +32,31 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.categories.presentation.components.CategoryCard
+import com.iti.pocketshop.features.brands.presentation.components.BrandCard
+import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 
 @Composable
-fun CategoriesRoot(
+fun BrandsRoot(
     onBack: () -> Unit,
-    viewModel: CategoriesViewModel = hiltViewModel()
+    onBrandClick: (ProductListRouteInfo.Brands) -> Unit,
+    viewModel: BrandsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    CategoriesScreen(
+    BrandsScreen(
         state = state,
         onAction = viewModel::onAction,
-        onBack = onBack
+        onBack = onBack,
+        onBrandClick = onBrandClick
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CategoriesScreen(
-    state: CategoriesState,
-    onAction: (CategoriesAction) -> Unit,
-    onBack: () -> Unit
+fun BrandsScreen(
+    state: BrandsState,
+    onAction: (BrandsAction) -> Unit,
+    onBack: () -> Unit,
+    onBrandClick: (ProductListRouteInfo.Brands) -> Unit
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
 
@@ -78,7 +75,6 @@ fun CategoriesScreen(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
                             contentDescription = stringResource(R.string.back),
-                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -87,7 +83,6 @@ fun CategoriesScreen(
                         Icon(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                             contentDescription = stringResource(R.string.search),
-                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -102,7 +97,7 @@ fun CategoriesScreen(
             if (isSearchActive) {
                 OutlinedTextField(
                     value = state.searchQuery,
-                    onValueChange = { onAction(CategoriesAction.SearchCategories(it)) },
+                    onValueChange = { onAction(BrandsAction.SearchBrands(it)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 8.dp),
@@ -114,7 +109,7 @@ fun CategoriesScreen(
                     },
                     trailingIcon = {
                         if (state.searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { onAction(CategoriesAction.SearchCategories("")) }) {
+                            IconButton(onClick = { onAction(BrandsAction.SearchBrands("")) }) {
                                 Icon(ImageVector.vectorResource(R.drawable.ic_close), contentDescription = "Clear")
                             }
                         }
@@ -123,7 +118,7 @@ fun CategoriesScreen(
             }
 
             Text(
-                text = stringResource(R.string.brands_available, state.filteredCategories.size),
+                text = stringResource(R.string.brands_available, state.filteredBrands.size),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
@@ -131,7 +126,7 @@ fun CategoriesScreen(
 
             PullToRefreshBox(
                 isRefreshing = state.isLoading,
-                onRefresh = { onAction(CategoriesAction.FetchCategories) },
+                onRefresh = { onAction(BrandsAction.FetchBrands) },
                 modifier = Modifier.fillMaxSize()
             ) {
                 LazyVerticalGrid(
@@ -141,10 +136,10 @@ fun CategoriesScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(state.filteredCategories, key = { it.id }) { category ->
-                        CategoryCard(
-                            category = category,
-                            onClick = { /* TODO navigate to products by brand */ }
+                    items(state.filteredBrands, key = { it.id }) { category ->
+                        BrandCard(
+                            brandItem = category,
+                            onClick = { onBrandClick(ProductListRouteInfo.Brands(category.title)) }
                         )
                     }
                 }
