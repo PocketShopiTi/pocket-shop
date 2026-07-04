@@ -13,6 +13,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.iti.pocketshop.core.components.SignInDialog
+import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.aichat.AiChatRoot
 import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
 import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
@@ -26,6 +27,8 @@ import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDispl
 import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
+import com.iti.pocketshop.features.brands.presentation.BrandsRoot
+import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 
 @Composable
 fun RootNavDisplay(
@@ -181,20 +184,23 @@ fun RootNavDisplay(
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
+                    openAddresses = {
+                        rootBackStack.navigateSingleTop(Route.Address)
+                    },
                     openLogin = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Login)
-                        }
+                        rootBackStack.navigateSingleTop(Route.Login)
                     },
                     openRegister = {
-                        rootBackStack.apply {
-                            clear()
-                            navigateSingleTop(Route.Register)
-                        }
+                        rootBackStack.navigateSingleTop(Route.Register)
                     },
                     openSearch = {
                         rootBackStack.navigateSingleTop(Route.SearchNav)
+                    },
+                    openBrands = {
+                        rootBackStack.navigateSingleTop(Route.Brands)
+                    },
+                    openProductList = { routeInfo ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(routeInfo))
                     },
                 )
             }
@@ -216,7 +222,7 @@ fun RootNavDisplay(
                 SettingsRoot(
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.Settings>()
-                    }
+                    },
                 )
             }
             entry<Route.SearchNav> {
@@ -225,6 +231,34 @@ fun RootNavDisplay(
                         rootBackStack.removeLastOrNull()
                     },
                     openProductDetails = { id -> openProductDetails(id) }
+                )
+            }
+            entry<Route.Address> {
+                AddressRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
+                )
+            }
+            entry<Route.Brands> {
+                BrandsRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    onBrandClick = { brandName ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(brandName))
+                    }
+                )
+            }
+            entry<Route.ProductList> {
+                ProductListRoot(
+                    routeInfo = it.routeInfo,
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    onProductClick = { id ->
+                        rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+                    }
                 )
             }
         }

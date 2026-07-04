@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -34,28 +33,31 @@ fun CategoryChip(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .clickable(onClick = onClick)
-            .width(72.dp)
+            .clickable(
+                indication = null,
+                interactionSource = null,
+                onClick = onClick,
+            )
     ) {
         Box(
             modifier = Modifier
                 .size(64.dp)
-                .clip(CircleShape)
+                .clip(MaterialTheme.shapes.extraLarge)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .border(1.5.dp, MaterialTheme.colorScheme.outlineVariant, CircleShape)
+                .border(1.5.dp, MaterialTheme.colorScheme.outline, MaterialTheme.shapes.extraLarge)
         ) {
-            if (category.imageUrl != null) {
+            if (category.catLogoUrl != null) {
                 AsyncImage(
-                    model = category.imageUrl,
-                    contentDescription = category.imageAlt,
+                    model = category.catLogoUrl,
+                    contentDescription = null,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape)
+
                 )
             } else {
                 Text(
-                    text = category.title.take(1).uppercase(),
+                    text = stringResource(category.catName.titleId).take(1).uppercase(),
                     modifier = Modifier.align(Alignment.Center),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
@@ -65,7 +67,7 @@ fun CategoryChip(
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text = category.title,
+            text = stringResource(category.catName.titleId),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Medium,

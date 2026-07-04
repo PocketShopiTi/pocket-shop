@@ -22,6 +22,8 @@ import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
+import com.iti.pocketshop.features.orders.presentation.OrdersRoot
+import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import com.iti.pocketshop.features.profile.presentation.ProfileRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
@@ -32,9 +34,12 @@ fun NestedNavDisplay(
     currentRootRoute: NavKey?,
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
+    openBrands: () -> Unit,
+    openProductList: (ProductListRouteInfo) -> Unit,
     logout: () -> Unit,
     openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
+    openAddresses: () -> Unit,
     openLogin: () -> Unit,
     openRegister: () -> Unit,
 ) {
@@ -48,7 +53,10 @@ fun NestedNavDisplay(
         bottomBar = {
             NavigationBar {
                 BottomBarDestination.entries.forEach { destination ->
-                    val isSelected = nestedBackStack.lastOrNull() == destination.route
+                    val currentRoute = nestedBackStack.lastOrNull()
+                    val isSelected = currentRoute == destination.route ||
+                            destination == BottomBarDestination.Profile &&
+                            currentRoute == Route.NestedNav.Orders
                     BottomNavigationButton(
                         onClick = {
                             if (currentUser?.isAnonymous == true && (
@@ -101,7 +109,9 @@ fun NestedNavDisplay(
                 entry<Route.NestedNav.Home> {
                     HomeRoot(
                         openProductDetails = openProductDetails,
-                        openSearch = openSearch
+                        openSearch = openSearch,
+                        openBrands = openBrands,
+                        openProductList = openProductList
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {
@@ -117,10 +127,21 @@ fun NestedNavDisplay(
                         openLogin = openLogin,
                         openRegister = openRegister,
                         openSettings = openSettings,
+                        openAddresses = openAddresses,
                         openWishList = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
                         },
+                        openOrders = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Orders)
+                        },
                         logout = logout,
+                    )
+                }
+                entry<Route.NestedNav.Orders> {
+                    OrdersRoot(
+                        onBack = { nestedBackStack.removeLastOrNull() },
+                        onTrack = {},
+                        onView = {},
                     )
                 }
             }

@@ -133,6 +133,7 @@ private fun LoggedInProfilePreview() {
                     recentOrders = listOf(
                         OrderEntity(
                             id = "PK-2026-0847",
+                            name = "PK-2026-0847",
                             status = OrderStatus.FULFILLED,
                             total = 778.50,
                             currencyCode = "USD",

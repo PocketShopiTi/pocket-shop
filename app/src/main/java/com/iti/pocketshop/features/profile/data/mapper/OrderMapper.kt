@@ -7,10 +7,10 @@ import com.iti.pocketshop.shopify.type.OrderFulfillmentStatus
 
 
 internal fun GetProfileQuery.Customer.toOrdersList(): List<OrderEntity> =
-    orders.edges.map {
-        val order = it.node
+    orders.nodes.map { order ->
         OrderEntity(
             id = order.id,
+            name = order.name,
             status = order.fulfillmentStatus.toOrderStatus(),
             total = order.currentTotalPrice.amount,
             currencyCode = order.currentTotalPrice.currencyCode.name,

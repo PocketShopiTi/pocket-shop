@@ -1,0 +1,33 @@
+query GetCustomerOrders($customerAccessToken: String!, $first: Int!, $after: String) {
+    customer(customerAccessToken: $customerAccessToken) {
+        id
+        orders(first: $first, after: $after, sortKey: PROCESSED_AT, reverse: true) {
+            pageInfo { hasNextPage endCursor }
+            totalCount
+            edges {
+                cursor
+                node {
+                    id
+                    name
+                    orderNumber
+                    processedAt
+                    financialStatus
+                    fulfillmentStatus
+                    currencyCode
+                    currentTotalPrice { amount currencyCode }
+                    lineItems(first: 1) {
+                        edges {
+                            node {
+                                title
+                                variant { id title image { url } }
+                            }
+                        }
+                    }
+                    shippingAddress {
+                        firstName lastName address1 city country phone
+                    }
+                }
+            }
+        }
+    }
+}

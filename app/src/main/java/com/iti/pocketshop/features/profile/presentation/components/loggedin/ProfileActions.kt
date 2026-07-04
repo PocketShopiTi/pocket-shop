@@ -28,19 +28,19 @@ fun ProfileActions(
             label = stringResource(R.string.profile_my_orders),
             icon = R.drawable.box,
             onClick = openOrders,
-            addedInfo = profile.stats?.ordersCount
+//            addedInfo = profile.stats?.ordersCount
         )
         ProfileMenuRow(
             label = stringResource(R.string.profile_addresses),
             icon = R.drawable.location,
             onClick = openAddresses,
-            addedInfo = profile.stats?.addressesCount
+//            addedInfo = profile.stats?.addressesCount
         )
         ProfileMenuRow(
             label = stringResource(R.string.wishlist),
             icon = R.drawable.favorite,
             onClick = openWishList,
-            addedInfo = profile.stats?.wishListCount
+//            addedInfo = profile.stats?.wishListCount
         )
         ProfileMenuRow(
             label = stringResource(R.string.profile_settings),

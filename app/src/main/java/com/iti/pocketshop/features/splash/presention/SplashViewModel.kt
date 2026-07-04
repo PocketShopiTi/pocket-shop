@@ -2,7 +2,7 @@ package com.iti.pocketshop.features.splash.presention
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.pocketshop.core.sessionmanager.domain.usecase.GetCurrentUserSessionUseCase
+import com.iti.pocketshop.common.sessionmanager.domain.usecase.GetCurrentUserSessionUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow

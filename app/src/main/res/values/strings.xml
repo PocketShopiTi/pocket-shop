@@ -74,9 +74,9 @@
     <string name="something_went_wrong">Something went wrong, Please try again</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
-    <string name="shop_by_category">Shop by Category</string>
+    <string name="shop_by_brand">Shop by Brand</string>
     <string name="featured">Featured</string>
-    <string name="best_sellers">Best Sellers</string>
+    <string name="trending">Trending</string>
     <string name="on_fire_emoji">🔥</string>
     <string name="new_arrivals">New Arrivals</string>
     <string name="new_items">NEW</string>
@@ -156,8 +156,8 @@
     <string name="error_email_already_in_use">An account already uses this email address.</string>
     <string name="error_weak_password">Please choose a stronger password.</string>
     <string name="error_email_not_verified">Verify your email address before continuing.</string>
-    <string name="register_first_name_label">FIRST NAME</string>
-    <string name="register_last_name_label">LAST NAME</string>
+    <string name="register_first_name_label">First Name</string>
+    <string name="register_last_name_label">Last Name</string>
     <string name="register_first_name_placeholder">First Name</string>
     <string name="register_last_name_placeholder">Last Name</string>
     <string name="register_name_required">This name is required</string>
@@ -173,7 +173,7 @@
     <string name="forgot_password_title">Reset your password</string>
     <string name="forgot_password_description">Enter your email and we’ll send reset instructions.</string>
     <string name="forgot_password_submit">Send reset link</string>
-    <string name="reset_link_sent">If an account exists, a reset link was sent.</string>
+    <string name="reset_link_sent">reset link was sent check your inbox and spams.</string>
     <string name="back_to_login">Back to login</string>
     <string name="retry">Retry</string>
     <string name="profile_title">Profile</string>
@@ -271,7 +271,7 @@
     <string name="select_theme">Select Theme</string>
     <string name="done">Done</string>
     <string name="currency_unit">Currency:</string>
-
+ 
     <!-- Notification onboarding -->
     <string name="notification_channel_promotions">Promotions</string>
     <string name="notification_ad_title">New offer from Pocket Shop</string>
@@ -291,4 +291,54 @@
     <string name="notification_onboarding_error_title">We could not load this offer</string>
     <string name="notification_onboarding_unavailable_title">Offer unavailable</string>
     <string name="notification_onboarding_unavailable_body">This promotion has ended or is no longer active.</string>
+     <string name="orders_title">My orders</string>
+    <string name="orders_back">Back</string>
+    <string name="orders_track">Track</string>
+    <string name="orders_view">View</string>
+    <string name="orders_loading">Loading orders</string>
+    <string name="orders_empty_title">No orders yet</string>
+    <string name="orders_empty_description">Your completed orders will appear here.</string>
+    <string name="orders_image_description">Image for order %1$s</string>
+    <string name="orders_status_pending">Pending</string>
+    <string name="orders_status_processing">Processing</string>
+    <string name="orders_status_delivered">Delivered</string>
+    <string name="orders_status_cancelled">Cancelled</string>
+    <string name="create_account">Create account</string>
+    <string name="join_millions_of_online_shoppers">Join millions of online shoppers!</string>
+    <string name="enter_first_name">Enter first name</string>
+    <string name="email">Email</string>
+    <string name="enter_email">Enter email</string>
+    <string name="password">Password</string>
+    <string name="enter_a_strong_password">Enter a strong password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="repeat_your_password">Repeat your password</string>
+    <string name="i_agree_to_the">"I agree to the "</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="and">" and "</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="already_have_an_account">"Already have an account? "</string>
+    <string name="sign_in">Sign in</string>
+    <string name="auth_invalid_email">Invalid email</string>
+    <string name="please_enter_your_first_name">Please enter your first name.</string>
+    <string name="empty_string" />
+    <string name="please_enter_a_valid_email">Please enter a valid email</string>
+    <string name="passwords_must_match">Passwords must match</string>
+    <string name="enter_last_name">Enter last name</string>
+    <string name="please_enter_your_last_name">Please enter your last name</string>
+    <string name="brands">Brands</string>
+    <string name="brands_available">%1$d brands available</string>
+    <string name="items_count">%1$d items</string>
+    <string name="back">Back</string>
+    <string name="clear_search">Clear search</string>
+    <string name="all_categories">All Categories</string>
+    <string name="men">Men</string>
+    <string name="women">Women</string>
+    <string name="kids">Kids</string>
+    <string name="baby">Baby</string>
+    <string name="shoes">Shoes</string>
+    <string name="bags">Bags</string>
+    <string name="accessories">Accessories</string>
+    <string name="pets">Pets</string>
+    <string name="try_searching_for_something_else">Try searching for something else.</string>
+ 
 </resources>

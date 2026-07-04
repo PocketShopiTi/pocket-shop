@@ -19,27 +19,27 @@ query GetProfile(
         }
 
         orders(first: $ordersCount, sortKey: PROCESSED_AT, reverse: true) {
-            edges {
-                node {
-                    id
-                    orderNumber
-                    fulfillmentStatus
-                    currentTotalPrice {
-                        amount
-                        currencyCode
-                    }
-                    lineItems(first: 1) {
-                        edges {
-                            node {
-                                variant {
-                                    id
-                                    image { url }
-                                }
+            nodes {
+                id
+                name
+                orderNumber
+                fulfillmentStatus
+                currentTotalPrice {
+                    amount
+                    currencyCode
+                }
+                lineItems(first: 1) {
+                    edges {
+                        node {
+                            variant {
+                                id
+                                image { url }
                             }
                         }
                     }
                 }
             }
+
         }
     }
 }

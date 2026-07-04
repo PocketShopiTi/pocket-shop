@@ -12,7 +12,7 @@ import com.iti.pocketshop.common.favorites.domain.repository.FavoriteRepo
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.toPocketFirebaseError
-import com.iti.pocketshop.core.sessionmanager.domain.repository.UserRepo
+import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -97,7 +97,7 @@ class FavoriteRepoImpl @Inject constructor(
                     ?.toEntity()
             }
 
-            favoriteDao.clearFavorites(userId)
+            favoriteDao.clearFavorites()
             favoriteDao.insertAllFavorite(favoriteProductEntities)
 
             val products = favoriteProductEntities.map { it.toDomain() }
@@ -109,7 +109,6 @@ class FavoriteRepoImpl @Inject constructor(
     }
 
     override suspend fun clearLocalFavorites() {
-        val userId = userRepo.currentUser?.uid ?: return
-        favoriteDao.clearFavorites(userId)
+        favoriteDao.clearFavorites()
     }
 }
