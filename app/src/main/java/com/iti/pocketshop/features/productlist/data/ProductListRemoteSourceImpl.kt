@@ -21,6 +21,7 @@ class ProductListRemoteSourceImpl @Inject constructor(
         after: String?,
         sortKey: String,
         reverse: Boolean,
+        query: String?,
     ): PocketResult<ProductListPage, PocketDataError.Remote> {
         return apolloClient
             .query(
@@ -29,6 +30,7 @@ class ProductListRemoteSourceImpl @Inject constructor(
                     after = if (after != null) Optional.present(after) else Optional.absent(),
                     sortKey = ProductSortKeys.valueOf(sortKey),
                     reverse = reverse,
+                    query = if (query != null) Optional.present(query) else Optional.absent(),
                 )
             )
             .safeCall()

@@ -9,8 +9,7 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.home.domain.GetHomeDataUseCase
-import com.iti.pocketshop.features.home.domain.models.Product
-import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
+import com.iti.pocketshop.features.home.presentation.models.toUIProduct
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -33,7 +32,13 @@ class HomeViewModel @Inject constructor(
     private val _state = MutableStateFlow(HomeState())
     val state = _state
         .combine(getLocalFavoritesUseCase()) { state, favorites ->
-            state.copy(favoriteIds = favorites.map(FavoriteProduct::id).toSet())
+            val favoriteIds = favorites.map(FavoriteProduct::id).toSet()
+            state.copy(
+                favoriteIds = favoriteIds,
+                featuredProducts = state.featuredProducts.map { it.copy(isFavorite = favoriteIds.contains(it.id)) },
+                bestSellers = state.bestSellers.map { it.copy(isFavorite = favoriteIds.contains(it.id)) },
+                newArrivals = state.newArrivals.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
+            )
         }
         .onStart {
             if (!hasLoadedInitialData) {
@@ -56,19 +61,24 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchHomeData() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
             getHomeDataUseCase()
                 .onSuccess { data ->
-                    _state.update {
-                        it.copy(
+                    _state.update { current ->
+                        current.copy(
+                            isLoading = false,
+                            isEmptyState = data.brands.isEmpty() && data.featuredProducts.isEmpty() && data.bestSellers.isEmpty() && data.newArrivals.isEmpty(),
+                            brands = data.brands,
                             categories = data.categories,
-                            featuredProducts = data.featuredProducts,
-                            bestSellers = data.bestSellers,
-                            newArrivals = data.newArrivals
+                            featuredProducts = data.featuredProducts.map { it.toUIProduct(current.favoriteIds.contains(it.id)) },
+                            bestSellers = data.bestSellers.map { it.toUIProduct(current.favoriteIds.contains(it.id)) },
+                            newArrivals = data.newArrivals.map { it.toUIProduct(current.favoriteIds.contains(it.id)) }
                         )
                     }
                 }
-                .onError {
-                    ErrorDialogController.sendEvent(it)
+                .onError { error ->
+                    _state.update { it.copy(isLoading = false) }
+                    ErrorDialogController.sendEvent(error)
                 }
         }
     }

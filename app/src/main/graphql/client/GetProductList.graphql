@@ -1,5 +1,5 @@
-query GetProductList($first: Int!, $after: String, $sortKey: ProductSortKeys!, $reverse: Boolean!) {
-    products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse) {
+query GetProductList($first: Int!, $after: String, $sortKey: ProductSortKeys!, $reverse: Boolean!, $query: String) {
+    products(first: $first, after: $after, sortKey: $sortKey, reverse: $reverse, query: $query) {
         nodes {
             ...ProductFields
         }

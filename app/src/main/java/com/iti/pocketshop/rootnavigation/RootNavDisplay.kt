@@ -25,7 +25,7 @@ import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDispl
 import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
 import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
-import com.iti.pocketshop.features.categories.presentation.CategoriesRoot
+import com.iti.pocketshop.features.brands.presentation.BrandsRoot
 import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 
 @Composable
@@ -171,11 +171,11 @@ fun RootNavDisplay() {
                     openSearch = {
                         rootBackStack.navigateSingleTop(Route.SearchNav)
                     },
-                    openCategories = {
-                        rootBackStack.navigateSingleTop(Route.Categories)
+                    openBrands = {
+                        rootBackStack.navigateSingleTop(Route.Brands)
                     },
-                    openProductList = { type ->
-                        rootBackStack.navigateSingleTop(Route.ProductList(type = type))
+                    openProductList = { routeInfo ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(routeInfo))
                     },
                 )
             }
@@ -215,16 +215,19 @@ fun RootNavDisplay() {
                     }
                 )
             }
-            entry<Route.Categories> {
-                CategoriesRoot(
+            entry<Route.Brands> {
+                BrandsRoot(
                     onBack = {
                         rootBackStack.removeLastOrNull()
+                    },
+                    onBrandClick = { brandName ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(brandName))
                     }
                 )
             }
             entry<Route.ProductList> {
                 ProductListRoot(
-                    type = it.type,
+                    routeInfo = it.routeInfo,
                     onBack = {
                         rootBackStack.removeLastOrNull()
                     },

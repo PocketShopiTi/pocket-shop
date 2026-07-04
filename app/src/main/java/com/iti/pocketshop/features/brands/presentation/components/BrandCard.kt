@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.categories.presentation.components
+package com.iti.pocketshop.features.brands.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,15 +23,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import com.iti.pocketshop.features.categories.domain.models.CategoryItem
-import androidx.compose.ui.res.stringResource
-import com.iti.pocketshop.R
+import com.iti.pocketshop.features.brands.domain.models.BrandItem
 
 @Composable
-fun CategoryCard(
-    category: CategoryItem,
+fun BrandCard(
+    brandItem: BrandItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -47,12 +44,12 @@ fun CategoryCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            if (category.imageUrl != null) {
+            if (brandItem.imageUrl != null) {
                 AsyncImage(
-                    model = category.imageUrl,
-                    contentDescription = category.imageAlt,
+                    model = brandItem.imageUrl,
+                    contentDescription = brandItem.title,
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(100.dp)
                         .clip(CircleShape),
                     contentScale = ContentScale.Crop
                 )
@@ -65,7 +62,7 @@ fun CategoryCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = category.title.firstOrNull()?.toString()?.uppercase() ?: "",
+                        text = brandItem.title.firstOrNull()?.toString()?.uppercase() ?: "",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -76,23 +73,13 @@ fun CategoryCard(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = category.title,
+                text = brandItem.title,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 2,
-                minLines = 2,
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.Ellipsis
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(R.string.items_count, category.itemCount),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 12.sp
             )
         }
     }

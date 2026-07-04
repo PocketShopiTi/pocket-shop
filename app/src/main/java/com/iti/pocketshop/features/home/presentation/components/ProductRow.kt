@@ -7,16 +7,16 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.iti.pocketshop.features.home.domain.models.Product
+import com.iti.pocketshop.features.home.presentation.models.UIProduct
 
 @Composable
 fun ProductRow(
-    products: List<Product>,
-    favoriteIds: Set<String>,
+    products: List<UIProduct>,
     onProductClick: (String) -> Unit,
-    onWishlistClick: (Product) -> Unit,
-    cardWidth: androidx.compose.ui.unit.Dp = 170.dp
+    onWishlistClick: (UIProduct) -> Unit,
+    cardWidth: Dp = 200.dp
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -25,11 +25,9 @@ fun ProductRow(
         items(products, key = { it.id }) { product ->
             ProductCard(
                 product = product,
-                onClick = { onProductClick(product.id) },
+                onClick = onProductClick,
                 onWishlistClick = onWishlistClick,
-                isFavorite = favoriteIds.contains(product.id),
                 modifier = Modifier
-                    .animateItem()
                     .width(cardWidth)
             )
         }

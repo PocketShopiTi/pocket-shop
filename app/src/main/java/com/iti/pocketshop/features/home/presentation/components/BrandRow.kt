@@ -7,21 +7,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.iti.pocketshop.features.home.domain.models.Category
+import com.iti.pocketshop.features.home.domain.models.Brand
 
 @Composable
-fun CategoryRow(
-    categories: List<Category>,
-    onCategoryClick: (Category) -> Unit
+fun BrandRow(
+    brands: List<Brand>,
+    onBrandClick: (Brand) -> Unit
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(categories, key = { it.id }) { category ->
-            CategoryChip(
-                category = category,
-                onClick = { onCategoryClick(category) },
+        items(brands, key = { it.id }) { brand ->
+            BrandChip(
+                brand = brand,
+                onClick = { onBrandClick(brand) },
                 modifier = Modifier.animateItem()
             )
         }
