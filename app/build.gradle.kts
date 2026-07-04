@@ -68,10 +68,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val mapsApiKey = localProperties["MAPS_API_KEY"]
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey as? String ?: ""
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
-        buildConfigField("String", "STORE_FRONT_TOKEN", "\"${localProperties.getProperty("STORE_FRONT_TOKEN", "")}\"")
-        buildConfigField("String", "ADMIN_TOKEN", "\"${localProperties.getProperty("ADMIN_TOKEN", "")}\"")
     }
 
     buildTypes {
@@ -109,10 +109,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     //todo: remove these
-    implementation(libs.androidx.compose.material)
-    implementation(libs.androidx.compose.material3.lint)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.tv.material)
 
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -137,6 +134,11 @@ dependencies {
     // coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
+
+    // google maps
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.location)
 
     //work manager
     implementation(libs.androidx.work.runtime.ktx)
@@ -181,4 +183,6 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     //noinspection LoginCredentials
     implementation(libs.googleid)
+    implementation(libs.osmdroid.android)
+
 }

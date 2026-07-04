@@ -39,6 +39,7 @@ fun NestedNavDisplay(
     logout: () -> Unit,
     openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
+    openAddresses: () -> Unit,
     openLogin: () -> Unit,
     openRegister: () -> Unit,
 ) {
@@ -126,6 +127,7 @@ fun NestedNavDisplay(
                         openLogin = openLogin,
                         openRegister = openRegister,
                         openSettings = openSettings,
+                        openAddresses = openAddresses,
                         openWishList = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
                         },

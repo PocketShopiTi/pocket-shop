@@ -12,6 +12,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.iti.pocketshop.core.components.SignInDialog
+import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.aichat.AiChatRoot
 import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
 import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
@@ -158,6 +159,9 @@ fun RootNavDisplay() {
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
+                    openAddresses = {
+                        rootBackStack.navigateSingleTop(Route.Address)
+                    },
                     openLogin = {
                         rootBackStack.navigateSingleTop(Route.Login)
                     },
@@ -193,7 +197,7 @@ fun RootNavDisplay() {
                 SettingsRoot(
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.Settings>()
-                    }
+                    },
                 )
             }
             entry<Route.SearchNav> {
@@ -202,6 +206,13 @@ fun RootNavDisplay() {
                         rootBackStack.removeLastOrNull()
                     },
                     openProductDetails = { id -> openProductDetails(id) }
+                )
+            }
+            entry<Route.Address> {
+                AddressRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
                 )
             }
             entry<Route.Brands> {
