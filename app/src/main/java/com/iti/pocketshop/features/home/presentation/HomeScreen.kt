@@ -29,6 +29,7 @@ import com.iti.pocketshop.features.home.presentation.components.BrandRow
 import com.iti.pocketshop.features.home.presentation.components.CategoriesRow
 import com.iti.pocketshop.features.home.presentation.components.EmptyHome
 import com.iti.pocketshop.features.home.presentation.components.HeroBanner
+import com.iti.pocketshop.features.home.presentation.components.HomeShimmer
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
 import com.iti.pocketshop.features.home.presentation.components.ProductRow
 import com.iti.pocketshop.features.home.presentation.components.SectionHeader
@@ -78,179 +79,183 @@ private fun HomeScreen(
             onSearchClick = openSearch
         )
         PullToRefreshBox(
-            isRefreshing = state.isLoading,
+            isRefreshing = state.isLoading && !state.isEmptyState,
             onRefresh = {
                 onAction(HomeAction.FetchData)
             }
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 32.dp)
-            ) {
-                // Hero banner
-                item {
-                    if (!state.isEmptyState) {
-                        HeroBanner(
-                            openSales = {
-                                //TODO()
-                            }
-                        )
-                    }
-                }
-
-                // Brands
-                if (state.brands.isNotEmpty()) {
-                    item { Spacer(Modifier.height(16.dp)) }
+            if (state.isLoading && state.isEmptyState) {
+                HomeShimmer()
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 32.dp)
+                ) {
+                    // Hero banner
                     item {
-                        SectionHeader(
-                            title = stringResource(R.string.shop_by_brand),
-                            onSeeAllClick = openBrands,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                    }
-                    item { Spacer(Modifier.height(8.dp)) }
-                    item {
-                        BrandRow(
-                            brands = state.brands,
-                            onBrandClick = { brand ->
-                                openProductList(ProductListRouteInfo.Brands(brand.brandName))
-                            }
-                        )
-                    }
-                }
-
-                // Categories
-                if (state.categories.isNotEmpty()) {
-                    item { Spacer(Modifier.height(16.dp)) }
-                    item {
-                        SectionHeader(
-                            title = stringResource(R.string.all_categories),
-                            onSeeAllClick = null,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                    }
-                    item { Spacer(Modifier.height(8.dp)) }
-                    item {
-                        CategoriesRow(
-                            categories = state.categories,
-                            onCategoryClick = { category ->
-                                openProductList(ProductListRouteInfo.Category(category.catName))
-                            }
-                        )
-                    }
-                }
-
-                // Featured products
-                if (state.featuredProducts.isNotEmpty()) {
-                    item { Spacer(Modifier.height(20.dp)) }
-                    item {
-                        SectionHeader(
-                            title = stringResource(R.string.featured),
-                            onSeeAllClick = {
-                                openProductList(ProductListRouteInfo.Featured)
-                            },
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                    }
-                    item { Spacer(Modifier.height(12.dp)) }
-                    item {
-                        ProductRow(
-                            products = state.featuredProducts,
-                            onProductClick = openProductDetails,
-                            favoriteIds = state.favoriteIds,
-                            onWishlistClick = { product ->
-                                if (user?.isAnonymous == true) {
-                                    scope.launch {
-                                        SignInDialogController.sendEvent(true)
-                                    }
-                                } else if (state.favoriteIds.contains(product.id)) {
-                                    scope.launch {
-                                        DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
-                                    }
-                                } else {
-                                    onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+                        if (!state.isEmptyState) {
+                            HeroBanner(
+                                openSales = {
+                                    //TODO()
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
-                }
 
-                // Best sellers
-                if (state.bestSellers.isNotEmpty()) {
-                    item { Spacer(Modifier.height(20.dp)) }
-                    item {
-                        SectionHeader(
-                            title = stringResource(R.string.trending),
-                            badge = stringResource(R.string.on_fire_emoji),
-                            onSeeAllClick = {
-                                openProductList(ProductListRouteInfo.Trending)
-                            },
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                    }
-                    item { Spacer(Modifier.height(12.dp)) }
-                    item {
-                        ProductRow(
-                            products = state.bestSellers,
-                            onProductClick = openProductDetails,
-                            favoriteIds = state.favoriteIds,
-                            onWishlistClick = { product ->
-                                if (user?.isAnonymous == true) {
-                                    scope.launch {
-                                        SignInDialogController.sendEvent(true)
-                                    }
-                                } else if (state.favoriteIds.contains(product.id)) {
-                                    scope.launch {
-                                        DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
-                                    }
-                                } else {
-                                    onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+                    // Brands
+                    if (state.brands.isNotEmpty()) {
+                        item { Spacer(Modifier.height(16.dp)) }
+                        item {
+                            SectionHeader(
+                                title = stringResource(R.string.shop_by_brand),
+                                onSeeAllClick = openBrands,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item { Spacer(Modifier.height(8.dp)) }
+                        item {
+                            BrandRow(
+                                brands = state.brands,
+                                onBrandClick = { brand ->
+                                    openProductList(ProductListRouteInfo.Brands(brand.brandName))
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
-                }
 
-                // New arrivals
-                if (state.newArrivals.isNotEmpty()) {
-                    item { Spacer(Modifier.height(20.dp)) }
-                    item {
-                        SectionHeader(
-                            title = stringResource(R.string.new_arrivals),
-                            badge = stringResource(R.string.new_items),
-                            onSeeAllClick = {
-                                openProductList(ProductListRouteInfo.NewArrivals)
-                            },
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                        )
-                    }
-                    item { Spacer(Modifier.height(12.dp)) }
-                    item {
-                        ProductRow(
-                            products = state.newArrivals,
-                            onProductClick = openProductDetails,
-                            cardWidth = 160.dp,
-                            favoriteIds = state.favoriteIds,
-                            onWishlistClick = { product ->
-                                if (user?.isAnonymous == true) {
-                                    scope.launch {
-                                        SignInDialogController.sendEvent(true)
-                                    }
-                                } else if (state.favoriteIds.contains(product.id)) {
-                                    scope.launch {
-                                        DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
-                                    }
-                                } else {
-                                    onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+                    // Categories
+                    if (state.categories.isNotEmpty()) {
+                        item { Spacer(Modifier.height(16.dp)) }
+                        item {
+                            SectionHeader(
+                                title = stringResource(R.string.all_categories),
+                                onSeeAllClick = null,
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item { Spacer(Modifier.height(8.dp)) }
+                        item {
+                            CategoriesRow(
+                                categories = state.categories,
+                                onCategoryClick = { category ->
+                                    openProductList(ProductListRouteInfo.Category(category.catName))
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
-                }
 
-                // Empty state
-                if (state.isEmptyState) {
-                    item { EmptyHome(onRefresh = { onAction(HomeAction.FetchData) }) }
+                    // Featured products
+                    if (state.featuredProducts.isNotEmpty()) {
+                        item { Spacer(Modifier.height(20.dp)) }
+                        item {
+                            SectionHeader(
+                                title = stringResource(R.string.featured),
+                                onSeeAllClick = {
+                                    openProductList(ProductListRouteInfo.Featured)
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item {
+                            ProductRow(
+                                products = state.featuredProducts,
+                                onProductClick = openProductDetails,
+                                favoriteIds = state.favoriteIds,
+                                onWishlistClick = { product ->
+                                    if (user?.isAnonymous == true) {
+                                        scope.launch {
+                                            SignInDialogController.sendEvent(true)
+                                        }
+                                    } else if (state.favoriteIds.contains(product.id)) {
+                                        scope.launch {
+                                            DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
+                                        }
+                                    } else {
+                                        onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    // Best sellers
+                    if (state.bestSellers.isNotEmpty()) {
+                        item { Spacer(Modifier.height(20.dp)) }
+                        item {
+                            SectionHeader(
+                                title = stringResource(R.string.trending),
+                                badge = stringResource(R.string.on_fire_emoji),
+                                onSeeAllClick = {
+                                    openProductList(ProductListRouteInfo.Trending)
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item {
+                            ProductRow(
+                                products = state.bestSellers,
+                                onProductClick = openProductDetails,
+                                favoriteIds = state.favoriteIds,
+                                onWishlistClick = { product ->
+                                    if (user?.isAnonymous == true) {
+                                        scope.launch {
+                                            SignInDialogController.sendEvent(true)
+                                        }
+                                    } else if (state.favoriteIds.contains(product.id)) {
+                                        scope.launch {
+                                            DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
+                                        }
+                                    } else {
+                                        onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    // New arrivals
+                    if (state.newArrivals.isNotEmpty()) {
+                        item { Spacer(Modifier.height(20.dp)) }
+                        item {
+                            SectionHeader(
+                                title = stringResource(R.string.new_arrivals),
+                                badge = stringResource(R.string.new_items),
+                                onSeeAllClick = {
+                                    openProductList(ProductListRouteInfo.NewArrivals)
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item { Spacer(Modifier.height(12.dp)) }
+                        item {
+                            ProductRow(
+                                products = state.newArrivals,
+                                onProductClick = openProductDetails,
+                                cardWidth = 160.dp,
+                                favoriteIds = state.favoriteIds,
+                                onWishlistClick = { product ->
+                                    if (user?.isAnonymous == true) {
+                                        scope.launch {
+                                            SignInDialogController.sendEvent(true)
+                                        }
+                                    } else if (state.favoriteIds.contains(product.id)) {
+                                        scope.launch {
+                                            DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
+                                        }
+                                    } else {
+                                        onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+                                    }
+                                }
+                            )
+                        }
+                    }
+
+                    // Empty state
+                    if (state.isEmptyState && !state.isLoading) {
+                        item { EmptyHome(onRefresh = { onAction(HomeAction.FetchData) }) }
+                    }
                 }
             }
         }

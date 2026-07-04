@@ -42,7 +42,7 @@ fun HeroBanner(
             .fillMaxWidth()
             .height(220.dp)
             .padding(horizontal = 20.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(20.dp))
+            .clip(MaterialTheme.shapes.large)
             .background(
                 Brush.linearGradient(
                     colors = listOf(
