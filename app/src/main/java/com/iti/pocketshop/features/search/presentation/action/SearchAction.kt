@@ -11,9 +11,12 @@ sealed class SearchAction {
     data class ToggleFilter(val filterValue: ProductFilterValue) : SearchAction()
     object ClearFilters : SearchAction()
 
-    data class SelectSortOption(val option: SortOption) : SearchAction()
+      data class SelectSortOption(val option: SortOption) : SearchAction()
     data class UpdatePriceRange(val range: ClosedFloatingPointRange<Float>) : SearchAction()
     object ClearPriceRange : SearchAction()
+    data class QuickToggleFilter(val filterValue: ProductFilterValue) : SearchAction()
+    data class QuickUpdatePriceRange(val range: ClosedFloatingPointRange<Float>) : SearchAction()
+    object QuickClearPriceRange : SearchAction()
 
     object OpenFiltersScreen : SearchAction()
 

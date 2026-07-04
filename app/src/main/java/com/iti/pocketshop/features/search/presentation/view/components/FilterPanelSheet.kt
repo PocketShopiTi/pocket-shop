@@ -70,7 +70,7 @@ fun FilterPanelSheet(
                         Checkbox(
                             checked = isChecked,
                             enabled = isEnabled,
-                            onCheckedChange = { onAction(SearchAction.ToggleFilter(value)) },
+                            onCheckedChange = { onAction(SearchAction.QuickToggleFilter(value)) },
                         )
                         Text(
                             text = value.labelWithCount(),
@@ -90,7 +90,7 @@ fun FilterPanelSheet(
                 OutlinedButton(
                     onClick = {
                         group.values.filter { activeFilters.containsSelection(it) }
-                            .forEach { onAction(SearchAction.ToggleFilter(it)) }
+                            .forEach { onAction(SearchAction.QuickToggleFilter(it)) }
                     },
                     modifier = Modifier.weight(1f),
                 ) {

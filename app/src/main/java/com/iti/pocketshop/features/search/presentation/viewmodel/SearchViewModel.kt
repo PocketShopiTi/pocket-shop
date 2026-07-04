@@ -70,6 +70,9 @@ class SearchViewModel @Inject constructor(
             is SearchAction.ClearSearch -> clearSearch()
             is SearchAction.ToggleFilter -> toggleFilter(intent.filterValue)
             is SearchAction.ClearFilters -> clearFilters()
+            is SearchAction.QuickToggleFilter -> quickToggleFilter(intent.filterValue)
+            is SearchAction.QuickUpdatePriceRange -> quickUpdatePriceRange(intent.range)
+            SearchAction.QuickClearPriceRange -> quickClearPriceRange()
             is SearchAction.LoadNextPage -> loadNextPage()
             is SearchAction.ClickQuerySuggestion -> queryExtracted(intent)
             is SearchAction.ClickBrowseCategories -> clearSearch()
@@ -112,17 +115,14 @@ class SearchViewModel @Inject constructor(
 
     private fun selectSortOption(option: SortOption) {
         _state.update { it.copy(activeSortOption = option) }
-        submitSearch()
     }
 
     private fun updatePriceRange(range: ClosedFloatingPointRange<Float>) {
         _state.update { it.copy(activePriceRange = range) }
-        submitSearch()
     }
 
     private fun clearPriceRange() {
         _state.update { it.copy(activePriceRange = null) }
-        submitSearch()
     }
 
     private fun clearError() {
@@ -175,10 +175,7 @@ class SearchViewModel @Inject constructor(
             val (sortKey, reverse) = currentSortParams()
 
             when (val result = getSearchResultsUseCase(
-                query = currentQuery,
-                filters = finalFilters,
-                sortKey = sortKey,
-                reverse = reverse
+                query = currentQuery, filters = finalFilters, sortKey = sortKey, reverse = reverse
             )) {
                 is PocketResult.Success -> {
                     val newBounds = _state.value.priceRangeBounds
@@ -187,9 +184,7 @@ class SearchViewModel @Inject constructor(
                     val newPhase = when {
                         result.data.products.isNotEmpty() -> SearchPhase.Results(result.data)
                         else -> {
-                            val predictiveItems = predictiveFallback
-                                ?.products
-                                ?.map { p ->
+                            val predictiveItems = predictiveFallback?.products?.map { p ->
                                     SearchResultItem.ProductItem(
                                         id = p.id,
                                         title = p.title,
@@ -203,8 +198,7 @@ class SearchViewModel @Inject constructor(
                                         tags = emptyList(),
                                         options = emptyList()
                                     )
-                                }
-                                .orEmpty()
+                                }.orEmpty()
 
                             if (predictiveItems.isNotEmpty()) {
                                 SearchPhase.Results(
@@ -227,7 +221,6 @@ class SearchViewModel @Inject constructor(
                             phase = newPhase,
                             isLoading = false,
                             priceRangeBounds = newBounds,
-                            lastPredictiveResult = null
                         )
                     }
                 }
@@ -264,6 +257,20 @@ class SearchViewModel @Inject constructor(
             else currentFilters.add(filter)
             currentState.copy(activeFilters = currentFilters)
         }
+    }
+
+    private fun quickToggleFilter(filter: ProductFilterValue) {
+        toggleFilter(filter)
+        submitSearch()
+    }
+
+    private fun quickUpdatePriceRange(range: ClosedFloatingPointRange<Float>) {
+        _state.update { it.copy(activePriceRange = range) }
+        submitSearch()
+    }
+
+    private fun quickClearPriceRange() {
+        _state.update { it.copy(activePriceRange = null) }
         submitSearch()
     }
 
@@ -275,7 +282,6 @@ class SearchViewModel @Inject constructor(
                 activeSortOption = SortOption.RELEVANCE,
             )
         }
-        submitSearch()
     }
 
     private fun loadNextPage() {
@@ -315,10 +321,9 @@ class SearchViewModel @Inject constructor(
         return filterInputs.ifEmpty { null }
     }
 
-    private fun currentSortParams(): Pair<String, Boolean?> =
-        when (_state.value.activeSortOption) {
-            SortOption.RELEVANCE -> "RELEVANCE" to null
-            SortOption.PRICE_LOW_TO_HIGH -> "PRICE" to false
-            SortOption.PRICE_HIGH_TO_LOW -> "PRICE" to true
-        }
+    private fun currentSortParams(): Pair<String, Boolean?> = when (_state.value.activeSortOption) {
+        SortOption.RELEVANCE -> "RELEVANCE" to null
+        SortOption.PRICE_LOW_TO_HIGH -> "PRICE" to false
+        SortOption.PRICE_HIGH_TO_LOW -> "PRICE" to true
+    }
 }
