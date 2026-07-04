@@ -34,6 +34,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,8 +51,15 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
+import com.iti.pocketshop.core.components.RemoveFavoriteDialog
+import com.iti.pocketshop.core.components.SignInDialogController
+import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import com.iti.pocketshop.features.home.presentation.components.ProductCard
+import com.iti.pocketshop.features.home.presentation.models.UIProduct
+import kotlinx.coroutines.launch
 
 @Composable
 fun ProductListRoot(
@@ -65,12 +73,34 @@ fun ProductListRoot(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val user = LocalUser.current
+    val scope = rememberCoroutineScope()
 
     ProductListScreen(
         state = state,
         onAction = viewModel::onAction,
         onBack = onBack,
-        onProductClick = onProductClick
+        onProductClick = onProductClick,
+        onWishlistClick = { uiProduct ->
+            val original = uiProduct.originalProduct
+            if (user?.isAnonymous == true) {
+                scope.launch {
+                    SignInDialogController.sendEvent(true)
+                }
+            } else if (uiProduct.isFavorite) {
+                scope.launch {
+                    DeleteFavoriteDialogController.sendEvent(original.toFavoriteProduct())
+                }
+            } else {
+                viewModel.onAction(ProductListAction.ToggleFavorite(original.toFavoriteProduct()))
+            }
+        }
+    )
+
+    RemoveFavoriteDialog(
+        onConfirm = {
+            viewModel.onAction(ProductListAction.ToggleFavorite(it))
+        }
     )
 }
 
@@ -79,7 +109,8 @@ private fun ProductListScreen(
     state: ProductListState,
     onAction: (ProductListAction) -> Unit,
     onBack: () -> Unit,
-    onProductClick: (String) -> Unit
+    onProductClick: (String) -> Unit,
+    onWishlistClick: (UIProduct) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
 
@@ -189,10 +220,7 @@ private fun ProductListScreen(
                                 product = product,
                                 onClick = { onProductClick(product.id) },
                                 modifier = Modifier.animateItem(),
-                                isFavorite = false,
-                                onWishlistClick = {
-                                    // todo
-                                }
+                                onWishlistClick = onWishlistClick
                             )
                         }
 

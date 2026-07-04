@@ -1,7 +1,6 @@
 package com.iti.pocketshop.features.home.presentation.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -35,26 +33,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.home.domain.models.Product
-import com.iti.pocketshop.features.home.presentation.formatPrice
+import com.iti.pocketshop.features.home.presentation.models.UIProduct
 
 
 @Composable
 fun ProductCard(
-    product: Product,
-    isFavorite: Boolean,
-    onClick: () -> Unit,
-    onWishlistClick: (Product) -> Unit,
+    product: UIProduct,
+    onClick: (String) -> Unit,
+    onWishlistClick: (UIProduct) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasDiscount = product.compareAtPrice != null &&
-            product.compareAtPrice.amount > product.price.amount
-
     Card(
-        onClick = onClick,
+        onClick = {
+            onClick(product.id)
+        },
         modifier = modifier
     ) {
         Box(
@@ -72,16 +66,14 @@ fun ProductCard(
             }
 
             // Discount badge
-            if (hasDiscount) {
-                val pct = ((1 - product.price.amount / product.compareAtPrice.amount) * 100)
-                    .toInt()
+            product.discountPercentage?.let { percentage ->
                 Surface(
                     color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(bottomEnd = 10.dp),
                     modifier = Modifier.align(Alignment.TopStart)
                 ) {
                     Text(
-                        text = "-$pct%",
+                        text = "-$percentage%",
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -100,11 +92,11 @@ fun ProductCard(
                     .align(Alignment.TopEnd),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                    contentColor = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                    contentColor = if (product.isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
                 )
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(if (isFavorite) R.drawable.ic_favorites_filled else R.drawable.ic_favorites),
+                    imageVector = ImageVector.vectorResource(if (product.isFavorite) R.drawable.ic_favorites_filled else R.drawable.ic_favorites),
                     contentDescription = stringResource(R.string.wishlist),
                 )
             }
@@ -169,16 +161,16 @@ fun ProductCard(
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
                     Text(
-                        text = formatPrice(product.price),
+                        text = product.price,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
-                        color = if (hasDiscount) MaterialTheme.colorScheme.primary
+                        color = if (product.discountPercentage != null) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurface
                     )
-                    if (hasDiscount) {
+                    if (product.compareAtPrice != null) {
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = formatPrice(product.compareAtPrice),
+                            text = product.compareAtPrice,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textDecoration = TextDecoration.LineThrough

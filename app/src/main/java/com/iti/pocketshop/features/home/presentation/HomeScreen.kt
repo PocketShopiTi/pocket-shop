@@ -23,7 +23,6 @@ import com.iti.pocketshop.R
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.SignInDialogController
-import com.iti.pocketshop.features.home.domain.models.Product
 import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import com.iti.pocketshop.features.home.presentation.components.BrandRow
 import com.iti.pocketshop.features.home.presentation.components.CategoriesRow
@@ -33,6 +32,7 @@ import com.iti.pocketshop.features.home.presentation.components.HomeShimmer
 import com.iti.pocketshop.features.home.presentation.components.HomeTopBar
 import com.iti.pocketshop.features.home.presentation.components.ProductRow
 import com.iti.pocketshop.features.home.presentation.components.SectionHeader
+import com.iti.pocketshop.features.home.presentation.models.UIProduct
 import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -56,7 +56,8 @@ fun HomeRoot(
         openProductDetails = openProductDetails,
         state = state,
         onAction = viewModel::onAction,
-        onWishlistClick = { product ->
+        onWishlistClick = { uiProduct ->
+            val product = uiProduct.originalProduct
             if (user?.isAnonymous == true) {
                 scope.launch {
                     SignInDialogController.sendEvent(true)
@@ -80,7 +81,7 @@ private fun HomeScreen(
     openProductDetails: (String) -> Unit,
     state: HomeState,
     onAction: (HomeAction) -> Unit,
-    onWishlistClick: (Product) -> Unit,
+    onWishlistClick: (UIProduct) -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -175,7 +176,6 @@ private fun HomeScreen(
                             ProductRow(
                                 products = state.newArrivals,
                                 onProductClick = openProductDetails,
-                                favoriteIds = state.favoriteIds,
                                 onWishlistClick = onWishlistClick
                             )
                         }
@@ -198,7 +198,6 @@ private fun HomeScreen(
                             ProductRow(
                                 products = state.featuredProducts,
                                 onProductClick = openProductDetails,
-                                favoriteIds = state.favoriteIds,
                                 onWishlistClick = onWishlistClick
                             )
                         }
@@ -222,7 +221,6 @@ private fun HomeScreen(
                             ProductRow(
                                 products = state.bestSellers,
                                 onProductClick = openProductDetails,
-                                favoriteIds = state.favoriteIds,
                                 onWishlistClick = onWishlistClick
                             )
                         }

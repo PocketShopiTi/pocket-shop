@@ -2,13 +2,18 @@ package com.iti.pocketshop.features.productlist.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
+import com.iti.pocketshop.common.favorites.domain.usecase.GetLocalFavoritesUseCase
+import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.features.home.presentation.models.toUIProduct
 import com.iti.pocketshop.features.productlist.domain.GetProductListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -18,12 +23,22 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
     private val getProductListUseCase: GetProductListUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    getLocalFavoritesUseCase: GetLocalFavoritesUseCase,
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
 
     private val _state = MutableStateFlow(ProductListState())
     val state = _state
+        .combine(getLocalFavoritesUseCase()) { state, favorites ->
+            val favoriteIds = favorites.map(FavoriteProduct::id).toSet()
+            state.copy(
+                favoriteIds = favoriteIds,
+                products = state.products.map { it.copy(isFavorite = favoriteIds.contains(it.id)) },
+                filteredProducts = state.filteredProducts.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
+            )
+        }
         .onStart {
             if (!hasLoadedInitialData) {
                 loadProducts(isRefresh = true)
@@ -55,6 +70,16 @@ class ProductListViewModel @Inject constructor(
                     )
                 }
             }
+            is ProductListAction.ToggleFavorite -> toggleFavorite(action.product)
+        }
+    }
+
+    private fun toggleFavorite(product: FavoriteProduct) {
+        viewModelScope.launch {
+            toggleFavoriteUseCase(product)
+                .onError {
+                    ErrorDialogController.sendEvent(it)
+                }
         }
     }
 
@@ -89,13 +114,15 @@ class ProductListViewModel @Inject constructor(
                 query =  currentStateRouteInfo.query()
             )
                 .onSuccess { page ->
-                    _state.update {
+                    _state.update { current ->
                         val newProducts =
-                            if (isRefresh) page.products else it.products + page.products
-                        it.copy(
+                            if (isRefresh) page.products.map { it.toUIProduct(current.favoriteIds.contains(it.id)) }
+                            else current.products + page.products.map { it.toUIProduct(current.favoriteIds.contains(it.id)) }
+                        
+                        current.copy(
                             products = newProducts,
-                            filteredProducts = if (it.searchQuery.isEmpty()) newProducts else newProducts.filter { product ->
-                                product.title.contains(it.searchQuery, ignoreCase = true)
+                            filteredProducts = if (current.searchQuery.isEmpty()) newProducts else newProducts.filter { product ->
+                                product.title.contains(current.searchQuery, ignoreCase = true)
                             },
                             hasNextPage = page.hasNextPage,
                             endCursor = page.endCursor,
