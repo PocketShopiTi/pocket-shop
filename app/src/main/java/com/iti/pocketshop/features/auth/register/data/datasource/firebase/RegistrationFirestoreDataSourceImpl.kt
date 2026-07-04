@@ -21,6 +21,7 @@ class RegistrationFirestoreDataSourceImpl @Inject constructor(
         const val LAST_NAME = "lastName"
         const val SHOPIFY_PASSWORD = "shopifyPassword"
         const val SHOPIFY_CUSTOMER_ID = "shopifyCustomerId"
+        const val SHOPIFY_CART_ID = "shopifyCartId"
     }
 
     override suspend fun load(
@@ -36,6 +37,7 @@ class RegistrationFirestoreDataSourceImpl @Inject constructor(
             RegistrationRecord(
                 shopifyPassword = password,
                 shopifyCustomerId = snapshot.getString(SHOPIFY_CUSTOMER_ID),
+                shopifyCartId = snapshot.getString(SHOPIFY_CART_ID),
             )
         }
 
@@ -46,6 +48,7 @@ class RegistrationFirestoreDataSourceImpl @Inject constructor(
         lastName: String,
         customerId: String?,
         password: String,
+        cartId: String?
     ): PocketResult<Unit, PocketDataError.Auth> = safeFirestoreCall {
         val data = mutableMapOf<String, Any?>(
             EMAIL to email,
@@ -55,6 +58,7 @@ class RegistrationFirestoreDataSourceImpl @Inject constructor(
         )
 
         if (customerId != null) data[SHOPIFY_CUSTOMER_ID] = customerId
+        if (cartId != null) data[SHOPIFY_CART_ID] = cartId
 
         firestore.collection(USERS)
             .document(uid)
@@ -62,4 +66,23 @@ class RegistrationFirestoreDataSourceImpl @Inject constructor(
             .await()
     }.map { }
 
+    override suspend fun saveCartId(
+        uid: String,
+        cartId: String
+    ): PocketResult<Unit, PocketDataError.Auth> = safeFirestoreCall {
+        firestore.collection(USERS)
+            .document(uid)
+            .update(SHOPIFY_CART_ID, cartId)
+            .await()
+    }.map { }
+
+    override suspend fun loadCartId(
+        uid: String
+    ): PocketResult<String?, PocketDataError.Auth> = safeFirestoreCall {
+        val snapshot = firestore.collection(USERS)
+            .document(uid)
+            .get()
+            .await()
+        snapshot.getString(SHOPIFY_CART_ID)
+    }
 }
