@@ -8,5 +8,6 @@ data class ShopifyCart(
     val subtotalCurrencyCode: String,
     val totalAmount: Double,
     val totalCurrencyCode: String,
-    val totalQuantity: Int
+    val totalQuantity: Int,
+    val appliedDiscountCodes: List<String> = emptyList()
 )

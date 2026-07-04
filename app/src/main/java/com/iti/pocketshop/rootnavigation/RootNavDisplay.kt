@@ -173,6 +173,9 @@ fun RootNavDisplay() {
                     openProductList = { routeInfo ->
                         rootBackStack.navigateSingleTop(Route.ProductList(routeInfo))
                     },
+                    openOrderCheckout = {
+                        rootBackStack.navigateSingleTop(Route.OrderCheckout)
+                    }
                 )
             }
             entry<Route.AiChat> {

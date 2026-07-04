@@ -53,7 +53,8 @@ import java.util.Locale
 @Composable
 fun CartRoot(
     viewModel: CartViewModel = hiltViewModel(),
-    onStartShoppingClick: () -> Unit = {}
+    onStartShoppingClick: () -> Unit = {},
+    onCheckoutClick: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -62,6 +63,8 @@ fun CartRoot(
         onAction = { action ->
             if (action == CartAction.StartShoppingClicked) {
                 onStartShoppingClick()
+            } else if (action == CartAction.CheckoutClicked) {
+                onCheckoutClick()
             } else {
                 viewModel.onAction(action)
             }

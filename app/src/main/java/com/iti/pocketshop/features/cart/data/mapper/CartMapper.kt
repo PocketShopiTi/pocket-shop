@@ -31,6 +31,7 @@ fun CartFields.toDomain(): ShopifyCart {
             } else {
                 null
             }
-        }
+        },
+        appliedDiscountCodes = this.discountCodes.filter { it.applicable }.map { it.code }
     )
 }

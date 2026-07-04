@@ -41,6 +41,7 @@ fun NestedNavDisplay(
     openSettings: () -> Unit,
     openLogin: () -> Unit,
     openRegister: () -> Unit,
+    openOrderCheckout: () -> Unit,
 ) {
 
     val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
@@ -122,6 +123,9 @@ fun NestedNavDisplay(
                     CartRoot(
                         onStartShoppingClick = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Home)
+                        },
+                        onCheckoutClick = {
+                            openOrderCheckout()
                         }
                     )
                 }
