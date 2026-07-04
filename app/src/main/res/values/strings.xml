@@ -253,6 +253,22 @@
     <string name="remove_favorite_dialog_confirm">Remove</string>
     <string name="sign_in_to_continue">Sign in to continue</string>
 
+    <!-- Cart screen -->
+    <string name="checkout_total">Checkout · %1$s</string>
+    <string name="cart_empty_title">Your cart is empty</string>
+    <string name="cart_empty_subtitle">Add items to your cart by browsing our collection.</string>
+    <string name="start_shopping">Start shopping</string>
+    <string name="order_summary">Order summary</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="discount_10">Discount (10%%)</string>
+    <string name="shipping">Shipping</string>
+    <string name="free">Free</string>
+    <string name="total">Total</string>
+    <string name="remove_item_title">Remove Item</string>
+    <string name="remove_item_message">Are you sure you want to remove this item from your cart?</string>
+    <string name="remove">Remove</string>
+    <string name="cart_item_size">Size: %1$s</string>
+
     <!-- Settings screen -->
     <string name="english">English</string>
     <string name="arabic">Arabic</string>
@@ -320,4 +336,14 @@
     <string name="payment_failed">Payment failed. Please try again</string>
     <string name="cart_currency_egp">EGP</string>
     <string name="cart_currency_usd">USD</string>
+    <string name="all_categories">All Categories</string>
+    <string name="men">Men</string>
+    <string name="women">Women</string>
+    <string name="kids">Kids</string>
+    <string name="baby">Baby</string>
+    <string name="shoes">Shoes</string>
+    <string name="bags">Bags</string>
+    <string name="accessories">Accessories</string>
+    <string name="pets">Pets</string>
+    <string name="try_searching_for_something_else">Try searching for something else.</string>
 </resources>

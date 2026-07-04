@@ -16,5 +16,15 @@ interface RegistrationFirestoreDataSource {
         lastName: String,
         customerId: String?,
         password: String,
+        cartId: String? = null
     ): PocketResult<Unit, PocketDataError.Auth>
+    
+    suspend fun saveCartId(
+        uid: String,
+        cartId: String
+    ): PocketResult<Unit, PocketDataError.Auth>
+
+    suspend fun loadCartId(
+        uid: String
+    ): PocketResult<String?, PocketDataError.Auth>
 }
