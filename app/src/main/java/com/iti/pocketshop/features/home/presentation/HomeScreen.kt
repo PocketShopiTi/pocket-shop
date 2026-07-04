@@ -20,10 +20,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
-import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.SignInDialogController
+import com.iti.pocketshop.features.home.domain.models.Product
 import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import com.iti.pocketshop.features.home.presentation.components.BrandRow
 import com.iti.pocketshop.features.home.presentation.components.CategoriesRow
@@ -46,6 +46,8 @@ fun HomeRoot(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val user = LocalUser.current
+    val scope: CoroutineScope = rememberCoroutineScope()
 
     HomeScreen(
         openSearch = openSearch,
@@ -54,7 +56,19 @@ fun HomeRoot(
         openProductDetails = openProductDetails,
         state = state,
         onAction = viewModel::onAction,
-        user = LocalUser.current
+        onWishlistClick = { product ->
+            if (user?.isAnonymous == true) {
+                scope.launch {
+                    SignInDialogController.sendEvent(true)
+                }
+            } else if (state.favoriteIds.contains(product.id)) {
+                scope.launch {
+                    DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
+                }
+            } else {
+                viewModel.onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
+            }
+        }
     )
 }
 
@@ -66,12 +80,10 @@ private fun HomeScreen(
     openProductDetails: (String) -> Unit,
     state: HomeState,
     onAction: (HomeAction) -> Unit,
-    user: UserSession?,
-    scope: CoroutineScope = rememberCoroutineScope()
+    onWishlistClick: (Product) -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -92,8 +104,8 @@ private fun HomeScreen(
                     contentPadding = PaddingValues(bottom = 32.dp)
                 ) {
                     // Hero banner
-                    item {
-                        if (!state.isEmptyState) {
+                    if (!state.isEmptyState) {
+                        item(key = "hero_banner") {
                             HeroBanner(
                                 openSales = {
                                     //TODO()
@@ -104,16 +116,16 @@ private fun HomeScreen(
 
                     // Brands
                     if (state.brands.isNotEmpty()) {
-                        item { Spacer(Modifier.height(16.dp)) }
-                        item {
+                        item(key = "brands_spacer") { Spacer(Modifier.height(16.dp)) }
+                        item(key = "brands_header") {
                             SectionHeader(
                                 title = stringResource(R.string.shop_by_brand),
                                 onSeeAllClick = openBrands,
                                 modifier = Modifier.padding(horizontal = 20.dp)
                             )
                         }
-                        item { Spacer(Modifier.height(8.dp)) }
-                        item {
+                        item(key = "brands_spacer_2") { Spacer(Modifier.height(8.dp)) }
+                        item(key = "brands_row") {
                             BrandRow(
                                 brands = state.brands,
                                 onBrandClick = { brand ->
@@ -125,16 +137,16 @@ private fun HomeScreen(
 
                     // Categories
                     if (state.categories.isNotEmpty()) {
-                        item { Spacer(Modifier.height(16.dp)) }
-                        item {
+                        item(key = "categories_spacer") { Spacer(Modifier.height(16.dp)) }
+                        item(key = "categories_header") {
                             SectionHeader(
                                 title = stringResource(R.string.all_categories),
                                 onSeeAllClick = null,
                                 modifier = Modifier.padding(horizontal = 20.dp)
                             )
                         }
-                        item { Spacer(Modifier.height(8.dp)) }
-                        item {
+                        item(key = "categories_spacer_2") { Spacer(Modifier.height(8.dp)) }
+                        item(key = "categories_row") {
                             CategoriesRow(
                                 categories = state.categories,
                                 onCategoryClick = { category ->
@@ -144,81 +156,11 @@ private fun HomeScreen(
                         }
                     }
 
-                    // Featured products
-                    if (state.featuredProducts.isNotEmpty()) {
-                        item { Spacer(Modifier.height(20.dp)) }
-                        item {
-                            SectionHeader(
-                                title = stringResource(R.string.featured),
-                                onSeeAllClick = {
-                                    openProductList(ProductListRouteInfo.Featured)
-                                },
-                                modifier = Modifier.padding(horizontal = 20.dp)
-                            )
-                        }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item {
-                            ProductRow(
-                                products = state.featuredProducts,
-                                onProductClick = openProductDetails,
-                                favoriteIds = state.favoriteIds,
-                                onWishlistClick = { product ->
-                                    if (user?.isAnonymous == true) {
-                                        scope.launch {
-                                            SignInDialogController.sendEvent(true)
-                                        }
-                                    } else if (state.favoriteIds.contains(product.id)) {
-                                        scope.launch {
-                                            DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
-                                        }
-                                    } else {
-                                        onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
-                                    }
-                                }
-                            )
-                        }
-                    }
-
-                    // Best sellers
-                    if (state.bestSellers.isNotEmpty()) {
-                        item { Spacer(Modifier.height(20.dp)) }
-                        item {
-                            SectionHeader(
-                                title = stringResource(R.string.trending),
-                                badge = stringResource(R.string.on_fire_emoji),
-                                onSeeAllClick = {
-                                    openProductList(ProductListRouteInfo.Trending)
-                                },
-                                modifier = Modifier.padding(horizontal = 20.dp)
-                            )
-                        }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item {
-                            ProductRow(
-                                products = state.bestSellers,
-                                onProductClick = openProductDetails,
-                                favoriteIds = state.favoriteIds,
-                                onWishlistClick = { product ->
-                                    if (user?.isAnonymous == true) {
-                                        scope.launch {
-                                            SignInDialogController.sendEvent(true)
-                                        }
-                                    } else if (state.favoriteIds.contains(product.id)) {
-                                        scope.launch {
-                                            DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
-                                        }
-                                    } else {
-                                        onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
-                                    }
-                                }
-                            )
-                        }
-                    }
 
                     // New arrivals
                     if (state.newArrivals.isNotEmpty()) {
-                        item { Spacer(Modifier.height(20.dp)) }
-                        item {
+                        item(key = "new_arrivals_spacer") { Spacer(Modifier.height(20.dp)) }
+                        item(key = "new_arrivals_header") {
                             SectionHeader(
                                 title = stringResource(R.string.new_arrivals),
                                 badge = stringResource(R.string.new_items),
@@ -228,33 +170,67 @@ private fun HomeScreen(
                                 modifier = Modifier.padding(horizontal = 20.dp)
                             )
                         }
-                        item { Spacer(Modifier.height(12.dp)) }
-                        item {
+                        item(key = "new_arrivals_spacer_2") { Spacer(Modifier.height(12.dp)) }
+                        item(key = "new_arrivals_row") {
                             ProductRow(
                                 products = state.newArrivals,
                                 onProductClick = openProductDetails,
-                                cardWidth = 160.dp,
                                 favoriteIds = state.favoriteIds,
-                                onWishlistClick = { product ->
-                                    if (user?.isAnonymous == true) {
-                                        scope.launch {
-                                            SignInDialogController.sendEvent(true)
-                                        }
-                                    } else if (state.favoriteIds.contains(product.id)) {
-                                        scope.launch {
-                                            DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
-                                        }
-                                    } else {
-                                        onAction(HomeAction.ToggleFavorite(product.toFavoriteProduct()))
-                                    }
-                                }
+                                onWishlistClick = onWishlistClick
+                            )
+                        }
+                    }
+
+                    // Featured products
+                    if (state.featuredProducts.isNotEmpty()) {
+                        item(key = "featured_spacer") { Spacer(Modifier.height(20.dp)) }
+                        item(key = "featured_header") {
+                            SectionHeader(
+                                title = stringResource(R.string.featured),
+                                onSeeAllClick = {
+                                    openProductList(ProductListRouteInfo.Featured)
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item(key = "featured_spacer_2") { Spacer(Modifier.height(12.dp)) }
+                        item(key = "featured_row") {
+                            ProductRow(
+                                products = state.featuredProducts,
+                                onProductClick = openProductDetails,
+                                favoriteIds = state.favoriteIds,
+                                onWishlistClick = onWishlistClick
+                            )
+                        }
+                    }
+
+                    // Best sellers
+                    if (state.bestSellers.isNotEmpty()) {
+                        item(key = "trending_spacer") { Spacer(Modifier.height(20.dp)) }
+                        item(key = "trending_header") {
+                            SectionHeader(
+                                title = stringResource(R.string.trending),
+                                badge = stringResource(R.string.on_fire_emoji),
+                                onSeeAllClick = {
+                                    openProductList(ProductListRouteInfo.Trending)
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item(key = "trending_spacer_2") { Spacer(Modifier.height(12.dp)) }
+                        item(key = "trending_row") {
+                            ProductRow(
+                                products = state.bestSellers,
+                                onProductClick = openProductDetails,
+                                favoriteIds = state.favoriteIds,
+                                onWishlistClick = onWishlistClick
                             )
                         }
                     }
 
                     // Empty state
                     if (state.isEmptyState && !state.isLoading) {
-                        item { EmptyHome(onRefresh = { onAction(HomeAction.FetchData) }) }
+                        item(key = "empty_state") { EmptyHome(onRefresh = { onAction(HomeAction.FetchData) }) }
                     }
                 }
             }
