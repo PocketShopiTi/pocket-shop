@@ -34,13 +34,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.features.cart.components.CartEmptyState
 import com.iti.pocketshop.features.cart.components.CartItemCard
 import com.iti.pocketshop.features.cart.components.OrderSummaryCard
 import com.iti.pocketshop.features.cart.components.RemoveCartItemDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import java.util.Locale
 
 @Composable
@@ -68,6 +72,22 @@ fun CartScreen(
     state: CartState,
     onAction: (CartAction) -> Unit,
 ) {
+    val uriHandler = LocalUriHandler.current
+
+    LaunchedEffect(state.checkoutUrl) {
+        state.checkoutUrl?.let { url ->
+            uriHandler.openUri(url)
+            onAction(CartAction.CheckoutHandled)
+        }
+    }
+
+    LaunchedEffect(state.error) {
+        state.error?.let { error ->
+            ErrorDialogController.sendEvent(error)
+            onAction(CartAction.ErrorHandled)
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -146,11 +166,18 @@ fun CartScreen(
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp)
             ) {
-                items(state.items, key = { it.id }) { item ->
+                if (state.isLoading) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+                items(state.items, key = { it.lineId }) { item ->
                     CartItemCard(
                         item = item,
                         onRemoveClick = { onAction(CartAction.RemoveItemClicked(item)) },
-                        onUpdateQuantity = { qty -> onAction(CartAction.UpdateQuantity(item.id, qty)) }
+                        onUpdateQuantity = { qty -> onAction(CartAction.UpdateQuantity(item.lineId, qty)) }
                     )
                 }
                 
@@ -158,7 +185,6 @@ fun CartScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     OrderSummaryCard(
                         subTotal = state.subTotal,
-                        discount = state.discount,
                         shipping = state.shipping,
                         total = state.total
                     )

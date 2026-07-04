@@ -35,12 +35,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.fillMaxSize
 import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.cart.domain.entity.CartItem
+import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 import java.util.Locale
 
 @Composable
 fun CartItemCard(
-    item: CartItem,
+    item: CartLineItem,
     onRemoveClick: () -> Unit,
     onUpdateQuantity: (Int) -> Unit,
     modifier: Modifier = Modifier
@@ -89,15 +89,10 @@ fun CartItemCard(
                         overflow = TextOverflow.Ellipsis
                     )
                     Text(
-                        text = item.brand.uppercase(Locale.US),
+                        text = item.variantTitle,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         letterSpacing = 1.sp
-                    )
-                    Text(
-                        text = stringResource(id = R.string.cart_item_size, item.size),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 

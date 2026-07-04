@@ -26,7 +26,6 @@ import java.util.Locale
 @Composable
 fun OrderSummaryCard(
     subTotal: Double,
-    discount: Double,
     shipping: Double,
     total: Double,
     modifier: Modifier = Modifier
@@ -48,13 +47,6 @@ fun OrderSummaryCard(
         Spacer(modifier = Modifier.height(16.dp))
         
         SummaryRow(title = stringResource(id = R.string.subtotal), value = String.format(Locale.US, "$%.2f", subTotal))
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        SummaryRow(
-            title = stringResource(id = R.string.discount_10), 
-            value = String.format(Locale.US, "-$%.2f", discount),
-            valueColor = MaterialTheme.colorScheme.primary // Brown color
-        )
         Spacer(modifier = Modifier.height(12.dp))
         
         SummaryRow(title = stringResource(id = R.string.shipping), value = if (shipping == 0.0) stringResource(id = R.string.free) else String.format(Locale.US, "$%.2f", shipping))
