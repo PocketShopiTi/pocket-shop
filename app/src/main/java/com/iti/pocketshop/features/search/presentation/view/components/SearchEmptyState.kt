@@ -28,7 +28,7 @@ fun SearchEmptyState(
     onAction: (SearchAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.empty))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_empty_list))
 
     Column(
         modifier = modifier

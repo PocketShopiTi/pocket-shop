@@ -11,9 +11,13 @@ sealed class SearchAction {
     data class ToggleFilter(val filterValue: ProductFilterValue) : SearchAction()
     object ClearFilters : SearchAction()
 
-      data class SelectSortOption(val option: SortOption) : SearchAction()
+    // Used by the Filters screen (deferred — applied only when SubmitSearch fires)
+    data class SelectSortOption(val option: SortOption) : SearchAction()
     data class UpdatePriceRange(val range: ClosedFloatingPointRange<Float>) : SearchAction()
     object ClearPriceRange : SearchAction()
+
+    // Used by the inline quick-edit sheets opened from filter chips on the Search page
+    // (applied immediately — updates state and triggers a search right away)
     data class QuickToggleFilter(val filterValue: ProductFilterValue) : SearchAction()
     data class QuickUpdatePriceRange(val range: ClosedFloatingPointRange<Float>) : SearchAction()
     object QuickClearPriceRange : SearchAction()

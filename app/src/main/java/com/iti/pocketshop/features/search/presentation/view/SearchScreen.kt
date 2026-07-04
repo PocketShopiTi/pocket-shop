@@ -1,5 +1,9 @@
 package com.iti.pocketshop.features.search.presentation.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,46 +96,56 @@ fun SearchScreen(
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
 
-                when (val phase = state.phase) {
-                    SearchPhase.Initial -> {
-                        SearchInitialContent(
-                            products = state.initialProducts,
-                            onAction = onAction,
-                        )
-                    }
+                Crossfade(
+                    targetState = state.phase,
+                    label = "search_phase_transition",
+                ) { phase ->
+                    when (phase) {
+                        SearchPhase.Initial -> {
+                            SearchInitialContent(
+                                products = state.initialProducts,
+                                onAction = onAction,
+                            )
+                        }
 
-                    is SearchPhase.Predictive -> {
-                        PredictiveSearchContent(
-                            predictiveResult = phase.predictiveResult,
-                            onAction = onAction,
-                        )
-                    }
+                        is SearchPhase.Predictive -> {
+                            PredictiveSearchContent(
+                                predictiveResult = phase.predictiveResult,
+                                onAction = onAction,
+                            )
+                        }
 
-                    is SearchPhase.Results -> {
-                        FilterChipsRow(
-                            filterGroups = phase.searchResult.filters,
-                            activeFilters = state.activeFilters,
-                            activeSortOption = state.activeSortOption,
-                            activePriceRange = state.activePriceRange,
-                            priceRangeBounds = state.priceRangeBounds,
-                            onAction = onAction,
-                            onOpenFiltersScreen = { onAction(SearchAction.OpenFiltersScreen) },
-                        )
-                        SearchResultsContent(
-                            query = state.query,
-                            searchResult = phase.searchResult,
-                            onAction = onAction,
-                        )
-                    }
+                        is SearchPhase.Results -> {
+                            Column(modifier = Modifier.fillMaxSize()) {
+                                FilterChipsRow(
+                                    filterGroups = phase.searchResult.filters,
+                                    activeFilters = state.activeFilters,
+                                    activeSortOption = state.activeSortOption,
+                                    activePriceRange = state.activePriceRange,
+                                    priceRangeBounds = state.priceRangeBounds,
+                                    onAction = onAction,
+                                    onOpenFiltersScreen = { onAction(SearchAction.OpenFiltersScreen) },
+                                )
+                                SearchResultsContent(
+                                    query = state.query,
+                                    searchResult = phase.searchResult,
+                                    onAction = onAction,
+                                )
+                            }
+                        }
 
-                    SearchPhase.Empty -> SearchEmptyState(onAction = onAction)
+                        SearchPhase.Empty -> SearchEmptyState(onAction = onAction)
+                    }
                 }
             }
 
-            if (state.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                )
+            AnimatedVisibility(
+                visible = state.isLoading,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.Center),
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
