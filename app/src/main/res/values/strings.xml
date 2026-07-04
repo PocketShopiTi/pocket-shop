@@ -88,6 +88,10 @@
     <string name="big_sale">BIG SALE</string>
     <string name="up_to_50_off">Up to\n50% Off</string>
     <string name="shop_now">Shop now</string>
+    <string name="home_coupon_your_code">Your coupon code</string>
+    <string name="home_coupon_copy_code">Copy code</string>
+    <string name="home_coupon_clip_label">Pocket Shop coupon</string>
+    <string name="home_coupon_close">Close offer</string>
     <string name="search">Search</string>
     <string name="search_placeholder">Search products, brands, and more</string>
     <string name="search_clear_query">Clear search</string>
