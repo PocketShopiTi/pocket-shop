@@ -1,9 +1,14 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,8 +36,15 @@ internal fun ProductContent(
             .background(MaterialTheme.colorScheme.background),
     ) {
         item {
+            Box(
+                modifier = Modifier
+                    .height(WindowInsets.statusBars.asPaddingValues().calculateTopPadding())
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+            )
+        }
+        item {
             ProductImageGallery(
-                images = product.images,
+                images = state.galleryImages,
                 selectedIndex = state.selectedImageIndex,
                 onImageSelected = { index ->
                     onAction(ProductDetailsAction.ImageSelected(index))
@@ -68,13 +80,6 @@ internal fun ProductContent(
                         onToggle = { onAction(ProductDetailsAction.ToggleDescription) },
                     )
                 }
-
-                SectionDivider()
-                ReviewsSection(
-                    reviews = product.reviews,
-                    reviewCount = product.reviewCount,
-                    onSeeAll = { onAction(ProductDetailsAction.SeeAllReviewsClicked) },
-                )
             }
         }
     }

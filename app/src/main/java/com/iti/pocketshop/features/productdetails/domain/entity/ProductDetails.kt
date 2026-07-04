@@ -10,9 +10,6 @@ data class ProductDetails(
     val images: List<ProductImage>,
     val options: List<ProductOption> = emptyList(),
     val variants: List<ProductVariant>,
-    val rating: Double,
-    val reviewCount: Int,
-    val reviews: List<ProductReview>,
     val isFavorite: Boolean,
 ) {
     val defaultVariant = variants.firstOrNull { it.availableForSale }
@@ -36,6 +33,27 @@ data class ProductDetails(
             variant.selectedOptionValueIds.count { (candidateOptionId, candidateValueId) ->
                 currentSelections[candidateOptionId] != candidateValueId
             }
+        }
+
+    fun imagesFor(variant: ProductVariant?): List<ProductImage> {
+        if (variant == null) return images
+        val featured = images.firstOrNull() ?: return images
+        val colorLabelRegex = selectedColorLabel(variant)
+            ?.takeIf { it.isNotBlank() }
+            ?.let { label -> Regex("\\b${Regex.escape(label)}\\b", RegexOption.IGNORE_CASE) }
+        val matches = images.filter { image ->
+            image.url == variant.imageUrl ||
+                    (colorLabelRegex != null &&
+                            image.altText?.contains(colorLabelRegex) == true)
+        }
+        if (matches.isEmpty()) return images
+        return listOf(featured) + matches.filterNot { it.url == featured.url }
+    }
+
+    fun selectedColorLabel(variant: ProductVariant): String? =
+        options.firstOrNull { it.type == ProductOptionType.COLOR }?.let { option ->
+            val valueId = variant.selectedOptionValueIds[option.id]
+            option.values.firstOrNull { it.id == valueId }?.label
         }
 }
 

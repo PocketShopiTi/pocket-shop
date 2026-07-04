@@ -24,11 +24,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.iti.pocketshop.core.components.ErrorDialogListener
-import com.iti.pocketshop.core.components.StatusBarBackground
 import com.iti.pocketshop.common.settings.domain.models.LanguageSetting
 import com.iti.pocketshop.common.settings.domain.models.ThemeSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
+import com.iti.pocketshop.core.components.ErrorDialogListener
+import com.iti.pocketshop.core.components.StatusBarBackground
 import com.iti.pocketshop.rootnavigation.RootNavDisplay
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import dagger.hilt.android.AndroidEntryPoint

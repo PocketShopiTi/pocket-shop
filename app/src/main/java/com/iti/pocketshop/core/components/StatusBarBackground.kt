@@ -16,6 +16,6 @@ fun StatusBarBackground(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .windowInsetsTopHeight(WindowInsets.statusBars)
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.background),
     )
 }

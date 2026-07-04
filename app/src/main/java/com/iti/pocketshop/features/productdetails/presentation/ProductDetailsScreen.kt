@@ -1,15 +1,16 @@
 package com.iti.pocketshop.features.productdetails.presentation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -34,7 +35,6 @@ import kotlinx.coroutines.launch
 fun ProductDetailsRoot(
     productId: String,
     onBack: () -> Unit,
-    onSeeAllReviews: (productId: String) -> Unit = {},
     viewModel: ProductDetailsViewModel = hiltViewModel(
         key = productId,
         creationCallback = { factory: ProductDetailsViewModel.Factory ->
@@ -70,7 +70,6 @@ fun ProductDetailsRoot(
             }
             when (action) {
                 ProductDetailsAction.BackClicked -> onBack()
-                ProductDetailsAction.SeeAllReviewsClicked -> onSeeAllReviews(productId)
                 else -> viewModel.onAction(action)
             }
         },
@@ -84,11 +83,6 @@ fun ProductDetailsScreen(
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {
     val listState = rememberLazyListState()
-    val showAppBarTitle by remember {
-        derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 240
-        }
-    }
 
     val onFavoriteClick: () -> Unit = {
         state.product?.let { product ->
@@ -104,16 +98,6 @@ fun ProductDetailsScreen(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
-        topBar = {
-            ProductDetailsTopAppBar(
-                title = state.product?.title.orEmpty(),
-                showTitle = showAppBarTitle && state.product != null,
-                isFavorite = state.isFavorite,
-                favoriteEnabled = state.product != null,
-                onBack = { onAction(ProductDetailsAction.BackClicked) },
-                onFavoriteClick = onFavoriteClick,
-            )
-        },
         bottomBar = {
             if (state.product != null) {
                 ProductBottomBar(
@@ -126,27 +110,36 @@ fun ProductDetailsScreen(
             }
         },
     ) { innerPadding ->
-        ScreenStateLayout(
-            isLoading = state.isLoading,
-            error = state.error,
-            isEmpty = state.product == null,
-            onRetry = { onAction(ProductDetailsAction.Retry) },
-            modifier = Modifier.padding(innerPadding),
-            loadingContent = { LoadingContent() },
-            emptyContent = {
-                EmptyProductContent(onRetry = { onAction(ProductDetailsAction.Retry) })
-            },
-            content = {
-                state.product?.let { product ->
-                    ProductContent(
-                        product = product,
-                        state = state,
-                        onAction = onAction,
-                        listState = listState,
-                    )
-                }
-            },
-        )
+        Box(modifier = Modifier.fillMaxSize()) {
+            ScreenStateLayout(
+                isLoading = state.isLoading,
+                error = state.error,
+                isEmpty = state.product == null,
+                onRetry = { onAction(ProductDetailsAction.Retry) },
+                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                loadingContent = { LoadingContent() },
+                emptyContent = {
+                    EmptyProductContent(onRetry = { onAction(ProductDetailsAction.Retry) })
+                },
+                content = {
+                    state.product?.let { product ->
+                        ProductContent(
+                            product = product,
+                            state = state,
+                            onAction = onAction,
+                            listState = listState,
+                        )
+                    }
+                },
+            )
+            ProductDetailsTopAppBar(
+                isFavorite = state.isFavorite,
+                favoriteEnabled = state.product != null,
+                onBack = { onAction(ProductDetailsAction.BackClicked) },
+                onFavoriteClick = onFavoriteClick,
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
+        }
     }
 
     RemoveFavoriteDialog(

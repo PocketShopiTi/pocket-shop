@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -12,47 +12,38 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductDetailsTopAppBar(
-    title: String,
-    showTitle: Boolean,
     isFavorite: Boolean,
     favoriteEnabled: Boolean,
     onBack: () -> Unit,
     onFavoriteClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val backDescription = stringResource(R.string.product_details_back)
+    val containerColor by animateColorAsState(
+        targetValue = Color.Transparent,
+        label = "appBarContainer",
+    )
     TopAppBar(
-        title = {
-            AnimatedVisibility(
-                visible = true,
-                enter = fadeIn() + scaleIn(initialScale = 0.96f),
-                exit = fadeOut() + scaleOut(targetScale = 0.96f),
-            ) {
-                Text(
-                    text = title,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium,
-                )
-            }
-        },
+        modifier = modifier,
+        title = { },
         navigationIcon = {
             IconButton(
                 onClick = onBack,
@@ -99,8 +90,8 @@ internal fun ProductDetailsTopAppBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = containerColor,
+            scrolledContainerColor = containerColor,
             navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             actionIconContentColor = MaterialTheme.colorScheme.onSurface,

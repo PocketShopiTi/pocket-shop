@@ -34,45 +34,6 @@ private fun ProductDetailsEmptyDescriptionPreview() {
     )
 }
 
-@Preview(name = "No reviews", showBackground = true, widthDp = 390, heightDp = 1180)
-@Composable
-private fun ProductDetailsNoReviewsPreview() {
-    ProductDetailsPreview(
-        ProductDetailsMockData.create("no-reviews").copy(
-            rating = 0.0,
-            reviewCount = 0,
-            reviews = emptyList(),
-        ),
-    )
-}
-
-@Preview(name = "Three reviews", showBackground = true, widthDp = 390, heightDp = 1180)
-@Composable
-private fun ProductDetailsThreeReviewsPreview() {
-    val product = ProductDetailsMockData.create("three-reviews")
-    ProductDetailsPreview(
-        product.copy(
-            reviewCount = 3,
-            reviews = product.reviews + product.reviews.first().copy(id = "review-3"),
-        ),
-    )
-}
-
-@Preview(name = "More reviews", showBackground = true, widthDp = 390, heightDp = 1180)
-@Composable
-private fun ProductDetailsMoreReviewsPreview() {
-    val product = ProductDetailsMockData.create("more-reviews")
-    ProductDetailsPreview(
-        product.copy(
-            reviewCount = 4,
-            reviews = product.reviews + listOf(
-                product.reviews.first().copy(id = "review-3"),
-                product.reviews.last().copy(id = "review-4"),
-            ),
-        ),
-    )
-}
-
 @Preview(
     name = "Dark theme",
     showBackground = true,

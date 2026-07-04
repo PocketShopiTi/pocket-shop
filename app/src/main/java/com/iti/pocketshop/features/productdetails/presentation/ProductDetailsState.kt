@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.productdetails.presentation
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.features.productdetails.domain.entity.Money
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 
 data class ProductDetailsState(
@@ -21,6 +22,9 @@ data class ProductDetailsState(
         get() = product?.variants?.firstOrNull { variant ->
             variant.selectedOptionValueIds == selectedOptionValueIds
         }
+
+    val galleryImages: List<ProductImage>
+        get() = product?.imagesFor(selectedVariant).orEmpty()
 
     val totalPrice: Money?
         get() = selectedVariant?.price?.let { price ->

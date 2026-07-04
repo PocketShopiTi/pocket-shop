@@ -75,8 +75,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
             }
             ProductDetailsAction.Retry -> loadProduct()
             ProductDetailsAction.AddToCartClicked -> showAddToCartFeedback()
-            ProductDetailsAction.BackClicked,
-            ProductDetailsAction.SeeAllReviewsClicked -> Unit
+            ProductDetailsAction.BackClicked -> Unit
         }
     }
 
@@ -94,7 +93,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
 
     private fun showProduct(product: ProductDetails) {
         val defaultVariant = product.defaultVariant
-        val selectedImageIndex = product.images.indexOfFirst { image ->
+        val selectedImageIndex = product.imagesFor(defaultVariant).indexOfFirst { image ->
             image.url == defaultVariant?.imageUrl
         }.coerceAtLeast(0)
 
@@ -115,7 +114,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
             state.copy(
                 selectedImageIndex = index.coerceIn(
                     minimumValue = 0,
-                    maximumValue = state.product?.images?.lastIndex?.coerceAtLeast(0) ?: 0,
+                    maximumValue = state.galleryImages.lastIndex.coerceAtLeast(0),
                 ),
             )
         }
@@ -129,16 +128,14 @@ class ProductDetailsViewModel @AssistedInject constructor(
                 valueId = valueId,
                 currentSelections = state.selectedOptionValueIds,
             ) ?: return@update state
-            val variantImageIndex = product.images.indexOfFirst { image ->
+            val variantImageIndex = product.imagesFor(variant).indexOfFirst { image ->
                 image.url == variant.imageUrl
             }
             state.copy(
                 selectedOptionValueIds = variant.selectedOptionValueIds,
-                selectedImageIndex = if (variantImageIndex >= 0) {
-                    variantImageIndex
-                } else {
-                    state.selectedImageIndex
-                },
+                // The gallery list changes with the variant, so an old index is
+                // meaningless — fall back to the featured image.
+                selectedImageIndex = variantImageIndex.coerceAtLeast(0),
                 isAddedToCart = false,
             )
         }

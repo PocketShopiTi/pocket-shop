@@ -129,9 +129,6 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
         images = images,
         options = options,
         variants = variants,
-        rating = 0.0,
-        reviewCount = 0,
-        reviews = emptyList(),
         isFavorite = false,
     )
 }
@@ -139,7 +136,7 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
 private fun optionValueId(optionId: String, value: String): String =
     "$optionId:${toLowerCase(value)}"
 
-private fun isDefaultOption(name: String, values: List<String>): Boolean =
+internal fun isDefaultOption(name: String, values: List<String>): Boolean =
     name.trim()
         .equals("Title", ignoreCase = true) &&
             values.size == 1 &&
@@ -180,15 +177,50 @@ private fun parseColour(value: Any): Long? {
     }
 }
 
-private fun colourArgb(value: String): Long = when (value.trim().lowercase(Locale.ROOT)) {
-    "black" -> 0xFF2C2826
-    "white" -> 0xFFFFFFFF
-    "ecru", "cream", "beige" -> 0xFFD8CEC0
-    "terracotta", "orange" -> 0xFFB8634A
-    "sage", "green" -> 0xFF8B9E7E
-    "red", "burgundy" -> 0xFF9E3F3F
-    "blue", "navy" -> 0xFF3F5873
-    "pink" -> 0xFFD88E9B
-    "grey", "gray" -> 0xFF8A8378
-    else -> 0xFFB8B0A5
+private val colourTokenArgb: Map<String, Long> = mapOf(
+    "black" to 0xFF2C2826,
+    "white" to 0xFFFFFFFF,
+    "ecru" to 0xFFD8CEC0,
+    "cream" to 0xFFD8CEC0,
+    "beige" to 0xFFD8CEC0,
+    "ivory" to 0xFFD8CEC0,
+    "terracotta" to 0xFFB8634A,
+    "orange" to 0xFFB8634A,
+    "sage" to 0xFF8B9E7E,
+    "green" to 0xFF8B9E7E,
+    "olive" to 0xFF8B9E7E,
+    "red" to 0xFF9E3F3F,
+    "burgundy" to 0xFF9E3F3F,
+    "maroon" to 0xFF9E3F3F,
+    "blue" to 0xFF3F5873,
+    "navy" to 0xFF3F5873,
+    "indigo" to 0xFF3F5873,
+    "pink" to 0xFFD88E9B,
+    "rose" to 0xFFD88E9B,
+    "grey" to 0xFF8A8378,
+    "gray" to 0xFF8A8378,
+    "charcoal" to 0xFF8A8378,
+    "silver" to 0xFF8A8378,
+    "brown" to 0xFF6B4F3F,
+    "tan" to 0xFFB49A7D,
+    "khaki" to 0xFFB49A7D,
+    "yellow" to 0xFFD9B44A,
+    "gold" to 0xFFD9B44A,
+    "purple" to 0xFF6E5A7E,
+)
+
+private const val FALLBACK_COLOUR_ARGB = 0xFFB8B0A5
+
+internal fun colourArgb(value: String): Long {
+    val normalized = toLowerCase(value)
+    colourTokenArgb[normalized]?.let { return it }
+    // Shopify names put the base hue last ("Cloud White", "Core Black", "Solar Red"),
+    // so scan tokens from the end to pick the base hue.
+    val tokens = normalized.split(NON_LETTER_REGEX).filter { it.isNotBlank() }
+    for (token in tokens.asReversed()) {
+        colourTokenArgb[token]?.let { return it }
+    }
+    return FALLBACK_COLOUR_ARGB
 }
+
+private val NON_LETTER_REGEX = Regex("[^a-z]+")

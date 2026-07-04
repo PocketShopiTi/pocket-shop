@@ -1,5 +1,9 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -39,11 +43,17 @@ internal fun ProductOptionSelector(
     }
 
     Column(modifier = Modifier.padding(top = 16.dp)) {
-        Text(
-            text = sectionTitle.uppercase(Locale.getDefault()),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            style = sectionLabelStyle(),
-        )
+        AnimatedContent(
+            targetState = sectionTitle,
+            transitionSpec = { fadeIn() togetherWith fadeOut() },
+            label = "optionSectionTitle",
+        ) { currentTitle ->
+            Text(
+                text = currentTitle.uppercase(Locale.getDefault()),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                style = sectionLabelStyle(),
+            )
+        }
         FlowRow(
             modifier = Modifier.padding(top = 10.dp),
             horizontalArrangement = Arrangement.spacedBy(
