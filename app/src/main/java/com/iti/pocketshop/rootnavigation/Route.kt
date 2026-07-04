@@ -12,6 +12,9 @@ sealed interface Route : NavKey {
     data object Onboarding : Route
 
     @Serializable
+    data class OnboardingNotification(val adId: String) : Route
+
+    @Serializable
     data object Login : Route
 
     @Serializable

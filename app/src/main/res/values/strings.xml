@@ -271,4 +271,24 @@
     <string name="select_theme">Select Theme</string>
     <string name="done">Done</string>
     <string name="currency_unit">Currency:</string>
+
+    <!-- Notification onboarding -->
+    <string name="notification_channel_promotions">Promotions</string>
+    <string name="notification_ad_title">New offer from Pocket Shop</string>
+    <string name="notification_ad_body">Tap to reveal your latest coupon.</string>
+    <string name="notification_onboarding_back">Back</string>
+    <string name="notification_onboarding_loading">Loading your offer</string>
+    <string name="notification_onboarding_image">Promotion image</string>
+    <string name="notification_onboarding_intro_subtitle">A new deal is ready for you.</string>
+    <string name="notification_onboarding_details_title">Offer details</string>
+    <string name="notification_onboarding_coupon_title">Your coupon is ready</string>
+    <string name="notification_onboarding_coupon_body">Use this code at checkout before the offer ends.</string>
+    <string name="notification_onboarding_coupon_label">Coupon code</string>
+    <string name="notification_onboarding_coupon_copy">Copy code</string>
+    <string name="notification_onboarding_coupon_copied">Copied</string>
+    <string name="notification_onboarding_no_coupon">No code needed</string>
+    <string name="notification_onboarding_page_indicator">%1$d / %2$d</string>
+    <string name="notification_onboarding_error_title">We could not load this offer</string>
+    <string name="notification_onboarding_unavailable_title">Offer unavailable</string>
+    <string name="notification_onboarding_unavailable_body">This promotion has ended or is no longer active.</string>
 </resources>
