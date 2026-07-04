@@ -9,8 +9,7 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.home.domain.GetHomeDataUseCase
-import com.iti.pocketshop.features.home.domain.models.Product
-import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
+import com.iti.pocketshop.features.home.domain.GetPromotionAdsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,6 +23,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getHomeDataUseCase: GetHomeDataUseCase,
+    private val getPromotionAdsUseCase: GetPromotionAdsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     getLocalFavoritesUseCase: GetLocalFavoritesUseCase,
 ) : ViewModel() {
@@ -51,11 +51,24 @@ class HomeViewModel @Inject constructor(
         when (action) {
             HomeAction.FetchData -> fetchHomeData()
             is HomeAction.ToggleFavorite -> toggleFavorite(action.product)
+            is HomeAction.OpenPromotionAd -> onboardingPromotionAd(action)
+            HomeAction.ClosePromotionAd -> onClosePromotionAd()
+
         }
+    }
+
+    private fun onClosePromotionAd() {
+        _state.update { it.copy(selectedPromotionAd = null) }
+    }
+
+    private fun onboardingPromotionAd(action: HomeAction.OpenPromotionAd) {
+        _state.update { it.copy(selectedPromotionAd = action.ad) }
     }
 
     private fun fetchHomeData() {
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+
             getHomeDataUseCase()
                 .onSuccess { data ->
                     _state.update {
@@ -70,6 +83,16 @@ class HomeViewModel @Inject constructor(
                 .onError {
                     ErrorDialogController.sendEvent(it)
                 }
+
+            getPromotionAdsUseCase()
+                .onSuccess { ads ->
+                    _state.update { it.copy(promotionAds = ads) }
+                }
+                .onError {
+                    ErrorDialogController.sendEvent(it)
+                }
+
+            _state.update { it.copy(isLoading = false) }
         }
     }
 

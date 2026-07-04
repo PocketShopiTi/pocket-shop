@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.home.data
 
+import com.google.firebase.firestore.DocumentSnapshot
 import com.iti.pocketshop.features.home.domain.models.*
 import com.iti.pocketshop.shopify.HomeQuery
 import com.iti.pocketshop.shopify.fragment.ProductFields
@@ -77,3 +78,25 @@ fun HomeQuery.Node.toDomain(): Category {
         imageAlt = image?.altText
     )
 }
+
+fun DocumentSnapshot.toPromotionAdOrNull(): PromotionAd? {
+    val title = getString(TITLE_FIELD)?.trim().orEmpty()
+    val couponCode = getString(COUPON_CODE_FIELD)?.trim().orEmpty()
+
+    if (title.isBlank() || couponCode.isBlank()) return null
+
+    return PromotionAd(
+        id = id,
+        title = title,
+        description = getString(DESCRIPTION_FIELD)?.trim().orEmpty(),
+        imageUrl = getString(IMAGE_URL_FIELD)?.trim()?.takeIf(String::isNotBlank),
+        couponCode = couponCode,
+        buttonText = getString(BUTTON_TEXT_FIELD)?.trim().orEmpty(),
+    )
+}
+
+private const val TITLE_FIELD = "title"
+private const val DESCRIPTION_FIELD = "description"
+private const val IMAGE_URL_FIELD = "imageUrl"
+private const val COUPON_CODE_FIELD = "couponCode"
+private const val BUTTON_TEXT_FIELD = "buttonText"
