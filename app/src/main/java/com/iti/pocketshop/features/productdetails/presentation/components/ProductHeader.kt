@@ -1,5 +1,9 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -57,22 +61,31 @@ internal fun ProductHeader(
 
 @Composable
 private fun PriceColumn(price: Money?, compareAtPrice: Money?) {
-    Column(horizontalAlignment = Alignment.End) {
-        if (price != null && compareAtPrice != null && compareAtPrice.amount > price.amount) {
+    AnimatedContent(
+        targetState = price to compareAtPrice,
+        transitionSpec = { fadeIn() togetherWith fadeOut() },
+        label = "variantPrice",
+    ) { (currentPrice, currentCompareAtPrice) ->
+        Column(horizontalAlignment = Alignment.End) {
+            if (
+                currentPrice != null && currentCompareAtPrice != null &&
+                currentCompareAtPrice.amount > currentPrice.amount
+            ) {
+                Text(
+                    text = formatMoney(currentCompareAtPrice),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelMedium.copy(
+                        fontSize = 12.sp,
+                        textDecoration = TextDecoration.LineThrough,
+                    ),
+                )
+            }
             Text(
-                text = formatMoney(compareAtPrice),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.labelMedium.copy(
-                    fontSize = 12.sp,
-                    textDecoration = TextDecoration.LineThrough,
-                ),
+                text = formatMoney(currentPrice),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.headlineSmall.copy(fontSize = 22.sp),
             )
         }
-        Text(
-            text = formatMoney(price),
-            color = MaterialTheme.colorScheme.onBackground,
-            style = MaterialTheme.typography.headlineSmall.copy(fontSize = 22.sp),
-        )
     }
 }
 
@@ -86,7 +99,7 @@ internal fun RatingSummary(rating: Double, reviewCount: Int) {
     ) {
         RatingStars(rating, starSize = 12.dp)
         Text(
-            text = "$rating ($reviewCount)",
+            text = stringResource(R.string.product_details_rating_summary, rating, reviewCount),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.sp),
         )

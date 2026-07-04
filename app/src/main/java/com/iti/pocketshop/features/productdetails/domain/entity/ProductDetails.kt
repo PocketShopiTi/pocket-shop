@@ -17,6 +17,26 @@ data class ProductDetails(
 ) {
     val defaultVariant = variants.firstOrNull { it.availableForSale }
         ?: variants.firstOrNull()
+
+    fun isOptionValueAvailable(optionId: String, valueId: String): Boolean =
+        variants.any { variant ->
+            variant.availableForSale && variant.selectedOptionValueIds[optionId] == valueId
+        }
+
+    fun resolveAvailableVariant(
+        optionId: String,
+        valueId: String,
+        currentSelections: Map<String, String>,
+    ): ProductVariant? = variants
+        .asSequence()
+        .filter { variant ->
+            variant.availableForSale && variant.selectedOptionValueIds[optionId] == valueId
+        }
+        .minByOrNull { variant ->
+            variant.selectedOptionValueIds.count { (candidateOptionId, candidateValueId) ->
+                currentSelections[candidateOptionId] != candidateValueId
+            }
+        }
 }
 
 fun ProductDetails.toFavoriteProduct(): FavoriteProduct {

@@ -12,7 +12,7 @@ private fun ProductDetailsNoOptionsPreview() {
     ProductDetailsPreview(
         product = original.copy(
             options = emptyList(),
-            variants = original.variants.map { it.copy(selectedOptionValueIds = emptySet()) },
+            variants = original.variants.map { it.copy(selectedOptionValueIds = emptyMap()) },
         ),
     )
 }
@@ -73,12 +73,41 @@ private fun ProductDetailsMoreReviewsPreview() {
     )
 }
 
+@Preview(
+    name = "Dark theme",
+    showBackground = true,
+    widthDp = 390,
+    heightDp = 1180,
+)
 @Composable
-private fun ProductDetailsPreview(product: ProductDetails) {
+private fun ProductDetailsDarkPreview() {
+    ProductDetailsPreview(
+        product = ProductDetailsMockData.create("dark-theme"),
+        isDarkTheme = true,
+    )
+}
+
+@Preview(
+    name = "RTL",
+    showBackground = true,
+    widthDp = 390,
+    heightDp = 1180,
+    locale = "ar",
+)
+@Composable
+private fun ProductDetailsRtlPreview() {
+    ProductDetailsPreview(ProductDetailsMockData.create("rtl"))
+}
+
+@Composable
+private fun ProductDetailsPreview(
+    product: ProductDetails,
+    isDarkTheme: Boolean = false,
+) {
     val selectedOptions = product.options.mapNotNull { option ->
         option.values.firstOrNull()?.let { option.id to it.id }
     }.toMap()
-    PocketShopTheme(isDarkTheme = false) {
+    PocketShopTheme(isDarkTheme = isDarkTheme) {
         ProductDetailsScreen(
             state = ProductDetailsState(
                 productId = product.id,

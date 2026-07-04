@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,9 @@ internal fun DescriptionSection(
             onTextLayout = { result ->
                 if (!expanded) canExpand = result.hasVisualOverflow
             },
-            modifier = Modifier.padding(top = 8.dp),
+            modifier = Modifier
+                .padding(top = 8.dp)
+                .animateContentSize(),
         )
 
         if (canExpand) {

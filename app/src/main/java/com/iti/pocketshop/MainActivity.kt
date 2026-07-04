@@ -9,18 +9,23 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.iti.pocketshop.core.components.ErrorDialogListener
+import com.iti.pocketshop.core.components.StatusBarBackground
 import com.iti.pocketshop.common.settings.domain.models.LanguageSetting
 import com.iti.pocketshop.common.settings.domain.models.ThemeSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
@@ -80,7 +85,10 @@ class MainActivity : AppCompatActivity() {
                     LocalSettingsUser provides ((mainUiState as? MainUiState.Ready)?.userSettings
                         ?: UserSettings())
                 ) {
-                    RootNavDisplay()
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        RootNavDisplay()
+                        StatusBarBackground(modifier = Modifier.align(Alignment.TopCenter))
+                    }
                     ErrorDialogListener()
                 }
             }

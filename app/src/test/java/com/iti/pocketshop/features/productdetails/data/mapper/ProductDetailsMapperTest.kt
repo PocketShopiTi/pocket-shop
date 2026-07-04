@@ -10,14 +10,14 @@ class ProductDetailsMapperTest {
 
     @Test
     fun `exact default title option is synthetic`() {
-        assertTrue(isSyntheticDefaultOption("Title", listOf("Default Title")))
-        assertTrue(isSyntheticDefaultOption(" title ", listOf(" default title ")))
+        assertTrue(isDefaultOption("Title", listOf("Default Title")))
+        assertTrue(isDefaultOption(" title ", listOf(" default title ")))
     }
 
     @Test
     fun `real title options are preserved`() {
-        assertFalse(isSyntheticDefaultOption("Title", listOf("Mr", "Ms")))
-        assertFalse(isSyntheticDefaultOption("Style", listOf("Default Title")))
+        assertFalse(isDefaultOption("Title", listOf("Mr", "Ms")))
+        assertFalse(isDefaultOption("Style", listOf("Default Title")))
     }
 
     @Test

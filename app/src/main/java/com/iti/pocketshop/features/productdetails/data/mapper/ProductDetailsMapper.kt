@@ -13,12 +13,12 @@ import java.util.Locale
 
 fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
     val visibleOptions = options.filterNot { option ->
-        isSyntheticDefaultOption(
+        isDefaultOption(
             name = option.name,
             values = option.optionValues.map { it.name },
         )
     }
-    val optionLookup = visibleOptions.associateBy { it.name.lowercase(Locale.ROOT) }
+    val optionLookup = visibleOptions.associateBy { toLowerCase(it.name) }
     val optionIdsByName = optionLookup.mapValues { it.value.id }
 
     val images = buildList {
@@ -52,7 +52,74 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
                 ),
             )
         }
+
+        variants.edges.forEachIndexed { index, edge ->
+            val image = edge.node.image ?: return@forEachIndexed
+            add(
+                ProductImage(
+                    id = "${edge.node.id}:variant:$index",
+                    url = image.url,
+                    altText = image.altText,
+                ),
+            )
+        }
     }.distinctBy { it.url }
+
+    val options = visibleOptions.map { option ->
+        val optionName = option.name
+        val optionType = classifyOptionType(
+            name = optionName,
+            hasSwatch = option.optionValues.any { it.swatch != null },
+        )
+        ProductOption(
+            id = option.id,
+            name = optionName,
+            type = optionType,
+            values = option.optionValues.map { value ->
+                val swatch = value.swatch
+                ProductOptionValue(
+                    id = optionValueId(option.id, value.name),
+                    label = value.name,
+                    swatchArgb = when {
+                        swatch?.color != null -> parseColour(swatch.color)
+                        optionType == ProductOptionType.COLOR -> colourArgb(value.name)
+                        else -> null
+                    },
+                    swatchImage = swatch?.image?.previewImage?.let { preview ->
+                        ProductImage(
+                            id = "${option.id}:${value.name}:swatch",
+                            url = preview.url,
+                            altText = preview.altText ?: swatch.image.alt,
+                        )
+                    },
+                )
+            },
+        )
+    }
+
+    val variants = variants.edges.map { edge ->
+        val variant = edge.node
+        ProductVariant(
+            id = variant.id,
+            selectedOptionValueIds = selectedOptionValueIds(
+                selectedOptions = variant.selectedOptions.map { it.name to it.value },
+                optionIdsByName = optionIdsByName,
+            ),
+            price = Money(
+                amount = variant.price.amount.toString().toDoubleOrNull() ?: 0.0,
+                currencyCode = variant.price.currencyCode.name,
+            ),
+            compareAtPrice = variant.compareAtPrice?.let {
+                Money(
+                    amount = it.amount.toString().toDoubleOrNull() ?: 0.0,
+                    currencyCode = it.currencyCode.name,
+                )
+            },
+            availableForSale = variant.availableForSale,
+            imageUrl = variant.image?.url,
+        )
+    }
+
 
     return ProductDetails(
         id = id,
@@ -60,58 +127,8 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
         title = title,
         description = description,
         images = images,
-        options = visibleOptions.map { option ->
-            val optionName = option.name
-            val optionType = classifyOptionType(
-                name = optionName,
-                hasSwatch = option.optionValues.any { it.swatch != null },
-            )
-            ProductOption(
-                id = option.id,
-                name = optionName,
-                type = optionType,
-                values = option.optionValues.map { value ->
-                    val swatch = value.swatch
-                    ProductOptionValue(
-                        id = optionValueId(option.id, value.name),
-                        label = value.name,
-                        swatchArgb = when {
-                            swatch?.color != null -> parseColour(swatch.color)
-                            optionType == ProductOptionType.COLOR -> colourArgb(value.name)
-                            else -> null
-                        },
-                        swatchImage = swatch?.image?.previewImage?.let { preview ->
-                            ProductImage(
-                                id = "${option.id}:${value.name}:swatch",
-                                url = preview.url,
-                                altText = preview.altText ?: swatch.image.alt,
-                            )
-                        },
-                    )
-                },
-            )
-        },
-        variants = variants.edges.map { edge ->
-            val variant = edge.node
-            ProductVariant(
-                id = variant.id,
-                selectedOptionValueIds = selectedOptionValueIds(
-                    selectedOptions = variant.selectedOptions.map { it.name to it.value },
-                    optionIdsByName = optionIdsByName,
-                ),
-                price = Money(
-                    amount = variant.price.amount.toString().toDoubleOrNull() ?: 0.0,
-                    currencyCode = variant.price.currencyCode.name,
-                ),
-                compareAtPrice = variant.compareAtPrice?.let {
-                    Money(
-                        amount = it.amount.toString().toDoubleOrNull() ?: 0.0,
-                        currencyCode = it.currencyCode.name,
-                    )
-                },
-                availableForSale = variant.availableForSale,
-            )
-        },
+        options = options,
+        variants = variants,
         rating = 0.0,
         reviewCount = 0,
         reviews = emptyList(),
@@ -120,18 +137,22 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
 }
 
 private fun optionValueId(optionId: String, value: String): String =
-    "$optionId:${value.trim().lowercase(Locale.ROOT)}"
+    "$optionId:${toLowerCase(value)}"
 
-internal fun isSyntheticDefaultOption(name: String, values: List<String>): Boolean =
-    name.trim().equals("Title", ignoreCase = true) &&
-        values.size == 1 &&
-        values.single().trim().equals("Default Title", ignoreCase = true)
+private fun isDefaultOption(name: String, values: List<String>): Boolean =
+    name.trim()
+        .equals("Title", ignoreCase = true) &&
+            values.size == 1 &&
+            values.single().trim().equals("Default Title", ignoreCase = true)
 
 internal fun classifyOptionType(name: String, hasSwatch: Boolean): ProductOptionType {
     val normalizedName = name.trim().lowercase(Locale.ROOT)
     return when {
-        hasSwatch || normalizedName == "color" || normalizedName == "colour" ->
+        hasSwatch ||
+                normalizedName == "color" ||
+                normalizedName == "colour" ->
             ProductOptionType.COLOR
+
         normalizedName == "size" -> ProductOptionType.SIZE
         else -> ProductOptionType.GENERIC
     }
@@ -140,11 +161,14 @@ internal fun classifyOptionType(name: String, hasSwatch: Boolean): ProductOption
 internal fun selectedOptionValueIds(
     selectedOptions: List<Pair<String, String>>,
     optionIdsByName: Map<String, String>,
-): Set<String> = selectedOptions.mapNotNull { (name, value) ->
-    optionIdsByName[name.lowercase(Locale.ROOT)]?.let { optionId ->
-        optionValueId(optionId, value)
+): Map<String, String> = selectedOptions.mapNotNull { (name, value) ->
+    optionIdsByName[toLowerCase(name)]?.let { optionId ->
+        optionId to optionValueId(optionId, value)
     }
-}.toSet()
+}.toMap()
+
+private fun toLowerCase(value: String): String =
+    value.trim().lowercase(Locale.ROOT)
 
 private fun parseColour(value: Any): Long? {
     val text = value.toString().trim()

@@ -26,7 +26,10 @@ internal object ProductDetailsMockData {
             sizes.map { size ->
                 ProductVariant(
                     id = "$productId-${colour.id}-${size.id}",
-                    selectedOptionValueIds = setOf(colour.id, size.id),
+                    selectedOptionValueIds = mapOf(
+                        "colour" to colour.id,
+                        "size" to size.id,
+                    ),
                     price = price,
                     compareAtPrice = null,
                     availableForSale = true,
