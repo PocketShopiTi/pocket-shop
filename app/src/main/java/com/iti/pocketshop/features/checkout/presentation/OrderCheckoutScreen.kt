@@ -2,10 +2,28 @@ package com.iti.pocketshop.features.checkout.presentation
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -15,7 +33,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.features.checkout.domain.model.PaymentMethod
+import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
+import com.iti.pocketshop.features.payment.domain.models.UserData
+import com.iti.pocketshop.features.payment.presentation.PaymentButton
 
 @Composable
 fun OrderCheckoutRoot(
@@ -36,6 +58,7 @@ fun OrderCheckoutScreen(
     onAction: (OrderCheckoutAction) -> Unit,
 ) {
     val context = LocalContext.current
+    val currentUser = LocalUser.current
 
     LaunchedEffect(state.checkoutUrl) {
         if (state.checkoutUrl != null) {
@@ -65,9 +88,15 @@ fun OrderCheckoutScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Cart Summary
-                Text("Subtotal: ${state.cart?.subtotalAmount} ${state.cart?.subtotalCurrencyCode}", style = MaterialTheme.typography.titleMedium)
-                Text("Total: ${state.cart?.totalAmount} ${state.cart?.totalCurrencyCode}", style = MaterialTheme.typography.titleLarge)
-                
+                Text(
+                    "Subtotal: ${state.cart?.subtotalAmount} ${state.cart?.subtotalCurrencyCode}",
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Text(
+                    "Total: ${state.cart?.totalAmount} ${state.cart?.totalCurrencyCode}",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
                 // Applied Coupons
                 if (state.cart?.appliedDiscountCodes?.isNotEmpty() == true) {
                     Text("Applied Coupons:", style = MaterialTheme.typography.bodyMedium)
@@ -88,7 +117,10 @@ fun OrderCheckoutScreen(
                     label = { Text("Coupon Code") },
                     modifier = Modifier.fillMaxWidth()
                 )
-                Button(onClick = { onAction(OrderCheckoutAction.ApplyCoupon) }, modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = { onAction(OrderCheckoutAction.ApplyCoupon) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text("Apply Coupon")
                 }
 
@@ -118,35 +150,30 @@ fun OrderCheckoutScreen(
                                 selected = state.selectedAddressId == address.id,
                                 onClick = { onAction(OrderCheckoutAction.SelectAddress(address.id)) }
                             )
-                            Text("${address.address1}, ${address.city}", modifier = Modifier.padding(start = 8.dp))
+                            Text(
+                                "${address.address1}, ${address.city}",
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
                         }
                     }
                 }
 
-                // Payment Methods
-                Text("Payment Method", style = MaterialTheme.typography.titleMedium)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(
-                        selected = state.selectedPaymentMethod == PaymentMethod.CASH_ON_DELIVERY,
-                        onClick = { onAction(OrderCheckoutAction.SelectPaymentMethod(PaymentMethod.CASH_ON_DELIVERY)) }
-                    )
-                    Text("Cash on Delivery")
-                    Spacer(modifier = Modifier.width(16.dp))
-                    RadioButton(
-                        selected = state.selectedPaymentMethod == PaymentMethod.ONLINE_PAYMENT,
-                        onClick = { onAction(OrderCheckoutAction.SelectPaymentMethod(PaymentMethod.ONLINE_PAYMENT)) }
-                    )
-                    Text("Online Payment")
-                }
-
                 // Place Order Button
-                Button(
-                    onClick = { onAction(OrderCheckoutAction.PlaceOrder) },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = state.selectedAddressId != null
-                ) {
-                    Text("Place Order")
-                }
+                PaymentButton(
+                    amountMinor = (state.cart?.totalAmount?.times(100))?.toLong() ?: return@Column,
+                    currency = PaymentCurrency.EGP,
+                    userData = UserData(
+                        firstName = currentUser?.displayName ?: "",
+                        lastName = currentUser?.displayName ?: "",
+                        email = currentUser?.email.orEmpty(),
+                        phoneNumber = currentUser?.displayName ?: "",
+                    ),
+                    onSuccess = { transactionId ->
+                        // todo handle order creation, clearing cart, marking order as paid, save the order in firestore, and navigation to a success screen
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
         }
     }
