@@ -62,6 +62,11 @@ internal fun AddressEditorContent(
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
+        SectionTitle(
+            title = stringResource(R.string.address_section_location),
+
+            )
+
         MapPreviewCard(
             latitude = editor.latitude,
             longitude = editor.longitude,

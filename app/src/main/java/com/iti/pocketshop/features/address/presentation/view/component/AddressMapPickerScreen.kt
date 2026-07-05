@@ -201,7 +201,6 @@ private fun AddressMapTopBar(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
-
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp),

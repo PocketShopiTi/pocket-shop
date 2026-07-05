@@ -6,6 +6,7 @@ import android.location.Geocoder
 import android.util.Log
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.features.address.data.model.Coordinates
 import com.iti.pocketshop.features.address.data.model.GoogleAddressComponent
 import com.iti.pocketshop.features.address.data.model.GoogleAddressResult
 import com.iti.pocketshop.features.address.data.model.GoogleAutocompletePrediction
@@ -17,7 +18,7 @@ import com.iti.pocketshop.features.address.data.model.GooglePlaceDetailsResponse
 import com.iti.pocketshop.features.address.data.model.GoogleStructuredFormatting
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.IOException
-import java.util.Locale
+ import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,8 +35,7 @@ class AddressLocationRemoteDataSourceImpl @Inject constructor(
         query: String,
         apiKey: String,
     ): PocketResult<GoogleAutocompleteResponse, PocketDataError.Remote> {
-        Log.d(TAG, "searchSuggestions()")
-        Log.d(TAG, "Query = $query")
+
 
         return withContext(Dispatchers.IO) {
             if (query.isBlank()) {
@@ -64,8 +64,7 @@ class AddressLocationRemoteDataSourceImpl @Inject constructor(
         placeId: String,
         apiKey: String,
     ): PocketResult<GooglePlaceDetailsResponse, PocketDataError.Remote> {
-        Log.d(TAG, "resolveSuggestion()")
-        Log.d(TAG, "PlaceId = $placeId")
+
 
         return withContext(Dispatchers.IO) {
             val coordinates = placeId.toCoordinatesOrNull()
@@ -279,10 +278,7 @@ class AddressLocationRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    private data class Coordinates(
-        val latitude: Double,
-        val longitude: Double,
-    )
+
 
     private companion object {
         const val TAG = "AddressLocationRemote"

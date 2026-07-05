@@ -2,7 +2,7 @@ package com.iti.pocketshop.features.address.presentation.action
 
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion
 import com.iti.pocketshop.features.address.presentation.state.AddressField
-import com.iti.pocketshop.features.address.presentation.state.PhoneCountryCode
+import com.iti.pocketshop.features.address.utils.PhoneCountryCode
 
 sealed interface AddressAction {
     data object Refresh : AddressAction

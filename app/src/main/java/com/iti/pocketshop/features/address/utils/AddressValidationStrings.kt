@@ -2,7 +2,6 @@ package com.iti.pocketshop.features.address.utils
 
 import android.content.Context
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.address.presentation.state.PhoneCountryCode
 
 internal interface AddressValidationStrings {
     val firstNameRequired: String

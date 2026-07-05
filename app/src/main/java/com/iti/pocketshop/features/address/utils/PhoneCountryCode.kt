@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.address.presentation.state
+package com.iti.pocketshop.features.address.utils
 
 import android.content.Context
 import androidx.annotation.StringRes
@@ -185,7 +185,8 @@ enum class PhoneCountryCode(
             }
 
             return entries.firstOrNull { option ->
-                normalized in option.countryNames || normalized in option.countryCodes.map { it.lowercase(Locale.US) }
+                normalized in option.countryNames || normalized in option.countryCodes.map { it.lowercase(
+                    Locale.US) }
             } ?: defaultFromLocale()
         }
 
