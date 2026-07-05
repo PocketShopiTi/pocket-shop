@@ -4,10 +4,11 @@ import com.iti.pocketshop.BuildConfig
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeRestCall
-import com.iti.pocketshop.features.payment.data.dto.PaymobBillingDataDto
 import com.iti.pocketshop.features.payment.data.dto.PaymobIntentionRequestDto
 import com.iti.pocketshop.features.payment.data.dto.PaymobIntentionResponseDto
-import com.iti.pocketshop.features.payment.di.PaymentHttpClient
+import com.iti.pocketshop.features.payment.data.mapper.toDto
+import com.iti.pocketshop.features.payment.domain.datasource.PaymobPaymentDataSource
+import com.iti.pocketshop.features.payment.domain.models.UserData
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -18,35 +19,20 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import javax.inject.Inject
 
-interface PaymobPaymentDataSource {
-    suspend fun createIntention(
-        amountMinor: Long,
-        currencyCode: String,
-    ): PocketResult<PaymobIntentionResponseDto, PocketDataError.Remote>
-}
 
 class PaymobPaymentDataSourceImpl @Inject constructor(
-    @param:PaymentHttpClient private val client: HttpClient,
+    private val client: HttpClient,
 ) : PaymobPaymentDataSource {
 
-    companion object {
-        private const val INTENTION_URL = "https://accept.paymob.com/v1/intention/"
-
-        // Placeholder billing data until the real customer/checkout data is wired in.
-        // Paymob requires every field; "NA" is its documented placeholder value.
-        private val PLACEHOLDER_BILLING_DATA = PaymobBillingDataDto(
-            firstName = "NA",
-            lastName = "NA",
-            email = "guest@pocketshop.app",
-            phoneNumber = "+201000000000",
-        )
-    }
+    private val intentionUrl = "https://accept.paymob.com/v1/intention/"
+    private val redirectionUrl = "https://pocketshop.app/payment/complete"
 
     override suspend fun createIntention(
         amountMinor: Long,
         currencyCode: String,
+        userData: UserData,
     ): PocketResult<PaymobIntentionResponseDto, PocketDataError.Remote> = safeRestCall {
-        client.post(INTENTION_URL) {
+        client.post(intentionUrl) {
             header(HttpHeaders.Authorization, "Token ${BuildConfig.PAYMOB_SECRET_KEY}")
             contentType(ContentType.Application.Json)
             setBody(
@@ -58,8 +44,8 @@ class PaymobPaymentDataSourceImpl @Inject constructor(
                         BuildConfig.WALLET_PAYMOB_INTEGRATION_ID.toInt(),
                         BuildConfig.KIOSK_PAYMOB_INTEGRATION_ID.toInt(),
                     ),
-                    billingData = PLACEHOLDER_BILLING_DATA,
-                    redirectionUrl = "https://pocketshop.app/payment/complete",
+                    billingData = userData.toDto(),
+                    redirectionUrl = redirectionUrl,
                 )
             )
         }.body<PaymobIntentionResponseDto>()

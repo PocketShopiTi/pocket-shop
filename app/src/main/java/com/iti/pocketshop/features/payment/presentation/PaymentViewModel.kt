@@ -2,10 +2,13 @@ package com.iti.pocketshop.features.payment.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
+import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.iti.pocketshop.features.payment.domain.usecase.CreatePaymobPaymentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,40 +33,58 @@ class PaymentViewModel @Inject constructor(
 
     fun onAction(action: PaymentAction) {
         when (action) {
-            is PaymentAction.Pay -> payWithPaymob(action.amountMinor, action.currency)
-            is PaymentAction.PaymobCheckoutFinished ->
-                onCheckoutFinished(action.success, action.transactionId)
+            is PaymentAction.Pay -> payWithPaymob(
+                action.amountMinor,
+                action.currency,
+                action.userData
+            )
 
-            PaymentAction.DismissError -> _state.update { it.copy(error = null) }
+            is PaymentAction.PaymobCheckoutFinished ->
+                onCheckoutFinished(action.result)
         }
     }
 
-    private fun payWithPaymob(amountMinor: Long, currency: PaymentCurrency) {
+    private fun payWithPaymob(
+        amountMinor: Long,
+        currency: PaymentCurrency,
+        userData: UserData
+    ) {
         viewModelScope.launch {
             _state.update {
-                it.copy(isLoading = true, error = null, completedPaymentId = null)
+                it.copy(isLoading = true, completedPaymentId = null)
             }
-            createPaymobPayment(amountMinor, currency)
+            createPaymobPayment(amountMinor, currency, userData)
                 .onSuccess { session ->
-                    _state.update { it.copy(isLoading = false, paymobCheckout = session) }
+                    _state.update { it.copy(paymobCheckout = session) }
                 }
                 .onError { error ->
-                    _state.update { it.copy(isLoading = false, error = error) }
+                    ErrorDialogController.sendEvent(error)
+                    _state.update { it.copy(isLoading = false) }
                 }
         }
     }
 
-    private fun onCheckoutFinished(success: Boolean, transactionId: String?) {
-        val intentionId = _state.value.paymobCheckout?.intentionId
-        _state.update {
-            if (success) {
-                it.copy(
-                    paymobCheckout = null,
-                    completedPaymentId = transactionId ?: intentionId,
-                )
-            } else {
-                it.copy(paymobCheckout = null, error = PocketDataError.Payment.FAILED)
-            }
+    private fun onCheckoutFinished(result: PocketResult<String, PocketDataError.Payment>) {
+        viewModelScope.launch {
+            result
+                .onSuccess { data ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            paymobCheckout = null,
+                            completedPaymentId = data,
+                            isLoading = false
+                        )
+                    }
+                }
+                .onError { error ->
+                    ErrorDialogController.sendEvent(error)
+                    _state.update { currentState ->
+                        currentState.copy(
+                            paymobCheckout = null,
+                            isLoading = false
+                        )
+                    }
+                }
         }
     }
 }
