@@ -73,6 +73,7 @@
     <string name="failed_to_process_response">Bad response, Please try again</string>
     <string name="something_went_wrong">Something went wrong, Please try again</string>
     <string name="bad_request_error">Invalid request. Please check your data and try again.</string>
+    <string name="invalid_coupon">Invalid coupon!!</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
     <string name="shop_by_brand">Shop by Brand</string>
@@ -88,6 +89,10 @@
     <string name="big_sale">BIG SALE</string>
     <string name="up_to_50_off">Up to\n50% Off</string>
     <string name="shop_now">Shop now</string>
+    <string name="home_coupon_your_code">Your coupon code</string>
+    <string name="home_coupon_copy_code">Copy code</string>
+    <string name="home_coupon_clip_label">Pocket Shop coupon</string>
+    <string name="home_coupon_close">Close offer</string>
     <string name="search">Search</string>
     <string name="search_placeholder">Search products, brands, and more</string>
     <string name="search_clear_query">Clear search</string>
@@ -349,4 +354,19 @@
     <string name="accessories">Accessories</string>
     <string name="pets">Pets</string>
     <string name="try_searching_for_something_else">Try searching for something else.</string>
+    <string name="cart_coupon_test_title">Cart coupon test</string>
+    <string name="cart_mock_applied_coupons">Mock applied coupons: AMR, SUMMER20</string>
+    <string name="cart_id_label">Cart ID</string>
+    <string name="cart_coupon_code_label">Coupon code</string>
+    <string name="cart_apply_coupon">Apply coupon</string>
+    <string name="cart_applying_coupon">Applying coupon…</string>
+    <string name="cart_coupon_applicable">applicable</string>
+    <string name="cart_coupon_not_applicable">not applicable</string>
+    <string name="cart_empty_discount_code">empty code</string>
+    <string name="cart_discount_status">Code: %1$s — %2$s</string>
+    <string name="cart_subtotal">Subtotal: %1$.2f %2$s</string>
+    <string name="cart_total">Total: %1$.2f %2$s</string>
+    <string name="cart_coupon_warning">Warning (%1$s): %2$s</string>
+    <string name="cart_coupon_user_error">User error (%1$s): %2$s</string>
+    <string name="cart_unknown_error_code">unknown</string>
 </resources>

@@ -19,6 +19,7 @@ sealed interface PocketDataError : Error {
         UNKNOWN,
         EMPTY_RESULT,
         BAD_REQUEST,
+        INVALID_COUPON,
     }
 
     enum class Auth : PocketDataError {
@@ -65,6 +66,7 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.SERVER -> context.getString(R.string.server_error)
     PocketDataError.Remote.SERIALIZATION -> context.getString(R.string.failed_to_process_response)
     PocketDataError.Remote.UNKNOWN -> context.getString(R.string.something_went_wrong)
+    PocketDataError.Remote.INVALID_COUPON -> context.getString(R.string.invalid_coupon)
     PocketDataError.Remote.EMPTY_RESULT -> context.getString(R.string.no_results_found)
     PocketDataError.Remote.BAD_REQUEST -> context.getString(R.string.bad_request_error)
 

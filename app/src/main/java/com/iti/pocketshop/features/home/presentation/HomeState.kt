@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.home.presentation
 import androidx.compose.runtime.Immutable
 import com.iti.pocketshop.features.home.domain.models.Brand
 import com.iti.pocketshop.features.home.domain.models.Category
+import com.iti.pocketshop.features.home.domain.models.PromotionAd
 import com.iti.pocketshop.features.home.presentation.models.UIProduct
 
 @Immutable
@@ -14,5 +15,7 @@ data class HomeState(
     val featuredProducts: List<UIProduct> = emptyList(),
     val bestSellers: List<UIProduct> = emptyList(),
     val newArrivals: List<UIProduct> = emptyList(),
-    val favoriteIds: Set<String> = emptySet()
+    val favoriteIds: Set<String> = emptySet(),
+    val promotionAds: List<PromotionAd> = emptyList(),
+    val selectedPromotionAd: PromotionAd? = null,
 )
