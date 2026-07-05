@@ -39,11 +39,11 @@ sealed interface PocketDataError : Error {
     }
 
     enum class Payment : PocketDataError {
-         CANCELED,
-         NO_FUNDS,
-         REJECTED,
-         EXPIRED ,
-         INVALID_CARD,
+        CANCELED,
+        NO_FUNDS,
+        REJECTED,
+        EXPIRED ,
+        INVALID_CARD,
         FAILED
     }
 

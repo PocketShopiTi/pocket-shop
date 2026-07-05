@@ -24,8 +24,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.paymob.paymob_sdk.PaymobSdk
@@ -36,13 +34,19 @@ fun PaymentButton(
     amountMinor: Long,
     currency: PaymentCurrency,
     userData: UserData,
-    onResult: (PocketResult<String, PocketDataError.Payment>) -> Unit,
+    onSuccess: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PaymentViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var startedIntentionId by rememberSaveable { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(state.completedPaymentId) {
+        state.completedPaymentId?.let { id ->
+            onSuccess(id)
+        }
+    }
 
     LaunchedEffect(state.paymobCheckout) {
         val session = state.paymobCheckout
@@ -54,50 +58,15 @@ fun PaymentButton(
                 publicKey = session.publicKey,
                 paymobSdkListener = object : PaymobSdkListener {
                     override fun onSuccess(payResponse: HashMap<String, String?>) {
-                        val transactionId = payResponse["id"] ?: session.intentionId
-                        val result = PocketResult.Success(transactionId)
-                        viewModel.onAction(
-                            PaymentAction.PaymobCheckoutFinished(result)
-                        )
-                        onResult(result)
+                        viewModel.onAction(PaymentAction.OnPaymobSuccess(payResponse))
                     }
 
                     override fun onFailure(msg: String?) {
-                        val error = when {
-                            msg.isNullOrBlank() ||
-                                    msg.contains("null", ignoreCase = true) ||
-                                    msg.contains("cancel", ignoreCase = true) ->
-                                PocketDataError.Payment.CANCELED
-
-                            msg.contains("funds", ignoreCase = true) ->
-                                PocketDataError.Payment.NO_FUNDS
-
-                            msg.contains("declined", ignoreCase = true) ||
-                                    msg.contains("rejected", ignoreCase = true) ||
-                                    msg.contains("auth", ignoreCase = true) ||
-                                    msg.contains("secure", ignoreCase = true) ->
-                                PocketDataError.Payment.REJECTED
-
-                            msg.contains("expired", ignoreCase = true) ->
-                                PocketDataError.Payment.EXPIRED
-
-                            msg.contains("invalid", ignoreCase = true) ||
-                                    msg.contains("card", ignoreCase = true) ||
-                                    msg.contains("cvv", ignoreCase = true) ||
-                                    msg.contains("number", ignoreCase = true) ->
-                                PocketDataError.Payment.INVALID_CARD
-
-                            else -> PocketDataError.Payment.FAILED
-                        }
-                        val result = PocketResult.Error(error)
-                        viewModel.onAction(
-                            PaymentAction.PaymobCheckoutFinished(result)
-                        )
-                        onResult(result)
+                        viewModel.onAction(PaymentAction.OnPaymobFailure(msg))
                     }
 
                     override fun onPending() {
-                        // In some flows, pending can be treated as "waiting for kiosk payment"
+                        // Kiosk payment
                     }
                 }
             ).build().start()

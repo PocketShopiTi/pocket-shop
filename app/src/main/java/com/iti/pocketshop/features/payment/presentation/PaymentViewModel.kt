@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
@@ -13,6 +12,7 @@ import com.iti.pocketshop.features.payment.domain.usecase.CreatePaymobPaymentUse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,12 +24,7 @@ class PaymentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(PaymentState())
-    val state = _state
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = PaymentState()
-        )
+    val state = _state.asStateFlow()
 
     fun onAction(action: PaymentAction) {
         when (action) {
@@ -39,8 +34,8 @@ class PaymentViewModel @Inject constructor(
                 action.userData
             )
 
-            is PaymentAction.PaymobCheckoutFinished ->
-                onCheckoutFinished(action.result)
+            is PaymentAction.OnPaymobSuccess -> handlePaymobSuccess(action.response)
+            is PaymentAction.OnPaymobFailure -> handlePaymobFailure(action.message)
         }
     }
 
@@ -64,27 +59,56 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    private fun onCheckoutFinished(result: PocketResult<String, PocketDataError.Payment>) {
+    private fun handlePaymobSuccess(response: HashMap<String, String?>) {
+        val transactionId = response["id"] ?: _state.value.paymobCheckout?.intentionId ?: "unknown"
+        _state.update {
+            it.copy(
+                paymobCheckout = null,
+                completedPaymentId = transactionId,
+                isLoading = false
+            )
+        }
+    }
+
+    private fun handlePaymobFailure(msg: String?) {
+        val error = mapPaymobError(msg)
         viewModelScope.launch {
-            result
-                .onSuccess { data ->
-                    _state.update { currentState ->
-                        currentState.copy(
-                            paymobCheckout = null,
-                            completedPaymentId = data,
-                            isLoading = false
-                        )
-                    }
-                }
-                .onError { error ->
-                    ErrorDialogController.sendEvent(error)
-                    _state.update { currentState ->
-                        currentState.copy(
-                            paymobCheckout = null,
-                            isLoading = false
-                        )
-                    }
-                }
+            ErrorDialogController.sendEvent(error)
+            _state.update {
+                it.copy(
+                    paymobCheckout = null,
+                    isLoading = false
+                )
+            }
+        }
+    }
+
+    private fun mapPaymobError(msg: String?): PocketDataError.Payment {
+        return when {
+            msg.isNullOrBlank() ||
+                    msg.contains("null", ignoreCase = true) ||
+                    msg.contains("cancel", ignoreCase = true) ->
+                PocketDataError.Payment.CANCELED
+
+            msg.contains("funds", ignoreCase = true) ->
+                PocketDataError.Payment.NO_FUNDS
+
+            msg.contains("declined", ignoreCase = true) ||
+                    msg.contains("rejected", ignoreCase = true) ||
+                    msg.contains("auth", ignoreCase = true) ||
+                    msg.contains("secure", ignoreCase = true) ->
+                PocketDataError.Payment.REJECTED
+
+            msg.contains("expired", ignoreCase = true) ->
+                PocketDataError.Payment.EXPIRED
+
+            msg.contains("invalid", ignoreCase = true) ||
+                    msg.contains("card", ignoreCase = true) ||
+                    msg.contains("cvv", ignoreCase = true) ||
+                    msg.contains("number", ignoreCase = true) ->
+                PocketDataError.Payment.INVALID_CARD
+
+            else -> PocketDataError.Payment.FAILED
         }
     }
 }
