@@ -28,6 +28,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -207,3 +210,7 @@ fun CartScreen(
         )
     }
 }
+
+// Test amounts in minor units (EGP 150.00 / USD 10.00) until the real cart total exists.
+private const val TEST_AMOUNT_MINOR_EGP = 15_000L
+private const val TEST_AMOUNT_MINOR_USD = 1_000L

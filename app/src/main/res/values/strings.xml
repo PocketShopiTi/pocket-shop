@@ -72,6 +72,7 @@
     <string name="server_error">Server error, Please try again</string>
     <string name="failed_to_process_response">Bad response, Please try again</string>
     <string name="something_went_wrong">Something went wrong, Please try again</string>
+    <string name="bad_request_error">Invalid request. Please check your data and try again.</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
     <string name="shop_by_brand">Shop by Brand</string>
@@ -327,6 +328,17 @@
     <string name="items_count">%1$d items</string>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
+
+    <string name="payment_pay_now">Pay now</string>
+    <string name="payment_completed">Payment completed successfully</string>
+    <string name="payment_canceled">Payment was canceled</string>
+    <string name="payment_failed">Unable to complete payment. Please try again.</string>
+    <string name="payment_no_funds">Insufficient funds. Please use another card.</string>
+    <string name="payment_rejected">Payment rejected. Please contact your bank.</string>
+    <string name="payment_expired">Card expired. Please use a different card.</string>
+    <string name="payment_invalid_card">Invalid card details. Please check and try again.</string>
+    <string name="cart_currency_egp">EGP</string>
+    <string name="cart_currency_usd">USD</string>
     <string name="all_categories">All Categories</string>
     <string name="men">Men</string>
     <string name="women">Women</string>
