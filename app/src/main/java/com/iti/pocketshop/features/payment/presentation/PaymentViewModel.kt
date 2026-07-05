@@ -34,7 +34,6 @@ class PaymentViewModel @Inject constructor(
             is PaymentAction.PaymobCheckoutFinished ->
                 onCheckoutFinished(action.success, action.transactionId)
 
-            PaymentAction.PaymobCheckoutDismissed -> onCheckoutDismissed()
             PaymentAction.DismissError -> _state.update { it.copy(error = null) }
         }
     }
@@ -65,12 +64,6 @@ class PaymentViewModel @Inject constructor(
             } else {
                 it.copy(paymobCheckout = null, error = PocketDataError.Payment.FAILED)
             }
-        }
-    }
-
-    private fun onCheckoutDismissed() {
-        _state.update {
-            it.copy(paymobCheckout = null, error = PocketDataError.Payment.CANCELED)
         }
     }
 }

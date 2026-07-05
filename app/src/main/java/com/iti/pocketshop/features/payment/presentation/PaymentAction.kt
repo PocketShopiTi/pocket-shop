@@ -9,6 +9,5 @@ sealed interface PaymentAction {
         val transactionId: String?,
     ) : PaymentAction
 
-    data object PaymobCheckoutDismissed : PaymentAction
     data object DismissError : PaymentAction
 }

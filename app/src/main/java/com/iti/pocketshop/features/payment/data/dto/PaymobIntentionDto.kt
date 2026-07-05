@@ -13,6 +13,7 @@ data class PaymobIntentionRequestDto(
     @SerialName("redirection_url") val redirectionUrl: String,
 )
 
+
 @Serializable
 data class PaymobItemDto(
     @SerialName("name") val name: String,
@@ -42,4 +43,24 @@ data class PaymobBillingDataDto(
 data class PaymobIntentionResponseDto(
     @SerialName("id") val id: String,
     @SerialName("client_secret") val clientSecret: String,
+    @SerialName("payment_methods")
+    val paymentMethods: List<PaymentMethod> = emptyList(),
+)
+
+@Serializable
+data class PaymentMethod(
+    @SerialName("integration_id")
+    val integrationId: Int,
+
+    val alias: String? = null,
+    val name: String,
+
+    @SerialName("method_type")
+    val methodType: String,
+
+    val currency: String,
+    val live: Boolean,
+
+    @SerialName("use_cvc_with_moto")
+    val useCvcWithMoto: Boolean
 )

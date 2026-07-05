@@ -19,34 +19,34 @@ suspend fun <T> safeRestCall(block: suspend () -> T): PocketResult<T, PocketData
     try {
         PocketResult.Success(block())
     } catch (e: HttpRequestTimeoutException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.REQUEST_TIMEOUT)
     } catch (e: ConnectTimeoutException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.REQUEST_TIMEOUT)
     } catch (e: SocketTimeoutException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.REQUEST_TIMEOUT)
     } catch (e: ResponseException) {
-        Log.e(TAG, "safeRestCall: HTTP ${e.response.status.value}")
+        Log.e(TAG, "safeRestCall: HTTP ${e.response.status.value}", e)
         httpToResult(e.response.status.value)
     } catch (e: JsonConvertException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.SERIALIZATION)
     } catch (e: SerializationException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.SERIALIZATION)
     } catch (e: UnknownHostException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.NO_INTERNET)
     } catch (e: IOException) {
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.NO_INTERNET)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
         currentCoroutineContext().ensureActive()
-        Log.e(TAG, "safeRestCall: ${e.localizedMessage}")
+        Log.e(TAG, "safeRestCall: ${e.localizedMessage}", e)
         PocketResult.Error(PocketDataError.Remote.UNKNOWN)
     }
 

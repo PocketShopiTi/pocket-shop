@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -19,7 +20,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
 import com.iti.pocketshop.core.networkutils.toUserMessage
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
-import com.iti.pocketshop.features.payment.presentation.components.PaymobCheckoutDialog
+import com.paymob.paymob_sdk.PaymobSdk
+import com.paymob.paymob_sdk.ui.PaymobSdkListener
 
 
 @Composable
@@ -32,11 +34,37 @@ fun PaymentButton(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    state.paymobCheckout?.let { session ->
-        PaymobCheckoutDialog(
-            session = session,
-            onAction = viewModel::onAction,
-        )
+    LaunchedEffect(state.paymobCheckout) {
+        state.paymobCheckout?.let { session ->
+            PaymobSdk.Builder(
+                context = context,
+                clientSecret = session.clientSecret,
+                publicKey = session.publicKey,
+                paymobSdkListener = object : PaymobSdkListener {
+                    override fun onSuccess(payResponse: HashMap<String, String?>) {
+                        viewModel.onAction(
+                            PaymentAction.PaymobCheckoutFinished(
+                                success = true,
+                                transactionId = payResponse["id"]
+                            )
+                        )
+                    }
+
+                    override fun onFailure(msg: String?) {
+                        viewModel.onAction(
+                            PaymentAction.PaymobCheckoutFinished(
+                                success = false,
+                                transactionId = null
+                            )
+                        )
+                    }
+
+                    override fun onPending() {
+                        // Treat pending as success for now or handle separately
+                    }
+                }
+            ).build().start()
+        }
     }
 
     Column(

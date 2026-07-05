@@ -26,12 +26,10 @@ interface PaymobPaymentDataSource {
 }
 
 class PaymobPaymentDataSourceImpl @Inject constructor(
-    @PaymentHttpClient private val client: HttpClient,
+    @param:PaymentHttpClient private val client: HttpClient,
 ) : PaymobPaymentDataSource {
 
     companion object {
-        const val REDIRECT_URL = "https://pocketshop.app/payment/complete"
-
         private const val INTENTION_URL = "https://accept.paymob.com/v1/intention/"
 
         // Placeholder billing data until the real customer/checkout data is wired in.
@@ -55,9 +53,13 @@ class PaymobPaymentDataSourceImpl @Inject constructor(
                 PaymobIntentionRequestDto(
                     amount = amountMinor,
                     currency = currencyCode,
-                    paymentMethods = listOf(BuildConfig.PAYMOB_INTEGRATION_ID.toInt()),
+                    paymentMethods = listOf(
+                        BuildConfig.CARD_PAYMOB_INTEGRATION_ID.toInt(),
+                        BuildConfig.WALLET_PAYMOB_INTEGRATION_ID.toInt(),
+                        BuildConfig.KIOSK_PAYMOB_INTEGRATION_ID.toInt(),
+                    ),
                     billingData = PLACEHOLDER_BILLING_DATA,
-                    redirectionUrl = REDIRECT_URL,
+                    redirectionUrl = "https://pocketshop.app/payment/complete",
                 )
             )
         }.body<PaymobIntentionResponseDto>()

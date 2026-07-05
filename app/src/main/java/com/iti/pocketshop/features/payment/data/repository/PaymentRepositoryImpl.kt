@@ -6,7 +6,6 @@ import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
 import com.iti.pocketshop.features.payment.data.mapper.toDomain
 import com.iti.pocketshop.features.payment.data.remote.PaymobPaymentDataSource
-import com.iti.pocketshop.features.payment.data.remote.PaymobPaymentDataSourceImpl
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 import com.iti.pocketshop.features.payment.domain.models.PaymobPaymentSession
 import com.iti.pocketshop.features.payment.domain.repository.PaymentRepository
@@ -24,7 +23,6 @@ class PaymentRepositoryImpl @Inject constructor(
             .map { dto ->
                 dto.toDomain(
                     publicKey = BuildConfig.PAYMOB_PUBLIC_KEY,
-                    redirectUrl = PaymobPaymentDataSourceImpl.REDIRECT_URL,
                 )
             }
 }
