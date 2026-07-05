@@ -1,0 +1,18 @@
+fragment AddressFields on MailingAddress {
+    id
+    firstName
+    lastName
+    company
+    phone
+    address1
+    address2
+    city
+    province
+    zip
+    country
+    countryCodeV2
+    provinceCode
+    formattedArea
+    latitude
+    longitude
+}

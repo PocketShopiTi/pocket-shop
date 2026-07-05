@@ -7,6 +7,8 @@ import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.features.cart.domain.repository.CartRepository
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,6 +30,7 @@ class ProductDetailsViewModel @Inject constructor(
     private val getProductDetails: GetProductDetailsUseCase,
     private val isFavorite: IsFavoriteUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val cartRepository: CartRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductDetailsState())
@@ -114,6 +117,20 @@ class ProductDetailsViewModel @Inject constructor(
 
     private fun showAddToCartFeedback() {
         if (_state.value.selectedVariant?.availableForSale != true) return
+
+        val currentState = _state.value
+        val variant = currentState.selectedVariant
+        
+        if (variant != null) {
+            viewModelScope.launch {
+                val cartId = cartRepository.cartState.value?.id ?: return@launch
+                cartRepository.addLines(
+                    cartId = cartId,
+                    variantId = variant.id,
+                    quantity = currentState.quantity
+                )
+            }
+        }
 
         _state.update { current ->
             reduceProductDetails(current, ProductDetailsAction.AddToCartClicked)

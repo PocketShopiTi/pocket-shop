@@ -23,7 +23,7 @@ class HomeRemoteSourceImpl @Inject constructor(
         featuredCount: Int,
         bestSellerCount: Int,
         newArrivalsCount: Int,
-        categoryCount: Int,
+        brandCount: Int,
     ): PocketResult<HomeData, PocketDataError.Remote> {
         return apolloClient
             .query(
@@ -31,7 +31,7 @@ class HomeRemoteSourceImpl @Inject constructor(
                     featuredCount = featuredCount,
                     bestSellerCount = bestSellerCount,
                     newArrivalCount = newArrivalsCount,
-                    categoryCount = categoryCount,
+                    brandCount = brandCount,
                 )
             )
             .safeCall()

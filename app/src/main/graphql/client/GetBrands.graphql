@@ -1,0 +1,10 @@
+query GetBrands($first: Int!) {
+    brands: metaobjects(type: "brand", first: $first) {
+        nodes {
+            id
+            handle
+            brandName: field(key: "name") { value }
+            brandLogo: field(key: "logo") { value }
+        }
+    }
+}

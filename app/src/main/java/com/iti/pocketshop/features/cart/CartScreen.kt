@@ -1,166 +1,216 @@
 package com.iti.pocketshop.features.cart
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.exclude
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.core.components.ErrorDialogController
+import com.iti.pocketshop.features.cart.components.CartEmptyState
+import com.iti.pocketshop.features.cart.components.CartItemCard
+import com.iti.pocketshop.features.cart.components.OrderSummaryCard
+import com.iti.pocketshop.features.cart.components.RemoveCartItemDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
+import java.util.Locale
 
 @Composable
 fun CartRoot(
-    viewModel: CartViewModel = hiltViewModel()
+    viewModel: CartViewModel = hiltViewModel(),
+    onStartShoppingClick: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     CartScreen(
         state = state,
-        onAction = viewModel::onAction
+        onAction = { action ->
+            if (action == CartAction.StartShoppingClicked) {
+                onStartShoppingClick()
+            } else {
+                viewModel.onAction(action)
+            }
+        }
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CartScreen(
     state: CartState,
     onAction: (CartAction) -> Unit,
 ) {
-    val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        horizontalAlignment = Alignment.Start,
-    ) {
-        Text(
-            text = stringResource(R.string.cart_coupon_test_title),
-            style = MaterialTheme.typography.headlineSmall,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-
-        Text(
-            text = stringResource(R.string.cart_mock_applied_coupons),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-
-        OutlinedTextField(
-            value = state.cartId,
-            onValueChange = { value -> onAction(CartAction.CartIdChanged(value)) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.cart_id_label)) },
-            singleLine = true,
-        )
-
-        OutlinedTextField(
-            value = state.couponCode,
-            onValueChange = { value -> onAction(CartAction.CouponCodeChanged(value)) },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text(stringResource(R.string.cart_coupon_code_label)) },
-            singleLine = true,
-        )
-
-        Button(
-            onClick = { onAction(CartAction.ApplyCouponClicked) },
-            enabled = state.canApplyCoupon,
-        ) {
-            Text(stringResource(R.string.cart_apply_coupon))
+    LaunchedEffect(state.checkoutUrl) {
+        state.checkoutUrl?.let { url ->
+            uriHandler.openUri(url)
+            onAction(CartAction.CheckoutHandled)
         }
+    }
 
-        if (state.isApplyingCoupon) {
-            Text(
-                text = stringResource(R.string.cart_applying_coupon),
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-        }
-
+    LaunchedEffect(state.error) {
         state.error?.let { error ->
-            Text(
-                text = error.toUserMessage(context),
-                color = MaterialTheme.colorScheme.error,
-            )
+            ErrorDialogController.sendEvent(error)
+            onAction(CartAction.ErrorHandled)
         }
+    }
 
-        state.couponResult?.let { result ->
-            result.cart?.let { cart ->
-                cart.discountCodes.forEach { discountCode ->
-                    val applicability = stringResource(
-                        if (discountCode.applicable) {
-                            R.string.cart_coupon_applicable
-                        } else {
-                            R.string.cart_coupon_not_applicable
-                        },
-                    )
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
+            TopAppBar(
+                title = { 
                     Text(
-                        text = stringResource(
-                            R.string.cart_discount_status,
-                            discountCode.code.ifBlank {
-                                stringResource(R.string.cart_empty_discount_code)
-                            },
-                            applicability,
+                        text = stringResource(id = R.string.cart),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    scrolledContainerColor = Color.Transparent
+                ),
+                windowInsets = TopAppBarDefaults.windowInsets.exclude(WindowInsets.statusBars),
+                actions = {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(28.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = state.items.size.toString(),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            if (state.items.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Button(
+                        onClick = { onAction(CartAction.CheckoutClicked) },
+                        shape = RoundedCornerShape(24.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
                         ),
-                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_cart),
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(id = R.string.checkout_total, String.format(Locale.US, "$%.2f", state.total)),
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+        if (state.items.isEmpty()) {
+            CartEmptyState(
+                onStartShoppingClick = { onAction(CartAction.StartShoppingClicked) },
+                modifier = Modifier.padding(innerPadding)
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .padding(horizontal = 16.dp)
+            ) {
+                if (state.isLoading) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(16.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                }
+                items(state.items, key = { it.lineId }) { item ->
+                    CartItemCard(
+                        item = item,
+                        onRemoveClick = { onAction(CartAction.RemoveItemClicked(item)) },
+                        onUpdateQuantity = { qty -> onAction(CartAction.UpdateQuantity(item.lineId, qty)) }
                     )
                 }
-
-                Text(
-                    text = stringResource(
-                        R.string.cart_subtotal,
-                        cart.cost.subtotalAmount.amount,
-                        cart.cost.subtotalAmount.currencyCode,
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-                Text(
-                    text = stringResource(
-                        R.string.cart_total,
-                        cart.cost.totalAmount.amount,
-                        cart.cost.totalAmount.currencyCode,
-                    ),
-                    color = MaterialTheme.colorScheme.onBackground,
-                )
-            }
-
-            result.warnings.forEach { warning ->
-                Text(
-                    text = stringResource(
-                        R.string.cart_coupon_warning,
-                        warning.code,
-                        warning.message,
-                    ),
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-
-            result.userErrors.forEach { userError ->
-                Text(
-                    text = stringResource(
-                        R.string.cart_coupon_user_error,
-                        userError.code ?: stringResource(R.string.cart_unknown_error_code),
-                        userError.message,
-                    ),
-                    color = MaterialTheme.colorScheme.error,
-                )
+                
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OrderSummaryCard(
+                        subTotal = state.subTotal,
+                        shipping = state.shipping,
+                        total = state.total
+                    )
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }
+
+    if (state.itemToRemove != null) {
+        RemoveCartItemDialog(
+            onConfirm = { onAction(CartAction.ConfirmRemoveItem) },
+            onDismiss = { onAction(CartAction.CancelRemoveItem) }
+        )
+    }
 }
+
+// Test amounts in minor units (EGP 150.00 / USD 10.00) until the real cart total exists.
+private const val TEST_AMOUNT_MINOR_EGP = 15_000L
+private const val TEST_AMOUNT_MINOR_USD = 1_000L

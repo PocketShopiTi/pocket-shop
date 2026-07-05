@@ -10,7 +10,7 @@ interface HomeRemoteSource {
         featuredCount: Int,
         bestSellerCount: Int,
         newArrivalsCount: Int,
-        categoryCount: Int,
+        brandCount: Int,
     ): PocketResult<HomeData, PocketDataError.Remote>
 
     suspend fun getPromotionAds(): PocketResult<List<PromotionAd>, PocketDataError.Auth>

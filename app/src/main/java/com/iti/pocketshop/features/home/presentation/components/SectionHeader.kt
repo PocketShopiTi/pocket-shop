@@ -24,7 +24,7 @@ import com.iti.pocketshop.R
 @Composable
 fun SectionHeader(
     title: String,
-    onSeeAllClick: () -> Unit,
+    onSeeAllClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
     badge: String? = null,
 ) {
@@ -57,12 +57,14 @@ fun SectionHeader(
                 }
             }
         }
-        Text(
-            text = stringResource(R.string.see_all),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.clickable(onClick = onSeeAllClick)
-        )
+        onSeeAllClick?.let {
+            Text(
+                text = stringResource(R.string.see_all),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable(onClick = onSeeAllClick)
+            )
+        }
     }
 }

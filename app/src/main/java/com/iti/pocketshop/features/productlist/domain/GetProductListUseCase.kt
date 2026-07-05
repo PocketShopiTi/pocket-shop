@@ -12,12 +12,14 @@ class GetProductListUseCase @Inject constructor(
         after: String? = null,
         sortKey: String,
         reverse: Boolean,
+        query: String? = null,
     ): PocketResult<ProductListPage, PocketDataError.Remote> {
         return repository.getProducts(
             first = first,
             after = after,
             sortKey = sortKey,
             reverse = reverse,
+            query = query,
         )
     }
 }

@@ -9,5 +9,6 @@ interface ProductListRepository {
         after: String? = null,
         sortKey: String,
         reverse: Boolean,
+        query: String? = null,
     ): PocketResult<ProductListPage, PocketDataError.Remote>
 }

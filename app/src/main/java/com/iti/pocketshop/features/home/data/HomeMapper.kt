@@ -9,6 +9,11 @@ import com.iti.pocketshop.shopify.fragment.ProductFields
 fun HomeQuery.Data.toDomain(): HomeData {
     return HomeData(
 
+        brands =
+            brands.nodes.map {
+                it.toDomain()
+            },
+
         categories =
             categories.nodes.map {
                 it.toDomain()
@@ -69,13 +74,21 @@ fun ProductFields.MaxVariantPrice.toDomain(): Money {
     )
 }
 
-fun HomeQuery.Node.toDomain(): Category {
+fun HomeQuery.Node.toDomain(): Brand {
+    return Brand(
+        id = id,
+        brandName = brandName?.value ?: "-",
+        handle = handle,
+        brandLogoUrl = brandLogo?.value,
+    )
+}
+
+fun HomeQuery.Node1.toDomain(): Category {
     return Category(
         id = id,
-        title = title,
+        catName = CategoryName.getTypeByString(catName?.value ?: "-"),
         handle = handle,
-        imageUrl = image?.url,
-        imageAlt = image?.altText
+        catLogoUrl = catLogo?.value,
     )
 }
 

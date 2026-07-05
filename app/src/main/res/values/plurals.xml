@@ -1,0 +1,6 @@
+<resources>
+    <plurals name="address_summary_saved_address_count">
+        <item quantity="one">You have %d saved address in Pocket.</item>
+        <item quantity="other">You have %d saved addresses in Pocket.</item>
+    </plurals>
+</resources>
