@@ -120,7 +120,11 @@ fun NestedNavDisplay(
                     )
                 }
                 entry<Route.NestedNav.Cart> {
-                    CartRoot()
+                    CartRoot(
+                        onStartShoppingClick = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Home)
+                        }
+                    )
                 }
                 entry<Route.NestedNav.Profile> {
                     ProfileRoot(

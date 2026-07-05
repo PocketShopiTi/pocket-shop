@@ -72,6 +72,8 @@
     <string name="server_error">Server error, Please try again</string>
     <string name="failed_to_process_response">Bad response, Please try again</string>
     <string name="something_went_wrong">Something went wrong, Please try again</string>
+    <string name="bad_request_error">Invalid request. Please check your data and try again.</string>
+    <string name="invalid_coupon">Invalid coupon!!</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
     <string name="shop_by_brand">Shop by Brand</string>
@@ -87,6 +89,10 @@
     <string name="big_sale">BIG SALE</string>
     <string name="up_to_50_off">Up to\n50% Off</string>
     <string name="shop_now">Shop now</string>
+    <string name="home_coupon_your_code">Your coupon code</string>
+    <string name="home_coupon_copy_code">Copy code</string>
+    <string name="home_coupon_clip_label">Pocket Shop coupon</string>
+    <string name="home_coupon_close">Close offer</string>
     <string name="search">Search</string>
     <string name="search_placeholder">Search products, brands, and more</string>
     <string name="search_clear_query">Clear search</string>
@@ -253,6 +259,22 @@
     <string name="remove_favorite_dialog_confirm">Remove</string>
     <string name="sign_in_to_continue">Sign in to continue</string>
 
+    <!-- Cart screen -->
+    <string name="checkout_total">Checkout · %1$s</string>
+    <string name="cart_empty_title">Your cart is empty</string>
+    <string name="cart_empty_subtitle">Add items to your cart by browsing our collection.</string>
+    <string name="start_shopping">Start shopping</string>
+    <string name="order_summary">Order summary</string>
+    <string name="subtotal">Subtotal</string>
+    <string name="discount_10">Discount (10%%)</string>
+    <string name="shipping">Shipping</string>
+    <string name="free">Free</string>
+    <string name="total">Total</string>
+    <string name="remove_item_title">Remove Item</string>
+    <string name="remove_item_message">Are you sure you want to remove this item from your cart?</string>
+    <string name="remove">Remove</string>
+    <string name="cart_item_size">Size: %1$s</string>
+
     <!-- Settings screen -->
     <string name="english">English</string>
     <string name="arabic">Arabic</string>
@@ -330,6 +352,17 @@
     <string name="items_count">%1$d items</string>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
+
+    <string name="payment_pay_now">Pay now</string>
+    <string name="payment_completed">Payment completed successfully</string>
+    <string name="payment_canceled">Payment was canceled</string>
+    <string name="payment_failed">Unable to complete payment. Please try again.</string>
+    <string name="payment_no_funds">Insufficient funds. Please use another card.</string>
+    <string name="payment_rejected">Payment rejected. Please contact your bank.</string>
+    <string name="payment_expired">Card expired. Please use a different card.</string>
+    <string name="payment_invalid_card">Invalid card details. Please check and try again.</string>
+    <string name="cart_currency_egp">EGP</string>
+    <string name="cart_currency_usd">USD</string>
     <string name="all_categories">All Categories</string>
     <string name="men">Men</string>
     <string name="women">Women</string>
@@ -341,4 +374,19 @@
     <string name="pets">Pets</string>
     <string name="try_searching_for_something_else">Try searching for something else.</string>
  
+    <string name="cart_coupon_test_title">Cart coupon test</string>
+    <string name="cart_mock_applied_coupons">Mock applied coupons: AMR, SUMMER20</string>
+    <string name="cart_id_label">Cart ID</string>
+    <string name="cart_coupon_code_label">Coupon code</string>
+    <string name="cart_apply_coupon">Apply coupon</string>
+    <string name="cart_applying_coupon">Applying coupon…</string>
+    <string name="cart_coupon_applicable">applicable</string>
+    <string name="cart_coupon_not_applicable">not applicable</string>
+    <string name="cart_empty_discount_code">empty code</string>
+    <string name="cart_discount_status">Code: %1$s — %2$s</string>
+    <string name="cart_subtotal">Subtotal: %1$.2f %2$s</string>
+    <string name="cart_total">Total: %1$.2f %2$s</string>
+    <string name="cart_coupon_warning">Warning (%1$s): %2$s</string>
+    <string name="cart_coupon_user_error">User error (%1$s): %2$s</string>
+    <string name="cart_unknown_error_code">unknown</string>
 </resources>

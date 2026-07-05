@@ -88,6 +88,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        dataBinding = true
     }
 }
 
@@ -186,4 +187,6 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.osmdroid.android)
 
+    // paymob
+    implementation(libs.paymob.sdk)
 }
