@@ -20,7 +20,6 @@ sealed interface PocketDataError : Error {
         EMPTY_RESULT,
         BAD_REQUEST,
         INVALID_COUPON,
-        EMPTY_RESULT
     }
 
     enum class Auth : PocketDataError {
