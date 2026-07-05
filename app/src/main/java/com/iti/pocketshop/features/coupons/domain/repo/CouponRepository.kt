@@ -1,10 +1,10 @@
-package com.iti.pocketshop.features.cart.domain.repo
+package com.iti.pocketshop.features.coupons.domain.repo
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.features.cart.domain.model.CartCouponResult
+import com.iti.pocketshop.features.coupons.domain.model.CartCouponResult
 
-interface CartRepository {
+interface CouponRepository {
     suspend fun applyCoupons(
         cartId: String,
         discountCodes: List<String>,

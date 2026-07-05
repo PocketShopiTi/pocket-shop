@@ -1,18 +1,18 @@
-package com.iti.pocketshop.features.cart.data.mapper
+package com.iti.pocketshop.features.coupons.data.mapper
 
-import com.iti.pocketshop.features.cart.domain.model.CartCouponResult
-import com.iti.pocketshop.features.cart.domain.model.CartCouponUserError
-import com.iti.pocketshop.features.cart.domain.model.CartCouponWarning
-import com.iti.pocketshop.features.cart.domain.model.CartCost
-import com.iti.pocketshop.features.cart.domain.model.CartDiscountCode
-import com.iti.pocketshop.features.cart.domain.model.CartMoney
-import com.iti.pocketshop.features.cart.domain.model.CouponCart
+import com.iti.pocketshop.features.coupons.domain.model.CartCouponResult
+import com.iti.pocketshop.features.coupons.domain.model.CartCouponUserError
+import com.iti.pocketshop.features.coupons.domain.model.CartCouponWarning
+import com.iti.pocketshop.features.coupons.domain.model.CartCost
+import com.iti.pocketshop.features.coupons.domain.model.CartDiscountCode
+import com.iti.pocketshop.features.coupons.domain.model.CartMoney
+import com.iti.pocketshop.features.coupons.domain.model.CouponCart
 import com.iti.pocketshop.shopify.ApplyDiscountCodeMutation.CartDiscountCodesUpdate
 
 fun CartDiscountCodesUpdate.toDomain(): CartCouponResult = CartCouponResult(
     cart = cart?.let { cart ->
         CouponCart(
-            id = cart.id,
+            cartId = cart.id,
             discountCodes = cart.discountCodes.map { discountCode ->
                 CartDiscountCode(
                     code = discountCode.code,

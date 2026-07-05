@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.cart.data.datasource
+package com.iti.pocketshop.features.coupons.data.datasource
 
 import com.apollographql.apollo.ApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
@@ -7,7 +7,7 @@ import com.iti.pocketshop.core.networkutils.safeCall
 import com.iti.pocketshop.shopify.ApplyDiscountCodeMutation
 import javax.inject.Inject
 
-interface CartDataSource {
+interface CouponDataSource {
 
     suspend fun applyCoupons(
         cartId: String,
@@ -15,9 +15,9 @@ interface CartDataSource {
     ): PocketResult<ApplyDiscountCodeMutation.CartDiscountCodesUpdate, PocketDataError.Remote>
 }
 
-class CartDataSourceImpl @Inject constructor(
+class CouponDataSourceImpl @Inject constructor(
     private val apolloClient: ApolloClient,
-) : CartDataSource {
+) : CouponDataSource {
 
     override suspend fun applyCoupons(
         cartId: String,

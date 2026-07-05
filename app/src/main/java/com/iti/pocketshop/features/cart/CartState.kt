@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.cart
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.features.cart.domain.model.CartCouponResult
+import com.iti.pocketshop.features.coupons.domain.model.CartCouponResult
 
 data class CartState(
     val paramOne: String = "default",

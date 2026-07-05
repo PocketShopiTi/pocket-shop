@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.cart.domain.model
+package com.iti.pocketshop.features.coupons.domain.model
 
 data class CartCouponResult(
     val cart: CouponCart?,
@@ -7,7 +7,7 @@ data class CartCouponResult(
 )
 
 data class CouponCart(
-    val id: String,
+    val cartId: String,
     val discountCodes: List<CartDiscountCode>,
     val cost: CartCost,
 )

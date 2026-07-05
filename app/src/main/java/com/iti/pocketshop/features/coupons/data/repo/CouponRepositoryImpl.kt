@@ -1,17 +1,17 @@
-package com.iti.pocketshop.features.cart.data.repo
+package com.iti.pocketshop.features.coupons.data.repo
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
-import com.iti.pocketshop.features.cart.data.datasource.CartDataSource
-import com.iti.pocketshop.features.cart.data.mapper.toDomain
-import com.iti.pocketshop.features.cart.domain.model.CartCouponResult
-import com.iti.pocketshop.features.cart.domain.repo.CartRepository
+import com.iti.pocketshop.features.coupons.data.datasource.CouponDataSource
+import com.iti.pocketshop.features.coupons.data.mapper.toDomain
+import com.iti.pocketshop.features.coupons.domain.model.CartCouponResult
+import com.iti.pocketshop.features.coupons.domain.repo.CouponRepository
 import javax.inject.Inject
 
-class CartRepositoryImpl @Inject constructor(
-    private val dataSource: CartDataSource,
-) : CartRepository {
+class CouponRepositoryImpl @Inject constructor(
+    private val dataSource: CouponDataSource,
+) : CouponRepository {
 
     override suspend fun applyCoupons(
         cartId: String,
