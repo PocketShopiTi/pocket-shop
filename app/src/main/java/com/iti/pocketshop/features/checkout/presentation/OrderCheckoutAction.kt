@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.ordercheckout
+package com.iti.pocketshop.features.checkout.presentation
 
 import com.iti.pocketshop.features.checkout.domain.model.PaymentMethod
 

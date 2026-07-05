@@ -19,7 +19,7 @@ import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
 import com.iti.pocketshop.features.auth.otp.presentation.EmailVerificationRoot
 import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
-import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
+import com.iti.pocketshop.features.checkout.presentation.OrderCheckoutRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
 import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot

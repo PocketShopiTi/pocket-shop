@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.ordercheckout
+package com.iti.pocketshop.features.checkout.presentation
 
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.checkout.domain.model.CheckoutAddress
