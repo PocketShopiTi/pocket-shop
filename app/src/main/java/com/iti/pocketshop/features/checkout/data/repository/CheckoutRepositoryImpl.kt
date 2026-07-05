@@ -3,7 +3,6 @@ package com.iti.pocketshop.features.checkout.data.repository
 import com.apollographql.apollo.ApolloClient
 import com.iti.pocketshop.core.networkutils.safeCall
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.features.cart.data.mapper.toDomain
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.checkout.domain.model.CheckoutAddress
@@ -17,7 +16,6 @@ import com.iti.pocketshop.shopify.type.CartBuyerIdentityInput
 import com.iti.pocketshop.shopify.type.DeliveryAddressInput
 import com.iti.pocketshop.shopify.type.MailingAddressInput
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
 
 class CheckoutRepositoryImpl @Inject constructor(
     private val apolloClient: ApolloClient,
@@ -31,17 +29,16 @@ class CheckoutRepositoryImpl @Inject constructor(
         
         return when(result) {
             is PocketResult.Success -> {
-                val addresses = result.data.customer?.addresses?.edges?.mapNotNull { edge ->
-                    val node = edge.node
+                val addresses = result.data.customer?.addresses?.nodes?.map { edge ->
                     CheckoutAddress(
-                        id = node.id,
-                        firstName = node.firstName ?: "",
-                        lastName = node.lastName ?: "",
-                        address1 = node.address1 ?: "",
-                        address2 = node.address2 ?: "",
-                        city = node.city ?: "",
-                        country = node.country ?: "",
-                        phone = node.phone ?: ""
+                        id = edge.id,
+                        firstName = edge.firstName ?: "",
+                        lastName = edge.lastName ?: "",
+                        address1 = edge.address1 ?: "",
+                        address2 = edge.address2 ?: "",
+                        city = edge.city ?: "",
+                        country = edge.country ?: "",
+                        phone = edge.phone ?: ""
                     )
                 } ?: emptyList()
                 Result.success(addresses)
