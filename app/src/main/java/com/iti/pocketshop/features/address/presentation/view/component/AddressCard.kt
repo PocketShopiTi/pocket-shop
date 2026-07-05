@@ -3,7 +3,6 @@ package com.iti.pocketshop.features.address.presentation.view.component
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,15 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,8 +33,6 @@ import com.iti.pocketshop.features.address.domain.model.Address
 internal fun AddressCard(
     address: Address,
     enabled: Boolean,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
     onMakeDefault: () -> Unit,
 ) {
     val primary = MaterialTheme.colorScheme.primary
@@ -53,8 +45,7 @@ internal fun AddressCard(
                 width = 1.5.dp,
                 color = if (address.isDefault) primary else MaterialTheme.colorScheme.outlineVariant,
                 shape = RoundedCornerShape(24.dp),
-            )
-            .clickable(enabled = enabled, onClick = onEdit),
+            ),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -65,83 +56,61 @@ internal fun AddressCard(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Row(
+            Column(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    Box(
+                        modifier = Modifier
+                            .size(18.dp)
+                            .border(
+                                width = 1.5.dp,
+                                color = if (address.isDefault) primary else MaterialTheme.colorScheme.outline,
+                                shape = CircleShape,
+                            )
+                            .padding(3.dp),
+                        contentAlignment = Alignment.Center,
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(18.dp)
-                                .border(
-                                    width = 1.5.dp,
-                                    color = if (address.isDefault) primary else MaterialTheme.colorScheme.outline,
-                                    shape = CircleShape,
-                                )
-                                .padding(3.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            if (address.isDefault) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(8.dp)
-                                        .background(primary, CircleShape),
-                                )
-                            }
+                        if (address.isDefault) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(primary, CircleShape),
+                            )
                         }
-                        Text(
-                            text = address.recipientName,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
                     }
                     Text(
-                        text = address.streetLine.ifBlank {
-                            stringResource(R.string.address_line_not_filled)
-                        },
+                        text = address.recipientName,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                Text(
+                    text = address.streetLine.ifBlank {
+                        stringResource(R.string.address_line_not_filled)
+                    },
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 13.sp,
+                )
+                if (address.locationLine.isNotBlank()) {
+                    Text(
+                        text = address.locationLine,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp,
                     )
-                    if (address.locationLine.isNotBlank()) {
-                        Text(
-                            text = address.locationLine,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 13.sp,
-                        )
-                    }
-                    if (address.formattedArea.isNotBlank()) {
-                        Text(
-                            text = address.formattedArea,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 12.sp,
-                        )
-                    }
                 }
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    FilledTonalIconButton(onClick = onEdit, enabled = enabled) {
-                        Icon(
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription = stringResource(R.string.address_content_description_edit),
-                        )
-                    }
-                    FilledTonalIconButton(onClick = onDelete, enabled = enabled) {
-                        Icon(
-                            imageVector = Icons.Filled.Delete,
-                            contentDescription = stringResource(R.string.address_content_description_delete),
-                        )
-                    }
+                if (address.formattedArea.isNotBlank()) {
+                    Text(
+                        text = address.formattedArea,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 12.sp,
+                    )
                 }
             }
 

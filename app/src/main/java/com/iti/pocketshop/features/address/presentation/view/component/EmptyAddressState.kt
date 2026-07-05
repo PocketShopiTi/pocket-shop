@@ -1,37 +1,32 @@
 package com.iti.pocketshop.features.address.presentation.view.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.iti.pocketshop.R
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
 import java.util.Locale
-
 
 @Composable
 internal fun EmptyAddressState(
@@ -41,8 +36,9 @@ internal fun EmptyAddressState(
     onAddAddress: () -> Unit,
 ) {
     val extendedColors = LocalExtendedColors.current
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_empty_list))
 
-     val formattedName = remember(customerName) {
+    val formattedName = remember(customerName) {
         customerName.trim()
             .split(Regex("\\s+"))
             .filter { it.isNotBlank() }
@@ -56,26 +52,19 @@ internal fun EmptyAddressState(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 8.dp),
+            .padding(horizontal = 24.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(80.dp)
-                .background(extendedColors.surfaceVariant, CircleShape)
-                .border(1.dp, extendedColors.primary.copy(alpha = 0.15f), CircleShape),
+            modifier = Modifier.size(150.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(
-                imageVector = Icons.Outlined.LocationOn,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = extendedColors.primary,
+            LottieAnimation(
+                composition = composition,
+                iterations = LottieConstants.IterateForever,
             )
         }
-
-        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
             text = if (formattedName.isBlank()) {
@@ -83,8 +72,7 @@ internal fun EmptyAddressState(
             } else {
                 stringResource(R.string.address_empty_title_with_name, formattedName)
             },
-            fontFamily = FontFamily.Serif,
-            fontSize = 22.sp,
+            style = androidx.compose.material3.MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = extendedColors.textPrimary,
             textAlign = TextAlign.Center,
@@ -92,13 +80,10 @@ internal fun EmptyAddressState(
 
         Text(
             text = stringResource(R.string.address_empty_subtitle),
+            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
             color = extendedColors.textSecondary,
-            fontSize = 14.sp,
-            lineHeight = 20.sp,
             textAlign = TextAlign.Center,
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Button(
             onClick = onAddAddress,
@@ -109,13 +94,13 @@ internal fun EmptyAddressState(
                 contentColor = extendedColors.onPrimary,
             ),
             modifier = Modifier
-                .fillMaxWidth(0.7f)
-                .height(50.dp),
+                .fillMaxWidth(0.82f)
+                .height(52.dp),
         ) {
             Text(
                 text = stringResource(R.string.address_add_new_address),
+                style = androidx.compose.material3.MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 15.sp,
             )
         }
     }

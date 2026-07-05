@@ -161,7 +161,7 @@ data class AddressEditorState(
             AddressField.FIRST_NAME -> copy(firstName = value)
             AddressField.LAST_NAME -> copy(lastName = value)
             AddressField.COMPANY -> copy(company = value)
-            AddressField.PHONE -> copy(phone = phoneCountryCode.displayNumber(value))
+            AddressField.PHONE -> copy(phone = value)
             AddressField.ADDRESS1 -> copy(address1 = value)
             AddressField.ADDRESS2 -> copy(address2 = value)
             AddressField.CITY -> copy(city = value)

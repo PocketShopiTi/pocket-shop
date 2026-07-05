@@ -6,7 +6,7 @@
     <string name="address_content_description_back">Back</string>
     <string name="address_content_description_refresh">Refresh addresses</string>
 
-    <string name="address_loading_syncing_addresses">Syncing addresses from Shopify...</string>
+    <string name="address_loading_syncing_addresses">Syncing addresses from Shopify…</string>
     <string name="address_loading_subtitle">This keeps your saved delivery details up to date.</string>
 
     <string name="address_empty_title">No saved addresses</string>
@@ -55,10 +55,14 @@
     <string name="address_location_no_results">No matching locations found.</string>
     <string name="address_map_expand">Expand map</string>
     <string name="address_map_collapse">Collapse map</string>
+    <string name="address_map_open_picker">Open map</string>
 
     <string name="address_map_title">Location preview</string>
     <string name="address_map_picker_unavailable_title">Location preview is unavailable</string>
     <string name="address_map_picker_unavailable_subtitle">We could not load the location preview right now.</string>
+    <string name="address_map_pick_hint">Search or tap the map to choose the delivery location.</string>
+    <string name="address_map_picker_no_location">No location selected yet.</string>
+    <string name="address_map_use_location">Use this location</string>
     <string name="address_map_coordinates">Lat %1$.4f, Lng %2$.4f</string>
     <string name="address_map_default_latitude">30.0444</string>
     <string name="address_map_default_longitude">31.2357</string>
@@ -117,7 +121,7 @@
     <string name="address_placeholder_phone_number">Phone number</string>
     <string name="address_placeholder_country">Country</string>
     <string name="address_placeholder_street_address">Street address</string>
-    <string name="address_placeholder_apartment_suite">Apartment, suite, floor, etc.</string>
+    <string name="address_placeholder_apartment_suite">Apartment (optional)</string>
     <string name="address_placeholder_city">City</string>
     <string name="address_placeholder_state_province">State / Province</string>
     <string name="address_placeholder_postal_code">Postal code</string>

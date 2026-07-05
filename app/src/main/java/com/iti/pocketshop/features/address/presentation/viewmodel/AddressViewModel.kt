@@ -325,7 +325,9 @@ class AddressViewModel @Inject constructor(
     }
 
     private fun handleLocationPermissionResult(granted: Boolean) {
-        if (!_state.value.editor.visible || _state.value.editor.isEditing) {
+        val editor = _state.value.editor
+        val hasSavedLocation = editor.latitude != null && editor.longitude != null
+        if (!editor.visible || hasSavedLocation || editor.isEditing) {
             return
         }
 
@@ -489,7 +491,7 @@ class AddressViewModel @Inject constructor(
 
                 is PocketResult.Success -> _state.update { current ->
                     current.copy(
-                            editor = current.editor.withLocationSelection(
+                        editor = current.editor.withLocationSelection(
                             result.data,
                             updateSearchQuery = true,
                         ),

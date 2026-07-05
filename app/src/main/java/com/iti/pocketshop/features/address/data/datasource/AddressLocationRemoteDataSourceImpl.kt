@@ -142,23 +142,48 @@ class AddressLocationRemoteDataSourceImpl @Inject constructor(
     }
 
     private fun AndroidAddress.toAutocompletePrediction(): GoogleAutocompletePrediction? {
-        val primaryText = toPrimaryText()
-        val secondaryText = toSecondaryText()
+        val hasStreetAddress = !subThoroughfare.isNullOrBlank() || !thoroughfare.isNullOrBlank()
+        val placeName = featureName?.takeIf { it.isNotBlank() }
+        if (placeName.isNullOrBlank() && hasStreetAddress) {
+            return null
+        }
+
+        val primaryText = placeName
+            ?: listOf(
+                locality,
+                subAdminArea,
+                adminArea,
+                countryName,
+            ).firstOrNull { !it.isNullOrBlank() }
+            .orEmpty()
+
+        val secondaryText = listOf(
+            locality,
+            subAdminArea,
+            adminArea,
+            countryName,
+            postalCode,
+        )
+            .filterNotNull()
+            .map { it.trim() }
+            .filter { it.isNotBlank() && it != primaryText }
+            .distinct()
+            .joinToString(", ")
+
         val placeId = toPlaceId()
-        if (placeId.isBlank() || primaryText.isBlank() && secondaryText.isBlank()) {
+        if (placeId.isBlank() || primaryText.isBlank()) {
             return null
         }
 
         val description = listOf(primaryText, secondaryText)
             .filter { it.isNotBlank() }
             .joinToString(", ")
-            .ifBlank { addressLineOrFallback() }
 
         return GoogleAutocompletePrediction(
             placeId = placeId,
             description = description,
             structuredFormatting = GoogleStructuredFormatting(
-                mainText = primaryText.ifBlank { description },
+                mainText = primaryText,
                 secondaryText = secondaryText,
             ),
         )
@@ -167,11 +192,11 @@ class AddressLocationRemoteDataSourceImpl @Inject constructor(
     private fun AndroidAddress.toGoogleAddressResult(): GoogleAddressResult? {
         val latitudeValue = latitude
         val longitudeValue = longitude
-        val formattedAddress = addressLineOrFallback()
+        val displayAddress = toPlaceDescription()
         val componentMap = buildAddressComponents()
 
         return GoogleAddressResult(
-            formattedAddress = formattedAddress,
+            formattedAddress = displayAddress,
             addressComponents = componentMap,
             geometry = GoogleGeometry(
                 location = GoogleLatLng(
@@ -218,47 +243,24 @@ class AddressLocationRemoteDataSourceImpl @Inject constructor(
         }
     }
 
-    private fun AndroidAddress.toPrimaryText(): String {
-        val line = listOfNotNull(
-            subThoroughfare?.takeIf { it.isNotBlank() },
-            thoroughfare?.takeIf { it.isNotBlank() },
-            featureName?.takeIf { it.isNotBlank() },
-        ).joinToString(" ")
-
-        if (line.isNotBlank()) {
-            return line
-        }
-
-        return listOf(
-            locality,
-            subAdminArea,
-            adminArea,
-            countryName,
-        ).filter { it.isNotBlank() }
-            .joinToString(", ")
-    }
-
-    private fun AndroidAddress.toSecondaryText(): String {
-        return listOf(
-            locality,
-            subAdminArea,
-            adminArea,
-            countryName,
-        ).filter { it.isNotBlank() }
-            .joinToString(", ")
-    }
-
     private fun AndroidAddress.toPlaceId(): String {
         return "geo:$latitude,$longitude"
     }
 
-    private fun AndroidAddress.addressLineOrFallback(): String {
-        return getAddressLine(0)?.takeIf { it.isNotBlank() }
-            ?: listOf(
-                toPrimaryText(),
-                toSecondaryText(),
-            ).filter { it.isNotBlank() }
-                .joinToString(", ")
+    private fun AndroidAddress.toPlaceDescription(): String {
+        return listOf(
+            featureName,
+            locality,
+            subAdminArea,
+            adminArea,
+            countryName,
+            postalCode,
+        )
+            .filterNotNull()
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .joinToString(", ")
     }
 
     private fun addressComponent(longName: String, type: String): GoogleAddressComponent {

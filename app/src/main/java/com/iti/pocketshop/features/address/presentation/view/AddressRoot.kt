@@ -39,8 +39,9 @@ fun AddressRoot(
         viewModel.onAction(AddressAction.LocationPermissionResult(granted))
     }
 
-    LaunchedEffect(state.editor.visible, state.editor.isEditing) {
-        val shouldRequestPermission = state.editor.visible && !state.editor.isEditing
+    LaunchedEffect(state.editor.visible, state.editor.isEditing, state.editor.latitude, state.editor.longitude) {
+        val hasSavedLocation = state.editor.latitude != null && state.editor.longitude != null
+        val shouldRequestPermission = state.editor.visible && !state.editor.isEditing && !hasSavedLocation
         if (shouldRequestPermission && !hasRequestedLocationPermission) {
             hasRequestedLocationPermission = true
             val permissionGranted = hasLocationPermission(context)

@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -28,11 +27,7 @@ import com.iti.pocketshop.ui.theme.LocalExtendedColors
 @Composable
 internal fun AddressTopBar(
     title: String,
-    showRefresh: Boolean,
-    isLoading: Boolean,
-    isSaving: Boolean,
     onBack: () -> Unit,
-    onRefresh: () -> Unit,
 ) {
     val extendedColors = LocalExtendedColors.current
 
@@ -63,20 +58,6 @@ internal fun AddressTopBar(
                         contentDescription = stringResource(R.string.address_content_description_back),
                         tint = extendedColors.textPrimary,
                         modifier = Modifier.size(18.dp),
-                    )
-                }
-            }
-        },
-        actions = {
-            if (showRefresh) {
-                IconButton(
-                    onClick = onRefresh,
-                    enabled = !isLoading && !isSaving,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = stringResource(R.string.address_content_description_refresh),
-                        tint = extendedColors.textPrimary,
                     )
                 }
             }
