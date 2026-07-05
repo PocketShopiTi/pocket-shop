@@ -1,13 +1,13 @@
-package com.iti.pocketshop.features.notification.data
+package com.iti.pocketshop.core.notification
 
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -15,8 +15,6 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.iti.pocketshop.MainActivity
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.notification.NotificationNavigation
-import com.iti.pocketshop.core.notification.NotificationTopicSubscriber
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -47,6 +45,7 @@ class PocketFirebaseMessagingService : FirebaseMessagingService() {
         topicSubscriber.subscribeToAllTopic()
     }
 
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun showAdOnboardingNotification(adId: String) {
         if (!canPostNotifications()) return
 
@@ -90,16 +89,15 @@ class PocketFirebaseMessagingService : FirebaseMessagingService() {
             ) == PackageManager.PERMISSION_GRANTED
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
         val channel = NotificationChannel(
             CHANNEL_ID,
             getString(R.string.notification_channel_promotions),
-            NotificationManager.IMPORTANCE_DEFAULT,
+            NotificationManager.IMPORTANCE_HIGH,
         ).apply {
             description = getString(R.string.notification_ad_body)
         }
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         manager.createNotificationChannel(channel)
     }
 

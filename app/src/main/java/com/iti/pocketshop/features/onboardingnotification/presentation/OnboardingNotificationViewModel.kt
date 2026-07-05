@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -22,13 +23,7 @@ class OnboardingNotificationViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OnboardingNotificationState())
-    val state = _state
-        .onStart { }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000L),
-            initialValue = OnboardingNotificationState(),
-        )
+    val state = _state.asStateFlow()
 
     private val _events = Channel<OnboardingNotificationEvent>()
     val events = _events.receiveAsFlow()

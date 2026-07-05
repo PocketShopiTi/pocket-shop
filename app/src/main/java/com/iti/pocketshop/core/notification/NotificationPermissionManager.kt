@@ -10,10 +10,11 @@ import androidx.core.content.ContextCompat
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
+import androidx.core.content.edit
 
-@Singleton
+
 class NotificationPermissionManager @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
 ) {
 
     fun requestPermissionIfNeeded(
@@ -31,9 +32,9 @@ class NotificationPermissionManager @Inject constructor(
         ) == PackageManager.PERMISSION_GRANTED
 
         if (!isGranted) {
-            preferences.edit()
-                .putBoolean(KEY_NOTIFICATION_PERMISSION_REQUESTED, true)
-                .apply()
+            preferences.edit {
+                putBoolean(KEY_NOTIFICATION_PERMISSION_REQUESTED, true)
+            }
             ActivityCompat.requestPermissions(
                 activity,
                 arrayOf(Manifest.permission.POST_NOTIFICATIONS),

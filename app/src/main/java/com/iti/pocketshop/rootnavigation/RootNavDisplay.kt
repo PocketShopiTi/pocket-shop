@@ -2,7 +2,7 @@ package com.iti.pocketshop.rootnavigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-  import androidx.compose.animation.togetherWith
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,10 +44,7 @@ fun RootNavDisplay(
 
     LaunchedEffect(pendingNotificationAdId) {
         val adId = pendingNotificationAdId?.takeIf { it.isNotBlank() } ?: return@LaunchedEffect
-        rootBackStack.apply {
-            clear()
-            navigateSingleTop(Route.OnboardingNotification(adId = adId))
-        }
+        rootBackStack.navigateSingleTop(Route.OnboardingNotification(adId = adId))
         onNotificationAdHandled()
     }
 

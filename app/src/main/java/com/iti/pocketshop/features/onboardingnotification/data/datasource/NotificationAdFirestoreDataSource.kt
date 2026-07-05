@@ -17,7 +17,7 @@ class NotificationAdFirestoreDataSource @Inject constructor(
         adId: String,
     ): PocketResult<NotificationAdDto?, PocketDataError.Auth> =
         safeFirestoreCall {
-            firestore.collection(ADDS_COLLECTION)
+            firestore.collection(ADS_COLLECTION)
                 .document(adId)
                 .get()
                 .await()
@@ -40,7 +40,7 @@ class NotificationAdFirestoreDataSource @Inject constructor(
     }
 
     private companion object {
-        const val ADDS_COLLECTION = "ads"
+        const val ADS_COLLECTION = "ads"
         const val TITLE = "title"
         const val DESCRIPTION = "description"
         const val COUPON_CODE = "couponCode"

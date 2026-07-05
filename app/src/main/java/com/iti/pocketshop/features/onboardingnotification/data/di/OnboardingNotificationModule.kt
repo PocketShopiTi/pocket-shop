@@ -15,13 +15,11 @@ import javax.inject.Singleton
 abstract class OnboardingNotificationModule {
 
     @Binds
-    @Singleton
     abstract fun bindNotificationAdRemoteDataSource(
         impl: NotificationAdFirestoreDataSource,
     ): NotificationAdRemoteDataSource
 
     @Binds
-    @Singleton
     abstract fun bindNotificationAdRepository(
         impl: NotificationAdRepositoryImpl,
     ): NotificationAdRepository

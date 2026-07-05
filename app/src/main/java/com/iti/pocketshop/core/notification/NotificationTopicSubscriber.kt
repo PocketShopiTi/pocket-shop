@@ -5,7 +5,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
+
 class NotificationTopicSubscriber @Inject constructor(
     private val firebaseMessaging: FirebaseMessaging,
 ) {
