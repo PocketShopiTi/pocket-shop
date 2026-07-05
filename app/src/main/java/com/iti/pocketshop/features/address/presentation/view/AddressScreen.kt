@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ fun AddressScreen(
     errorMessage: String?,
     onAction: (AddressAction) -> Unit,
     onBack: () -> Unit,
+    onPickContact: () -> Unit,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val extendedColors = LocalExtendedColors.current
@@ -91,7 +93,16 @@ fun AddressScreen(
                 )
             }
         },
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) { data ->
+                Snackbar(
+                    snackbarData = data,
+                    containerColor = extendedColors.snackbarContainer,
+                    contentColor = extendedColors.snackbarContent,
+                    actionColor = extendedColors.snackbarAction,
+                )
+            }
+        },
     ) { padding ->
         Box(
             modifier = Modifier
@@ -121,6 +132,7 @@ fun AddressScreen(
                             state = state,
                             onAction = onAction,
                             onOpenMapPicker = { isMapPickerOpen = true },
+                            onPickContact = onPickContact,
                         )
                     } else {
                         AddressListContent(

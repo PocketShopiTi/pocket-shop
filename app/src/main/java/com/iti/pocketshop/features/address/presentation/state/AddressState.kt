@@ -153,6 +153,39 @@ data class AddressEditorState(
         )
     }
 
+    fun withContactPicked(displayName: String?, phoneNumber: String?): AddressEditorState {
+        val resolvedCountryCode = when {
+            phoneNumber.isNullOrBlank() -> phoneCountryCode
+            phoneCountryCodeTouched -> phoneCountryCode
+            else -> PhoneCountryCode.fromSavedPhone(phone = phoneNumber)
+        }
+        val resolvedPhone = phoneNumber?.takeIf { it.isNotBlank() }
+            ?.let { resolvedCountryCode.displayNumber(it) }
+            ?: phone
+
+        val nameParts = displayName
+            ?.trim()
+            ?.split(Regex("\\s+"))
+            ?.filter { it.isNotBlank() }
+            ?: emptyList()
+        val resolvedFirstName = firstName.ifBlank { nameParts.firstOrNull().orEmpty() }
+        val resolvedLastName = lastName.ifBlank {
+            if (nameParts.size > 1) nameParts.drop(1).joinToString(" ") else ""
+        }
+
+        return copy(
+            phone = resolvedPhone,
+            phoneCountryCode = resolvedCountryCode,
+            firstName = resolvedFirstName,
+            lastName = resolvedLastName,
+            validationErrors = validationErrors - setOf(
+                AddressField.PHONE,
+                AddressField.FIRST_NAME,
+                AddressField.LAST_NAME,
+            ),
+        )
+    }
+
     fun clearFieldError(field: AddressField): AddressEditorState {
         return copy(validationErrors = validationErrors - field)
     }

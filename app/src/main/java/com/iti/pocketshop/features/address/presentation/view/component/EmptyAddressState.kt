@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.address.presentation.view.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,7 +37,7 @@ internal fun EmptyAddressState(
     onAddAddress: () -> Unit,
 ) {
     val extendedColors = LocalExtendedColors.current
-    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie_empty_list))
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.location))
 
     val formattedName = remember(customerName) {
         customerName.trim()
@@ -57,12 +58,12 @@ internal fun EmptyAddressState(
         verticalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Box(
-            modifier = Modifier.size(150.dp),
-            contentAlignment = Alignment.Center,
+            modifier = Modifier.size(250.dp)
         ) {
             LottieAnimation(
                 composition = composition,
                 iterations = LottieConstants.IterateForever,
+                modifier = Modifier.fillMaxSize()
             )
         }
 

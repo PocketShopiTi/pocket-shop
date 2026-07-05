@@ -1,8 +1,10 @@
 package com.iti.pocketshop.features.address.presentation.action
 
+import android.net.Uri
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion
 import com.iti.pocketshop.features.address.presentation.state.AddressField
 import com.iti.pocketshop.features.address.utils.PhoneCountryCode
+
 
 sealed interface AddressAction {
     data object Refresh : AddressAction
@@ -12,6 +14,9 @@ sealed interface AddressAction {
     data object CloseEditor : AddressAction
     data class FieldChanged(val field: AddressField, val value: String) : AddressAction
     data class PhoneCountryChanged(val countryCode: PhoneCountryCode) : AddressAction
+    data object PickContactClicked : AddressAction
+    data class ContactUriPicked(val uri: Uri) : AddressAction
+    data class ContactPicked(val displayName: String?, val phoneNumber: String?) : AddressAction
     data object ToggleDefault : AddressAction
     data object SaveClicked : AddressAction
     data class LocationPermissionResult(val granted: Boolean) : AddressAction

@@ -1,7 +1,10 @@
 package com.iti.pocketshop.features.address.presentation.view
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.provider.ContactsContract
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,6 +42,55 @@ fun AddressRoot(
         viewModel.onAction(AddressAction.LocationPermissionResult(granted))
     }
 
+    val pickContactLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val contactUri = result.data?.data
+            if (contactUri != null) {
+                context.contentResolver.query(
+                    contactUri,
+                    arrayOf(
+                        ContactsContract.CommonDataKinds.Phone.NUMBER,
+                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
+                    ),
+                    null,
+                    null,
+                    null,
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val numberIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                        val nameIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                        val number = if (numberIndex >= 0) cursor.getString(numberIndex) else null
+                        val name = if (nameIndex >= 0) cursor.getString(nameIndex) else null
+                        viewModel.onAction(AddressAction.ContactPicked(displayName = name, phoneNumber = number))
+                    }
+                }
+            }
+        }
+    }
+
+    val contactsPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+    ) { granted ->
+        if (granted) {
+            pickContactLauncher.launch(Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI))
+        }
+    }
+
+    fun launchContactPicker() {
+        val hasContactsPermission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.READ_CONTACTS,
+        ) == PackageManager.PERMISSION_GRANTED
+
+        if (hasContactsPermission) {
+            pickContactLauncher.launch(Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI))
+        } else {
+            contactsPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+        }
+    }
+
     LaunchedEffect(state.editor.visible, state.editor.isEditing, state.editor.latitude, state.editor.longitude) {
         val hasSavedLocation = state.editor.latitude != null && state.editor.longitude != null
         val shouldRequestPermission = state.editor.visible && !state.editor.isEditing && !hasSavedLocation
@@ -73,6 +125,7 @@ fun AddressRoot(
                 onBack()
             }
         },
+        onPickContact = { launchContactPicker() },
     )
 }
 

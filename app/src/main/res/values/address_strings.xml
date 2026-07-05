@@ -20,6 +20,7 @@
 
     <string name="address_section_address_details">Address details</string>
     <string name="address_section_recipient">Recipient details</string>
+    <string name="pick_from_contacts">Pick from contacts</string>
 
     <string name="address_label_first_name">First name</string>
     <string name="address_label_last_name">Last name</string>

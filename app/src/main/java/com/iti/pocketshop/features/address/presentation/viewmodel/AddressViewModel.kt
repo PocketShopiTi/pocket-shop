@@ -1,13 +1,16 @@
 package com.iti.pocketshop.features.address.presentation.viewmodel
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.R
 import com.iti.pocketshop.core.networkutils.PocketResult
+ import com.iti.pocketshop.core.utils.PermissionChecker
 import com.iti.pocketshop.features.address.domain.error.AddressError
 import com.iti.pocketshop.features.address.domain.model.LocationCoordinates
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion
+import com.iti.pocketshop.features.address.domain.usecase.GetContactUseCase
 import com.iti.pocketshop.features.address.domain.usecase.GetCurrentLocationUseCase
 import com.iti.pocketshop.features.address.domain.usecase.DeleteAddressUseCase
 import com.iti.pocketshop.features.address.domain.usecase.GetAddressesUseCase
@@ -17,16 +20,20 @@ import com.iti.pocketshop.features.address.domain.usecase.SaveAddressUseCase
 import com.iti.pocketshop.features.address.domain.usecase.SearchAddressSuggestionsUseCase
 import com.iti.pocketshop.features.address.domain.usecase.SetDefaultAddressUseCase
 import com.iti.pocketshop.features.address.presentation.action.AddressAction
+import com.iti.pocketshop.features.address.presentation.action.AddressEffect
 import com.iti.pocketshop.features.address.presentation.state.AddressEditorState
 import com.iti.pocketshop.features.address.presentation.state.AddressState
 import com.iti.pocketshop.features.address.utils.AndroidAddressValidationStrings
 import com.iti.pocketshop.features.address.utils.validateAddressEditor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,10 +50,15 @@ class AddressViewModel @Inject constructor(
     private val searchAddressSuggestionsUseCase: SearchAddressSuggestionsUseCase,
     private val resolveAddressSuggestionUseCase: ResolveAddressSuggestionUseCase,
     private val reverseGeocodeLocationUseCase: ReverseGeocodeLocationUseCase,
+    private val getContactUseCase: GetContactUseCase,
+    private val permissionChecker: PermissionChecker,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AddressState())
     val state: StateFlow<AddressState> = _state.asStateFlow()
+
+    private val _effect = Channel<AddressEffect>(Channel.BUFFERED)
+    val effect: Flow<AddressEffect> = _effect.receiveAsFlow()
 
     private var loadJob: Job? = null
     private var mutationJob: Job? = null
@@ -68,23 +80,17 @@ class AddressViewModel @Inject constructor(
             is AddressAction.LocationPermissionResult -> handleLocationPermissionResult(action.granted)
             is AddressAction.LocationSearchChanged -> updateLocationSearch(action.query)
             is AddressAction.LocationSuggestionSelected -> resolveLocationSuggestion(action.suggestion)
-            is AddressAction.MapLocationPicked -> reverseGeocodeLocation(
-                action.latitude,
-                action.longitude
-            )
-
+            is AddressAction.MapLocationPicked -> reverseGeocodeLocation(action.latitude, action.longitude)
             AddressAction.ClearLocationSuggestions -> onClearLocationSuggestions(action)
-            is AddressAction.EditAddressClicked -> {
-                onEditAdress(action)
-            }
-
-            AddressAction.AddAddressClicked,
+            is AddressAction.EditAddressClicked -> onEditAdress(action)
+            AddressAction.AddAddressClicked -> onAddAddressClicked()
             AddressAction.CloseEditor -> onClickAction(action)
-
+            AddressAction.PickContactClicked -> onPickContactClicked()
+            is AddressAction.ContactUriPicked -> onContactUriPicked(action.uri)
             is AddressAction.FieldChanged -> onFieldChanged(action)
-
             AddressAction.ToggleDefault,
             is AddressAction.PhoneCountryChanged,
+            is AddressAction.ContactPicked,
             is AddressAction.DeleteClicked,
             AddressAction.CancelDelete,
             AddressAction.DismissError,
@@ -130,6 +136,50 @@ class AddressViewModel @Inject constructor(
 
                         else -> {}
                     }
+                }
+            }
+        }
+    }
+
+    private fun onAddAddressClicked() {
+        onClickAction(AddressAction.AddAddressClicked)
+        requestLocationPermissionIfNeeded()
+    }
+
+    private fun requestLocationPermissionIfNeeded() {
+        val editor = _state.value.editor
+        val hasSavedLocation = editor.latitude != null && editor.longitude != null
+        if (!editor.visible || editor.isEditing || hasSavedLocation) {
+            return
+        }
+        if (permissionChecker.hasLocationPermission()) {
+            handleLocationPermissionResult(true)
+        } else {
+            viewModelScope.launch {
+                _effect.send(AddressEffect.RequestLocationPermission)
+            }
+        }
+    }
+
+    private fun onPickContactClicked() {
+        viewModelScope.launch {
+            if (permissionChecker.hasContactsPermission()) {
+                _effect.send(AddressEffect.LaunchContactPicker)
+            } else {
+                _effect.send(AddressEffect.RequestContactsPermission)
+            }
+        }
+    }
+
+    private fun onContactUriPicked(uri: Uri) {
+        viewModelScope.launch {
+            val contact = getContactUseCase(uri)
+            if (contact != null) {
+                _state.update { current ->
+                    reduceAddressState(
+                        current,
+                        AddressAction.ContactPicked(contact.displayName, contact.phoneNumber),
+                    )
                 }
             }
         }

@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -40,6 +42,7 @@ internal fun AddressEditorContent(
     state: AddressState,
     onAction: (AddressAction) -> Unit,
     onOpenMapPicker: () -> Unit,
+    onPickContact: () -> Unit,
 ) {
     val editor = state.editor
     val scrollState = rememberScrollState()
@@ -142,6 +145,15 @@ internal fun AddressEditorContent(
                         contentDescription = null,
                         tint = extendedColors.textSecondary,
                     )
+                },
+                trailingIcon = {
+                    IconButton(onClick = onPickContact, enabled = !isBusy) {
+                        Icon(
+                            Icons.Filled.Contacts,
+                            contentDescription = stringResource(R.string.pick_from_contacts),
+                            tint = extendedColors.textSecondary,
+                        )
+                    }
                 },
                 onValueChange = { onAction(AddressAction.FieldChanged(AddressField.PHONE, it)) },
             )
