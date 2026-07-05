@@ -63,7 +63,33 @@ fun PaymentButton(
                     }
 
                     override fun onFailure(msg: String?) {
-                        val result = PocketResult.Error(PocketDataError.Payment.FAILED)
+                        val error = when {
+                            msg.isNullOrBlank() ||
+                                    msg.contains("null", ignoreCase = true) ||
+                                    msg.contains("cancel", ignoreCase = true) ->
+                                PocketDataError.Payment.CANCELED
+
+                            msg.contains("funds", ignoreCase = true) ->
+                                PocketDataError.Payment.NO_FUNDS
+
+                            msg.contains("declined", ignoreCase = true) ||
+                                    msg.contains("rejected", ignoreCase = true) ||
+                                    msg.contains("auth", ignoreCase = true) ||
+                                    msg.contains("secure", ignoreCase = true) ->
+                                PocketDataError.Payment.REJECTED
+
+                            msg.contains("expired", ignoreCase = true) ->
+                                PocketDataError.Payment.EXPIRED
+
+                            msg.contains("invalid", ignoreCase = true) ||
+                                    msg.contains("card", ignoreCase = true) ||
+                                    msg.contains("cvv", ignoreCase = true) ||
+                                    msg.contains("number", ignoreCase = true) ->
+                                PocketDataError.Payment.INVALID_CARD
+
+                            else -> PocketDataError.Payment.FAILED
+                        }
+                        val result = PocketResult.Error(error)
                         viewModel.onAction(
                             PaymentAction.PaymobCheckoutFinished(result)
                         )

@@ -52,6 +52,7 @@ suspend fun <T> safeRestCall(block: suspend () -> T): PocketResult<T, PocketData
 
 private fun httpToResult(statusCode: Int): PocketResult<Nothing, PocketDataError.Remote> =
     when (statusCode) {
+        400 -> PocketResult.Error(PocketDataError.Remote.BAD_REQUEST)
         408 -> PocketResult.Error(PocketDataError.Remote.REQUEST_TIMEOUT)
         429 -> PocketResult.Error(PocketDataError.Remote.TOO_MANY_REQUESTS)
         in 500..599 -> PocketResult.Error(PocketDataError.Remote.SERVER)
