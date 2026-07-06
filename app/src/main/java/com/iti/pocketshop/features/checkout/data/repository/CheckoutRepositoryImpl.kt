@@ -24,8 +24,10 @@ import com.iti.pocketshop.shopify.type.DeliveryAddressInput
 import javax.inject.Inject
 
 class CheckoutRepositoryImpl @Inject constructor(
+    @param:StorefrontApolloClient
+    private val storeApolloClient: ApolloClient,
     @param:AdminApolloClient
-    private val apolloClient: ApolloClient,
+    private val adminApolloClient: ApolloClient,
 ) : CheckoutRepository {
 
     override suspend fun setDeliveryAddress(
@@ -41,7 +43,7 @@ class CheckoutRepositoryImpl @Inject constructor(
             deliveryAddressPreferences = Optional.present(listOf(deliveryPref))
         )
         val result =
-            apolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity)).safeCall()
+            storeApolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity)).safeCall()
 
         return when (result) {
             is PocketResult.Success -> {
@@ -59,7 +61,7 @@ class CheckoutRepositoryImpl @Inject constructor(
         customer: UserData,
         payment: PaymentConfirmation
     ): PocketResult<Order?, PocketDataError> {
-        return apolloClient.mutation(
+        return adminApolloClient.mutation(
             PaidOrderCreateMutation(
                 order = toOrderInput(
                     cart = cart,
