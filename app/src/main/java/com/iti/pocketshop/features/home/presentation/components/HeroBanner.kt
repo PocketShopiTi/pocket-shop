@@ -1,4 +1,5 @@
 package com.iti.pocketshop.features.home.presentation.components
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -9,12 +10,11 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
- import androidx.compose.foundation.background
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -87,19 +87,19 @@ fun HeroBanner(
             targetState = currentIndex,
             transitionSpec = {
                 (slideInHorizontally(
-                    animationSpec = tween(520, easing = FastOutSlowInEasing),
-                    initialOffsetX = { width -> width / 2 },
-                ) + fadeIn(tween(300)) + scaleIn(
-                    initialScale = 0.96f,
-                    animationSpec = tween(520, easing = FastOutSlowInEasing),
-                )) togetherWith
+                    animationSpec = tween(400, easing = FastOutSlowInEasing),
+                    initialOffsetX = { width -> width },
+                ) + fadeIn(tween(300))).togetherWith(
                     (slideOutHorizontally(
-                        animationSpec = tween(520, easing = FastOutSlowInEasing),
-                        targetOffsetX = { width -> -width / 2 },
-                    ) + fadeOut(tween(260)) + scaleOut(
-                        targetScale = 1.04f,
-                        animationSpec = tween(520, easing = FastOutSlowInEasing),
-                    )) using SizeTransform(clip = true)
+                        animationSpec = tween(600, easing = FastOutSlowInEasing),
+                        targetOffsetX = { width -> -width },
+                    ) + fadeOut(tween(500)) + scaleOut(
+                        targetScale = 1.2f,
+                        animationSpec = tween(600, easing = FastOutSlowInEasing),
+                    ))
+                ).using(
+                    SizeTransform(clip = false)
+                )
             },
             label = "promotionAdContent",
             modifier = Modifier.fillMaxSize(),
@@ -121,7 +121,7 @@ private fun PromotionAdContent(
     val infiniteTransition = rememberInfiniteTransition(label = "promotionBannerMotion")
     val imageScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.06f,
+        targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = BANNER_IMAGE_MOTION_DELAY_MILLIS,
@@ -285,5 +285,5 @@ private fun StaticHeroBanner(
     }
 }
 
-private const val BANNER_AUTO_SCROLL_DELAY_MILLIS = 3_500L
-private const val BANNER_IMAGE_MOTION_DELAY_MILLIS = 4_800
+private const val BANNER_AUTO_SCROLL_DELAY_MILLIS = 2_500L
+private const val BANNER_IMAGE_MOTION_DELAY_MILLIS = 2_500
