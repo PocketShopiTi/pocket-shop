@@ -55,6 +55,7 @@ class ProductDetailsViewModel @Inject constructor(
 
     private var loadJob: Job? = null
     private var cartFeedbackJob: Job? = null
+    private var addToCartJob: Job? = null
 
     private fun loadProduct(productId: String, force: Boolean = false) {
         if (!force && _state.value.productId == productId && _state.value.product != null) return
@@ -138,8 +139,9 @@ class ProductDetailsViewModel @Inject constructor(
             return
         }
         if (variant != null) {
-            viewModelScope.launch {
-
+            addToCartJob?.cancel()
+            addToCartJob = viewModelScope.launch {
+                delay(300L.milliseconds)
                 addToCartUseCase(
                     cartId = cartId,
                     variantId = variant.id,

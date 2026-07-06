@@ -11,6 +11,8 @@ import com.iti.pocketshop.features.cart.domain.usecase.RemoveCartItemUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.UpdateCartQuantityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
@@ -29,6 +32,7 @@ class CartViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var loadedInitialData = false
+    private var updateQuantityJob: Job? = null
     private val _state = MutableStateFlow(CartState())
 
     val state = _state
@@ -98,7 +102,9 @@ class CartViewModel @Inject constructor(
     }
 
     private fun updateItemQuantity(action: CartAction.UpdateQuantity) {
-        viewModelScope.launch {
+        updateQuantityJob?.cancel()
+        updateQuantityJob = viewModelScope.launch {
+            delay(500L.milliseconds)
             val cartId = state.value.cartId ?: return@launch
             _state.update { it.copy(isLoading = true) }
             updateCartQuantityUseCase(cartId, action.lineId, action.quantity)
