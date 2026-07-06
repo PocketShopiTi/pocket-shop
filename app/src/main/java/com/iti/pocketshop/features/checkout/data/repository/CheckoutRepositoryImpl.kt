@@ -33,7 +33,7 @@ class CheckoutRepositoryImpl @Inject constructor(
     override suspend fun setDeliveryAddress(
         cartId: String,
         addressId: String
-    ): Result<ShopifyCart> {
+    ): PocketResult<ShopifyCart?, PocketDataError> {
 
         val deliveryPref = DeliveryAddressInput(
             customerAddressId = Optional.present(addressId)
@@ -42,17 +42,10 @@ class CheckoutRepositoryImpl @Inject constructor(
         val identity = CartBuyerIdentityInput(
             deliveryAddressPreferences = Optional.present(listOf(deliveryPref))
         )
-        val result =
-            storeApolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity)).safeCall()
-
-        return when (result) {
-            is PocketResult.Success -> {
-                val cart = result.data.cartBuyerIdentityUpdate?.cart?.cartFields?.toDomain()
-                if (cart != null) Result.success(cart) else Result.failure(Exception("Failed to set address"))
+        return storeApolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity)).safeCall()
+            .map {
+                it.cartBuyerIdentityUpdate?.cart?.cartFields?.toDomain()
             }
-
-            is PocketResult.Error -> Result.failure(Exception(result.error.toString()))
-        }
     }
 
     override suspend fun placeOrder(

@@ -147,7 +147,7 @@ private fun OrderSummaryCard(
 
             SummaryRow(
                 label = stringResource(R.string.total),
-                value = "${state.cart?.totalAmount ?: 0.0} ${state.cart?.totalAmount?.currencyCode ?: ""}",
+                value = "${state.cart?.totalAmount?.amount ?: 0.0} ${state.cart?.totalAmount?.currencyCode ?: ""}",
                 labelStyle = MaterialTheme.typography.titleMedium,
                 valueStyle = MaterialTheme.typography.titleLarge,
             )
@@ -225,34 +225,34 @@ private fun CouponCard(
                         )
                     }
                 }
-            }
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = state.couponCodeInput,
-                    onValueChange = { onAction(CheckoutAction.OnCouponInputChanged(it)) },
-                    label = {
-                        Text(
-                            stringResource(R.string.coupon_code)
-                        )
-                    },
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                FilledTonalButton(
-                    onClick = { onAction(CheckoutAction.ApplyCoupon) },
-                    enabled = state.couponCodeInput.isNotBlank() && !state.isLoading
+            } else {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (state.isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(stringResource(R.string.apply))
+                    OutlinedTextField(
+                        value = state.couponCodeInput,
+                        onValueChange = { onAction(CheckoutAction.OnCouponInputChanged(it)) },
+                        label = {
+                            Text(
+                                stringResource(R.string.coupon_code)
+                            )
+                        },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f)
+                    )
+                    FilledTonalButton(
+                        onClick = { onAction(CheckoutAction.ApplyCoupon) },
+                        enabled = state.couponCodeInput.isNotBlank() && !state.isLoading
+                    ) {
+                        if (state.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text(stringResource(R.string.apply))
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.checkout.domain
+package com.iti.pocketshop.features.checkout.domain.usecases
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult

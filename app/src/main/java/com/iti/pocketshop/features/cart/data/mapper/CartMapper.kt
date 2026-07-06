@@ -21,7 +21,7 @@ fun CartFields.toDomain(): ShopifyCart {
 
 fun CartFields.Node.toDomain(): CartLineItem? {
     val productVariant = merchandise.onProductVariant
-    return if (productVariant != null) {
+    return productVariant?.let {
         CartLineItem(
             lineId = id,
             variantId = productVariant.id,
@@ -33,8 +33,6 @@ fun CartFields.Node.toDomain(): CartLineItem? {
             currencyCode = productVariant.price.currencyCode.name,
             imageUrl = productVariant.image?.url ?: ""
         )
-    } else {
-        null
     }
 }
 

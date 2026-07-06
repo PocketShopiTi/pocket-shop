@@ -1,15 +1,15 @@
 package com.iti.pocketshop.features.checkout.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.components.ErrorDialogController
+import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.address.domain.usecase.GetAddressesUseCase
 import com.iti.pocketshop.features.cart.domain.repository.CartRepository
-import com.iti.pocketshop.features.checkout.domain.PlaceOrderUseCase
-import com.iti.pocketshop.features.checkout.domain.repository.CheckoutRepository
+import com.iti.pocketshop.features.checkout.domain.usecases.PlaceOrderUseCase
+import com.iti.pocketshop.features.checkout.domain.usecases.SetDeliveryAddressUseCase
 import com.iti.pocketshop.features.coupons.domain.usecase.ApplyCouponUseCase
 import com.iti.pocketshop.features.coupons.domain.usecase.RemoveCouponUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,11 +21,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.collections.firstOrNull
 
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(
-    private val checkoutRepository: CheckoutRepository,
+    private val setDeliveryAddressUseCase: SetDeliveryAddressUseCase,
     private val applyCouponUseCase: ApplyCouponUseCase,
     private val removeCouponUseCase: RemoveCouponUseCase,
     private val getAddressesUseCase: GetAddressesUseCase,
@@ -87,13 +86,20 @@ class CheckoutViewModel @Inject constructor(
 
             is CheckoutAction.OnPaymentSuccess -> {
                 viewModelScope.launch {
-                    Log.d("TAG", "safeCall: get the payment")
                     val cartId = state.value.cart?.id ?: return@launch
                     val selectedAddress = state.value.selectedAddress ?: return@launch
                     _state.update { it.copy(isLoading = true) }
-                    checkoutRepository.setDeliveryAddress(cartId, selectedAddress.id)
+                    setDeliveryAddressUseCase(cartId, selectedAddress.id)
                         .onSuccess { cart ->
-                            Log.d("TAG", "safeCall: get the cart")
+                            cart ?: run {
+                                _state.update {
+                                    it.copy(
+                                        isLoading = false
+                                    )
+                                }
+                                ErrorDialogController.sendEvent(PocketDataError.Remote.EMPTY_RESULT)
+                                return@onSuccess
+                            }
                             placeOrderUseCase(
                                 cart = cart,
                                 shippingAddress = selectedAddress,
@@ -101,7 +107,6 @@ class CheckoutViewModel @Inject constructor(
                                 payment = action.paymentConfirmation
                             )
                                 .onSuccess { newOrder ->
-                                    Log.d("TAG", "safeCall: get the newOrder")
                                     _state.update {
                                         it.copy(
                                             isLoading = false,
@@ -113,8 +118,8 @@ class CheckoutViewModel @Inject constructor(
                                     ErrorDialogController.sendEvent(it)
                                 }
                         }
-                        .onFailure{
-                            //todo handle error
+                        .onError {
+                            ErrorDialogController.sendEvent(it)
                         }
 
                 }

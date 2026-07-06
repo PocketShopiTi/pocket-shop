@@ -10,7 +10,10 @@ import com.iti.pocketshop.features.payment.domain.models.UserData
 
 interface CheckoutRepository {
     
-    suspend fun setDeliveryAddress(cartId: String, addressId: String): Result<ShopifyCart>
+    suspend fun setDeliveryAddress(
+        cartId: String,
+        addressId: String
+    ): PocketResult<ShopifyCart?, PocketDataError>
 
     suspend fun placeOrder(
         cart: ShopifyCart,
