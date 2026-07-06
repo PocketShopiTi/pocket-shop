@@ -104,13 +104,13 @@ class CheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             val cartId = state.value.cart?.id ?: return@launch
             val selectedAddress = state.value.selectedAddress ?: return@launch
-            _state.update { it.copy(isLoading = true) }
+            _state.update { it.copy(isProcessingOrder = true) }
             setDeliveryAddressUseCase(cartId, selectedAddress.id)
                 .onSuccess { cart ->
                     cart ?: run {
                         _state.update {
                             it.copy(
-                                isLoading = false
+                                isProcessingOrder = false
                             )
                         }
                         ErrorDialogController.sendEvent(PocketDataError.Remote.EMPTY_RESULT)
@@ -128,16 +128,18 @@ class CheckoutViewModel @Inject constructor(
                             )
                             _state.update {
                                 it.copy(
-                                    isLoading = false,
+                                    isProcessingOrder = false,
                                     placedOrder = newOrder
                                 )
                             }
                         }
                         .onError {
+                            _state.update { it.copy(isProcessingOrder = false) }
                             ErrorDialogController.sendEvent(it)
                         }
                 }
                 .onError {
+                    _state.update { it.copy(isProcessingOrder = false) }
                     ErrorDialogController.sendEvent(it)
                 }
 

@@ -7,6 +7,7 @@ import com.iti.pocketshop.features.checkout.data.mappers.PaymentConfirmation
 
 data class CheckoutState(
     val isLoading: Boolean = false,
+    val isProcessingOrder: Boolean = false,
     val cart: ShopifyCart? = null,
     val addresses: List<Address> = emptyList(),
     val selectedAddress: Address? = null,

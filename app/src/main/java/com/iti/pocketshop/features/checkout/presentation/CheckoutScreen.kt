@@ -31,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,9 +41,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.address.domain.model.Address
+import com.iti.pocketshop.features.checkout.data.mappers.Order
 import com.iti.pocketshop.features.checkout.data.mappers.PaymentConfirmation
 import com.iti.pocketshop.features.checkout.domain.model.toUserData
 import com.iti.pocketshop.features.home.domain.models.Money
@@ -53,12 +63,21 @@ import com.iti.pocketshop.features.payment.presentation.PaymentButton
 
 @Composable
 fun OrderCheckoutRoot(
-    viewModel: CheckoutViewModel = hiltViewModel()
+    onOrderPlaced: (Order) -> Unit,
+    onBack: () -> Unit,
+    viewModel: CheckoutViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LaunchedEffect(state.placedOrder) {
+        state.placedOrder?.let {
+            onOrderPlaced(it)
+        }
+    }
+
     OrderCheckoutScreen(
         state = state,
+        onBack = onBack,
         onAction = viewModel::onAction
     )
 }
@@ -66,15 +85,32 @@ fun OrderCheckoutRoot(
 @Composable
 fun OrderCheckoutScreen(
     state: CheckoutState,
+    onBack: () -> Unit,
     onAction: (CheckoutAction) -> Unit,
 ) {
+    if (state.isProcessingOrder) {
+        OrderProcessingDialog()
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        stringResource(R.string.checkout)
+                        stringResource(R.string.checkout),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBack
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_back),
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
                 }
             )
         },
@@ -86,41 +122,77 @@ fun OrderCheckoutScreen(
             )
         }
     ) { innerPadding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            if (state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    item {
+                        OrderSummaryCard(state = state)
+                    }
+                    item {
+                        CouponCard(
+                            state = state,
+                            onAction = onAction
+                        )
+                    }
+                    item {
+                        AddressSection(
+                            state = state,
+                            onAction = onAction
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+                }
             }
-        } else {
-            LazyColumn(
+        }
+    }
+}
+
+@Composable
+private fun OrderProcessingDialog() {
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false)
+    ) {
+        Card(
+            shape = MaterialTheme.shapes.large,
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        ) {
+            Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
+                    .padding(32.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                item {
-                    OrderSummaryCard(state = state)
-                }
-                item {
-                    CouponCard(
-                        state = state,
-                        onAction = onAction
-                    )
-                }
-                item {
-                    AddressSection(
-                        state = state,
-                        onAction = onAction
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    strokeWidth = 4.dp
+                )
+                Text(
+                    text = stringResource(R.string.processing_your_order),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(R.string.please_wait_a_moment),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
@@ -307,7 +379,9 @@ private fun AddressSection(
                     )
                 }
             } else {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                     state.addresses.forEach { address ->
                         val selected = state.selectedAddress?.id == address.id
                         Surface(
@@ -363,7 +437,9 @@ private fun CheckoutBottomBar(
         shadowElevation = 8.dp,
         color = MaterialTheme.colorScheme.surface
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier
+            .padding(16.dp)
+            .padding(bottom = 16.dp)) {
             if (state.selectedAddress == null) {
                 Text(
                     stringResource(R.string.select_a_delivery_address_to_continue),
@@ -380,20 +456,24 @@ private fun CheckoutBottomBar(
                     currency = PaymentCurrency.EGP,
                     userData = user,
                     onSuccess = { transactionId ->
-                        onAction(CheckoutAction.OnPaymentSuccess(
-                            customer = user,
-                            paymentConfirmation = PaymentConfirmation(
-                                transactionId = transactionId,
-                                gateway = PaymentGateway.PayMob.gatewayName,
-                                amount = Money(
-                                    total.amount,
-                                    total.currencyCode.name
+                        onAction(
+                            CheckoutAction.OnPaymentSuccess(
+                                customer = user,
+                                paymentConfirmation = PaymentConfirmation(
+                                    transactionId = transactionId,
+                                    gateway = PaymentGateway.PayMob.gatewayName,
+                                    amount = Money(
+                                        total.amount,
+                                        total.currencyCode.name
+                                    )
                                 )
                             )
-                        ))
+                        )
                     },
                     enabled = canCheckout,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .height(52.dp)
+                        .fillMaxWidth()
                 )
             }
         }
