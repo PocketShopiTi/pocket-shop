@@ -23,6 +23,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -71,7 +72,7 @@ fun CartItemCard(
             // Image
             Box(
                 modifier = Modifier
-                    .size(90.dp)
+                    .size(100.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
@@ -114,12 +115,15 @@ fun CartItemCard(
 
                     IconButton(
                         onClick = onRemoveClick,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier,
+                        colors = IconButtonDefaults.iconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Delete,
                             contentDescription = stringResource(id = R.string.remove),
-                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.8f),
                             modifier = Modifier.size(20.dp)
                         )
                     }
@@ -151,7 +155,7 @@ fun CartItemCard(
                                     onUpdateQuantity(localQuantity)
                                 }
                             },
-                            modifier = Modifier.size(32.dp),
+                            modifier = Modifier,
                             enabled = localQuantity > 1
                         ) {
                             Icon(
@@ -174,7 +178,7 @@ fun CartItemCard(
                                 localQuantity++
                                 onUpdateQuantity(localQuantity)
                             },
-                            modifier = Modifier.size(32.dp)
+                            modifier = Modifier
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,

@@ -56,6 +56,13 @@ class CartLocalDataSourceImpl @Inject constructor(
         cartDao.insertCartItems(shopifyCart.lines.map { it.toEntity() })
     }
 
+    override suspend fun replaceCart(shopifyCart: ShopifyCart) {
+        cartDao.replaceCart(
+            shopifyCart.toEntity(),
+            shopifyCart.lines.map { it.toEntity() }
+        )
+    }
+
     override suspend fun saveCartItems(lineItems: List<CartLineItem>) {
         cartDao.insertCartItems(lineItems.map { it.toEntity() })
     }

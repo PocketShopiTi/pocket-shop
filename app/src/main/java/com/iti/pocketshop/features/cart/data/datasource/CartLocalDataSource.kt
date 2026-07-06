@@ -15,6 +15,7 @@ interface CartLocalDataSource {
     suspend fun saveCartLocally(
         shopifyCart: ShopifyCart
     )
+    suspend fun replaceCart(shopifyCart: ShopifyCart)
 
     suspend fun saveCartItems(lineItems: List<CartLineItem>)
 }

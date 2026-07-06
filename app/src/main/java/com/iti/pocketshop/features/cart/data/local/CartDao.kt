@@ -34,4 +34,12 @@ interface CartDao {
 
     @Query("DELETE FROM shopify_cart")
     suspend fun clearCartMetadata()
+
+    @Transaction
+    suspend fun replaceCart(metadata: ShopifyCartEntity, items: List<CartLineItemEntity>) {
+        clearCartItems()
+        clearCartMetadata()
+        insertCartMetadata(metadata)
+        insertCartItems(items)
+    }
 }

@@ -123,10 +123,10 @@ class CartViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             restoreOrCreateCartUseCase()
-                .onSuccess {
+                .onSuccess { cart ->
                     _state.update {
                         it.copy(
-                            cartId = it.cartId,
+                            cartId = cart.id,
                             isLoading = false
                         )
                     }

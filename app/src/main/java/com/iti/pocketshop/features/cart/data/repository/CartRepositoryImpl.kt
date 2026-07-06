@@ -37,8 +37,7 @@ class CartRepositoryImpl @Inject constructor(
     }
 
     private suspend fun updateLocalCart(domainCart: ShopifyCart) {
-        localDataSource.clearCart()
-        localDataSource.saveCartLocally(domainCart)
+        localDataSource.replaceCart(domainCart)
     }
 
     override suspend fun loadCart(

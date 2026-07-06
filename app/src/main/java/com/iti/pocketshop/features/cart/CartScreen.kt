@@ -111,7 +111,7 @@ fun CartScreen(
             modifier = Modifier
                 .weight(1f)
         ) {
-            if (state.items.isEmpty()) {
+            if (state.items.isEmpty() && !state.isLoading) {
                 CartEmptyState(
                     onStartShoppingClick = onStartShoppingClick,
                 )
