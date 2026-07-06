@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.address.data.repository
 
+import android.net.Uri
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.apollographql.apollo.api.Optional
@@ -7,6 +8,7 @@ import com.iti.pocketshop.BuildConfig
 import com.iti.pocketshop.core.userdata.CustomerAccessTokenProvider
 import com.iti.pocketshop.features.address.data.datasource.AddressRemoteDataSource
 import com.iti.pocketshop.features.address.data.datasource.AddressLocationRemoteDataSource
+import com.iti.pocketshop.features.address.data.datasource.ContactsDataSource
 import com.iti.pocketshop.features.address.data.datasource.CurrentLocationDataSource
 import com.iti.pocketshop.features.address.data.model.GoogleAddressComponent
 import com.iti.pocketshop.features.address.data.model.GoogleAddressResult
@@ -20,6 +22,7 @@ import com.iti.pocketshop.features.address.domain.model.AddressBook
 import com.iti.pocketshop.features.address.domain.model.AddressDraft
 import com.iti.pocketshop.features.address.domain.model.AddressLocationDetails
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion
+import com.iti.pocketshop.features.address.domain.model.ContactInfo
 import com.iti.pocketshop.features.address.domain.model.LocationCoordinates
 import com.iti.pocketshop.features.address.domain.repository.AddressRepository
 import com.iti.pocketshop.shopify.CreateCustomerAddressMutation
@@ -33,6 +36,7 @@ class AddressRepositoryImpl @Inject constructor(
     private val currentLocationDataSource: CurrentLocationDataSource,
     private val tokenProvider: CustomerAccessTokenProvider,
     private val strings: AddressRepositoryStrings,
+    private  val dataSource: ContactsDataSource
 ) : AddressRepository {
 
     private val mapsApiKey = BuildConfig.MAPS_API_KEY
@@ -444,4 +448,6 @@ class AddressRepositoryImpl @Inject constructor(
             Optional.Present(trimmed)
         }
     }
+    override suspend fun getContact(uri: Uri): ContactInfo? = dataSource.getContact(uri)
+
 }

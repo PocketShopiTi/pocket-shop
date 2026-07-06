@@ -19,6 +19,9 @@ data class ExtendedColors(
     val error: Color,
     val warning: Color,
     val info: Color,
+    val snackbarContainer: Color,
+    val snackbarContent: Color,
+    val snackbarAction: Color,
 )
 
 val LocalExtendedColors = staticCompositionLocalOf {
@@ -39,6 +42,9 @@ val lightExtendedColors = ExtendedColors(
     error = Color(0xFFDC2626),
     warning = Color(0xFFD97706),
     info = Color(0xFF2563EB),
+    snackbarContainer = Color(0xFFF2EBDF),
+    snackbarContent = Color(0xFF1A1714),
+    snackbarAction = Color(0xFFD97A4E),
 )
 
 val darkExtendedColors = ExtendedColors(
@@ -55,4 +61,8 @@ val darkExtendedColors = ExtendedColors(
     error = Color(0xFFF87171),
     warning = Color(0xFFFBBF24),
     info = Color(0xFF60A5FA),
+    snackbarContainer = Color(0xFF2A2520),
+    snackbarContent = Color(0xFFFBF7F0),
+    snackbarAction = Color(0xFFF9BB72),
+
 )

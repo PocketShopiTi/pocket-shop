@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.address.presentation.state
+package com.iti.pocketshop.features.address.utils
 
 import android.content.Context
 import androidx.annotation.StringRes
@@ -10,6 +10,7 @@ enum class PhoneCountryCode(
     @StringRes val flagResId: Int,
     val dialingCode: String,
     private val localPrefix: String,
+    private val nationalNumberLength: Int,
     private val countryNames: Set<String>,
     private val countryCodes: Set<String>,
 ) {
@@ -18,6 +19,7 @@ enum class PhoneCountryCode(
         flagResId = R.string.address_phone_country_flag_united_states,
         dialingCode = "+1",
         localPrefix = "",
+        nationalNumberLength = 10,
         countryNames = setOf(
             "united states",
             "usa",
@@ -31,6 +33,7 @@ enum class PhoneCountryCode(
         flagResId = R.string.address_phone_country_flag_canada,
         dialingCode = "+1",
         localPrefix = "",
+        nationalNumberLength = 10,
         countryNames = setOf(
             "canada",
             "ca",
@@ -42,6 +45,7 @@ enum class PhoneCountryCode(
         flagResId = R.string.address_phone_country_flag_united_kingdom,
         dialingCode = "+44",
         localPrefix = "0",
+        nationalNumberLength = 10,
         countryNames = setOf(
             "united kingdom",
             "uk",
@@ -55,6 +59,7 @@ enum class PhoneCountryCode(
         flagResId = R.string.address_phone_country_flag_egypt,
         dialingCode = "+20",
         localPrefix = "0",
+        nationalNumberLength = 10,
         countryNames = setOf(
             "egypt",
             "eg",
@@ -67,6 +72,7 @@ enum class PhoneCountryCode(
         flagResId = R.string.address_phone_country_flag_saudi_arabia,
         dialingCode = "+966",
         localPrefix = "0",
+        nationalNumberLength = 9,
         countryNames = setOf(
             "saudi arabia",
             "sa",
@@ -79,6 +85,7 @@ enum class PhoneCountryCode(
         flagResId = R.string.address_phone_country_flag_international,
         dialingCode = "",
         localPrefix = "",
+        nationalNumberLength = 0,
         countryNames = emptySet(),
         countryCodes = emptySet(),
     ),
@@ -101,19 +108,17 @@ enum class PhoneCountryCode(
         }
     }
 
+
     fun displayNumber(phone: String): String {
         val normalized = normalizePhoneInput(phone)
         if (normalized.isBlank()) {
             return ""
         }
-
-        return when (this) {
-            UNITED_STATES, CANADA -> displayNorthAmerica(normalized)
-            UNITED_KINGDOM -> displayUnitedKingdom(normalized)
-            EGYPT -> displayEgypt(normalized)
-            SAUDI_ARABIA -> displaySaudi(normalized)
-            INTERNATIONAL -> normalized
+        if (this == INTERNATIONAL) {
+            return normalized
         }
+
+        return nationalNumber(normalized).ifBlank { normalized }
     }
 
     fun toE164(phone: String): String? {
@@ -121,14 +126,36 @@ enum class PhoneCountryCode(
         if (normalized.isBlank()) {
             return null
         }
-
-        return when (this) {
-            UNITED_STATES, CANADA -> normalizeNorthAmerica(normalized)
-            UNITED_KINGDOM -> normalizeUnitedKingdom(normalized)
-            EGYPT -> normalizeEgypt(normalized)
-            SAUDI_ARABIA -> normalizeSaudi(normalized)
-            INTERNATIONAL -> normalizeInternational(normalized)
+        if (this == INTERNATIONAL) {
+            return normalizeInternational(normalized)
         }
+
+        val national = nationalNumber(normalized)
+        if (national.length != nationalNumberLength) {
+            return null
+        }
+        return "$dialingCode$national"
+    }
+
+
+    private fun nationalNumber(normalized: String): String {
+        val hasPlus = normalized.startsWith("+")
+        var digits = normalized.removePrefix("+")
+        val codeDigits = dialingCode.removePrefix("+")
+
+        if (codeDigits.isNotEmpty() && digits.startsWith(codeDigits) &&
+            (hasPlus || digits.length == codeDigits.length + nationalNumberLength)
+        ) {
+            digits = digits.drop(codeDigits.length)
+        }
+
+        if (localPrefix.isNotEmpty() && digits.startsWith(localPrefix) &&
+            digits.length == localPrefix.length + nationalNumberLength
+        ) {
+            digits = digits.drop(localPrefix.length)
+        }
+
+        return digits
     }
 
     fun matches(phone: String): Boolean {
@@ -158,7 +185,8 @@ enum class PhoneCountryCode(
             }
 
             return entries.firstOrNull { option ->
-                normalized in option.countryNames || normalized in option.countryCodes.map { it.lowercase(Locale.US) }
+                normalized in option.countryNames || normalized in option.countryCodes.map { it.lowercase(
+                    Locale.US) }
             } ?: defaultFromLocale()
         }
 
@@ -214,92 +242,6 @@ enum class PhoneCountryCode(
                 .lowercase(Locale.US)
                 .replace(Regex("[^a-z0-9]+"), " ")
                 .trim()
-        }
-    }
-
-    private fun displayNorthAmerica(normalized: String): String {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+1") && digits.length == 11 -> digits.drop(1)
-            digits.startsWith("1") && digits.length == 11 -> digits.drop(1)
-            digits.length == 10 -> digits
-            else -> normalized
-        }
-    }
-
-    private fun normalizeNorthAmerica(normalized: String): String? {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+1") && digits.length == 11 -> "+$digits"
-            digits.startsWith("1") && digits.length == 11 -> "+$digits"
-            digits.length == 10 -> "+1$digits"
-            else -> null
-        }
-    }
-
-    private fun displayUnitedKingdom(normalized: String): String {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+44") && digits.length == 12 -> "0${digits.drop(2)}"
-            digits.startsWith("44") && normalized.firstOrNull() != '+' && digits.length == 12 -> "0${digits.drop(2)}"
-            digits.startsWith("0") && digits.length == 11 -> digits
-            digits.length == 10 -> "0$digits"
-            else -> normalized
-        }
-    }
-
-    private fun normalizeUnitedKingdom(normalized: String): String? {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+44") && digits.length == 12 -> "+$digits"
-            digits.startsWith("44") && normalized.firstOrNull() != '+' && digits.length == 12 -> "+$digits"
-            digits.startsWith("0") && digits.length == 11 -> "+44${digits.drop(1)}"
-            digits.length == 10 -> "+44$digits"
-            else -> null
-        }
-    }
-
-    private fun displayEgypt(normalized: String): String {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+20") && digits.length == 12 -> "0${digits.drop(2)}"
-            digits.startsWith("20") && normalized.firstOrNull() != '+' && digits.length == 12 -> "0${digits.drop(2)}"
-            digits.startsWith("0") && digits.length == 11 -> digits
-            digits.length == 10 -> "0$digits"
-            else -> normalized
-        }
-    }
-
-    private fun normalizeEgypt(normalized: String): String? {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+20") && digits.length == 12 -> "+$digits"
-            digits.startsWith("20") && normalized.firstOrNull() != '+' && digits.length == 12 -> "+$digits"
-            digits.startsWith("0") && digits.length == 11 -> "+20${digits.drop(1)}"
-            digits.length == 10 -> "+20$digits"
-            else -> null
-        }
-    }
-
-    private fun displaySaudi(normalized: String): String {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+966") && digits.length == 12 -> "0${digits.drop(3)}"
-            digits.startsWith("966") && normalized.firstOrNull() != '+' && digits.length == 12 -> "0${digits.drop(3)}"
-            digits.startsWith("0") && digits.length == 10 -> digits
-            digits.length == 9 -> "0$digits"
-            else -> normalized
-        }
-    }
-
-    private fun normalizeSaudi(normalized: String): String? {
-        val digits = normalized.removePrefix("+")
-        return when {
-            normalized.startsWith("+966") && digits.length == 12 -> "+$digits"
-            digits.startsWith("966") && normalized.firstOrNull() != '+' && digits.length == 12 -> "+$digits"
-            digits.startsWith("0") && digits.length == 10 -> "+966${digits.drop(1)}"
-            digits.length == 9 -> "+966$digits"
-            else -> null
         }
     }
 
