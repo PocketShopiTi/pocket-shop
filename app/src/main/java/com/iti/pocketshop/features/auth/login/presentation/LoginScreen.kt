@@ -32,7 +32,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.MainActivity
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.network.toUserMessage
 import com.iti.pocketshop.features.auth.login.presentation.component.AuthTextField
 import com.iti.pocketshop.features.auth.login.presentation.component.DividerWithText
 import com.iti.pocketshop.features.auth.login.presentation.component.ForgotPasswordLink

@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.auth.register.domain.usecase
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.auth.register.domain.model.AuthData
 import com.iti.pocketshop.features.auth.register.domain.repository.RegisterRepository
 import javax.inject.Inject

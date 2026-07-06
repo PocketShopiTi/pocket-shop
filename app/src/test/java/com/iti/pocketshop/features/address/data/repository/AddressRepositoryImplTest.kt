@@ -1,8 +1,8 @@
 package com.iti.pocketshop.features.address.data.repository
 
 import com.apollographql.apollo.api.Optional
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.core.userdata.CustomerAccessTokenProvider
 import com.iti.pocketshop.features.address.data.datasource.AddressLocationRemoteDataSource
 import com.iti.pocketshop.features.address.data.datasource.AddressRemoteDataSource
@@ -130,14 +130,14 @@ class AddressRepositoryImplTest {
         assertEquals("addr_1", afterDelete.defaultAddressId)
     }
 
-    private fun <D, E : com.iti.pocketshop.core.networkutils.Error> PocketResult<D, E>.successData(): D {
+    private fun <D, E : com.iti.pocketshop.com.iti.pocketshop.network.Error> PocketResult<D, E>.successData(): D {
         return when (this) {
             is PocketResult.Success -> data
             is PocketResult.Error -> throw AssertionError("Expected success but got error: $error")
         }
     }
 
-    private fun <E : com.iti.pocketshop.core.networkutils.Error> PocketResult<Unit, E>.successUnit() {
+    private fun <E : com.iti.pocketshop.com.iti.pocketshop.network.Error> PocketResult<Unit, E>.successUnit() {
         when (this) {
             is PocketResult.Success -> Unit
             is PocketResult.Error -> throw AssertionError("Expected success but got error: $error")

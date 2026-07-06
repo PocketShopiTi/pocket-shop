@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.network.toUserMessage
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 

@@ -2,10 +2,10 @@ package com.iti.pocketshop.features.auth.register.data.datasource.firebase
 
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.map
-import com.iti.pocketshop.core.networkutils.safeFirestoreCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.map
+import com.iti.pocketshop.network.safeFirestoreCall
 import com.iti.pocketshop.features.auth.register.domain.model.RegistrationRecord
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject

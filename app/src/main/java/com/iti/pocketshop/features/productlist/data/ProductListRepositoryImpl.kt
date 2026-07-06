@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.productlist.data
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.productlist.domain.ProductListPage
 import com.iti.pocketshop.features.productlist.domain.ProductListRemoteSource
 import com.iti.pocketshop.features.productlist.domain.ProductListRepository

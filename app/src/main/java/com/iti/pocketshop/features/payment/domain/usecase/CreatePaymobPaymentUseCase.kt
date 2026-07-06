@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.payment.domain.usecase
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import  com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.iti.pocketshop.features.payment.domain.models.PaymobPaymentSession

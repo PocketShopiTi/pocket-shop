@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.address.data.repository
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.core.userdata.CustomerAccessTokenProvider
 import com.iti.pocketshop.features.address.data.datasource.AddressLocationRemoteDataSource
 import com.iti.pocketshop.features.address.data.datasource.AddressRemoteDataSource

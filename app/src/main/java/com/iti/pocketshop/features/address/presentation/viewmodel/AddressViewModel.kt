@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.address.domain.error.AddressError
 import com.iti.pocketshop.features.address.domain.model.LocationCoordinates
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion

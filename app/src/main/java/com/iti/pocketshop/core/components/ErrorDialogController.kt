@@ -1,6 +1,6 @@
 package com.iti.pocketshop.core.components
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 

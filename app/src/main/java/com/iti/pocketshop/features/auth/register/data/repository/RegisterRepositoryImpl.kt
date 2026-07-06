@@ -1,8 +1,8 @@
 package com.iti.pocketshop.features.auth.register.data.repository
 
 import android.util.Log
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.auth.register.data.datasource.firebase.RegistrationFirestoreDataSource
 import com.iti.pocketshop.features.auth.register.data.datasource.shopify.ShopifyCustomerCreation
 import com.iti.pocketshop.features.auth.register.data.datasource.shopify.ShopifyCustomerDataSource

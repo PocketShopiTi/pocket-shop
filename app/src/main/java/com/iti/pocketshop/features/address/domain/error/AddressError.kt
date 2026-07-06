@@ -1,9 +1,9 @@
 package com.iti.pocketshop.features.address.domain.error
 
 import android.content.Context
-import com.iti.pocketshop.core.networkutils.Error
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.network.Error
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.toUserMessage
 import com.iti.pocketshop.R
 
 sealed interface AddressError : Error {

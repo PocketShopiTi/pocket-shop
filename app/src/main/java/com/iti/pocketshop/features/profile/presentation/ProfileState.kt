@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.profile.presentation
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 
 data class ProfileState(

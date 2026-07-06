@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.search.presentation.action
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 
 sealed class SearchEffect {
     data class NavigateToProductDetails(val id: String) : SearchEffect()

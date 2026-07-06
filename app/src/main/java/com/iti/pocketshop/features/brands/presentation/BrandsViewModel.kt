@@ -3,8 +3,8 @@ package com.iti.pocketshop.features.brands.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.components.ErrorDialogController
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.network.onError
+import com.iti.pocketshop.network.onSuccess
 import com.iti.pocketshop.features.brands.domain.GetBrandsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

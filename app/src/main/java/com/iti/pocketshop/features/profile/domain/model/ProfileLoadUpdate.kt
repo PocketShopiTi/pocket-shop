@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.profile.domain.model
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 
 sealed interface ProfileLoadUpdate {
     data class Cached(val profile: ProfileData) : ProfileLoadUpdate

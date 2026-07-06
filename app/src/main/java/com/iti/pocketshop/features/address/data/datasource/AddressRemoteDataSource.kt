@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.address.data.datasource
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.shopify.CreateCustomerAddressMutation
 import com.iti.pocketshop.shopify.DeleteCustomerAddressMutation
 import com.iti.pocketshop.shopify.GetCustomerAddressesQuery

@@ -4,10 +4,10 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.SyncFavoritesUseCase
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.onError
+import com.iti.pocketshop.network.onSuccess
 import com.iti.pocketshop.features.auth.login.domain.model.LoginOutcome
 import com.iti.pocketshop.features.auth.login.domain.usecase.ContinueAsGuestUseCase
 import com.iti.pocketshop.features.auth.login.domain.usecase.LoginWithEmailUseCase

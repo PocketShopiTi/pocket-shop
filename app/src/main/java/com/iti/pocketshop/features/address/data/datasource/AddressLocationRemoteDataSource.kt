@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.address.data.datasource
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.address.data.model.GoogleAutocompleteResponse
 import com.iti.pocketshop.features.address.data.model.GoogleGeocodeResponse
 import com.iti.pocketshop.features.address.data.model.GooglePlaceDetailsResponse

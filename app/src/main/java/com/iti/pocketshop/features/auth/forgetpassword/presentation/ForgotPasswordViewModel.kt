@@ -3,7 +3,7 @@ package com.iti.pocketshop.features.auth.forgetpassword.presentation
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.auth.forgetpassword.domain.SendPasswordResetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

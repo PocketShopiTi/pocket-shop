@@ -6,8 +6,8 @@ import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.onError
+import com.iti.pocketshop.network.PocketDataError
 import com.iti.pocketshop.features.cart.domain.repository.CartRepository
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase

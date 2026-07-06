@@ -1,9 +1,9 @@
 package com.iti.pocketshop.features.cart.data.datasource
 
 import com.apollographql.apollo.ApolloClient
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.safeCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.safeCall
 import com.iti.pocketshop.shopify.CartBuyerIdentityUpdateMutation
 import com.iti.pocketshop.shopify.CartCreateMutation
 import com.iti.pocketshop.shopify.CartLinesAddMutation

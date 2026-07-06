@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.address.domain.repository
 
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.address.domain.error.AddressError
 import com.iti.pocketshop.features.address.domain.model.Address
 import com.iti.pocketshop.features.address.domain.model.AddressBook

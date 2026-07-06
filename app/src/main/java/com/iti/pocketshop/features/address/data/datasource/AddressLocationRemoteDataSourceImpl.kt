@@ -4,8 +4,8 @@ import android.content.Context
 import android.location.Address as AndroidAddress
 import android.location.Geocoder
 import android.util.Log
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.address.data.model.GoogleAddressComponent
 import com.iti.pocketshop.features.address.data.model.GoogleAddressResult
 import com.iti.pocketshop.features.address.data.model.GoogleAutocompletePrediction

@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.address.domain.usecase
 
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.address.domain.error.AddressError
 import com.iti.pocketshop.features.address.domain.model.LocationCoordinates
 import com.iti.pocketshop.features.address.domain.repository.AddressRepository

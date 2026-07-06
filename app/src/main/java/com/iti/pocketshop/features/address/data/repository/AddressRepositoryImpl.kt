@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.address.data.repository
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.apollographql.apollo.api.Optional
 import com.iti.pocketshop.BuildConfig
 import com.iti.pocketshop.core.userdata.CustomerAccessTokenProvider

@@ -99,7 +99,6 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -122,9 +121,6 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
-
-    // Kotlin json
-    implementation(libs.kotlinx.serialization.json)
 
     // splash screen
     implementation(libs.androidx.core.splashscreen)
@@ -159,11 +155,7 @@ dependencies {
     //kotlinx-datetime
     implementation(libs.kotlinx.datetime)
 
-    // ktor
-    implementation(libs.bundles.ktor)
-
     //Apollo
-    implementation(libs.apollo.runtime)
     implementation(libs.logging.interceptor)
 
     // nav3
@@ -171,11 +163,9 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
-    // firebase auth
+    // firebase (bom kept for analytics/messaging version alignment)
     implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
     implementation(libs.firebase.analytics)
-    implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
 
     // Credential Manager for Google Sign-In
@@ -189,4 +179,10 @@ dependencies {
 
     // paymob
     implementation(libs.paymob.sdk)
+    //serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    //network module
+    implementation(project(":network"))
+
 }

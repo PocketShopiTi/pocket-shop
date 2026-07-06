@@ -2,7 +2,7 @@
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.search.domain.model.ProductFilterValue
 import com.iti.pocketshop.features.search.domain.model.SortOption
 import com.iti.pocketshop.features.search.domain.model.extractPriceRangeBounds

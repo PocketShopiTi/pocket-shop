@@ -2,11 +2,11 @@ package com.iti.pocketshop.features.home.data
 
 import com.apollographql.apollo.ApolloClient
 import com.google.firebase.firestore.FirebaseFirestore
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.map
-import com.iti.pocketshop.core.networkutils.safeCall
-import com.iti.pocketshop.core.networkutils.safeFirestoreCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.map
+import com.iti.pocketshop.network.safeCall
+import com.iti.pocketshop.network.safeFirestoreCall
 import com.iti.pocketshop.features.home.domain.HomeRemoteSource
 import com.iti.pocketshop.features.home.domain.models.HomeData
 import com.iti.pocketshop.features.home.domain.models.PromotionAd

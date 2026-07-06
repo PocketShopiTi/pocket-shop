@@ -1,11 +1,10 @@
-package com.iti.pocketshop.core.networkutils
+package com.iti.pocketshop.network
 
 import android.content.Context
 import android.util.Log
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.iti.pocketshop.R
 
 private const val TAG = "PocketDataError"
 
@@ -43,7 +42,7 @@ sealed interface PocketDataError : Error {
         CANCELED,
         NO_FUNDS,
         REJECTED,
-        EXPIRED ,
+        EXPIRED,
         INVALID_CARD,
         FAILED
     }

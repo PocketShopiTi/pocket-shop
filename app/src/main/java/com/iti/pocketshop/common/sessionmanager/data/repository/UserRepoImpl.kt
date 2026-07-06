@@ -6,8 +6,8 @@ import com.iti.pocketshop.common.sessionmanager.data.datasource.firebase.Firebas
 import com.iti.pocketshop.common.sessionmanager.data.toUserSession
 import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.SignInDialogController
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

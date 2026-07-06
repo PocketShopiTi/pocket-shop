@@ -6,8 +6,8 @@ import com.iti.pocketshop.common.sessionmanager.data.datasource.customerremote.S
 import com.iti.pocketshop.common.sessionmanager.data.datasource.local.CustomerTokenStore
 import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerCredentials
 import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerSession
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

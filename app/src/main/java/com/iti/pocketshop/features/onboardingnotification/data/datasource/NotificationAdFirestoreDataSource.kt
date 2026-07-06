@@ -2,9 +2,9 @@ package com.iti.pocketshop.features.onboardingnotification.data.datasource
 
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.safeFirestoreCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.safeFirestoreCall
 import com.iti.pocketshop.features.onboardingnotification.data.dto.NotificationAdDto
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject

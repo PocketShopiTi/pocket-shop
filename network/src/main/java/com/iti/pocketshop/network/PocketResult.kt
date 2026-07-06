@@ -1,9 +1,8 @@
-package com.iti.pocketshop.core.networkutils
-
+package com.iti.pocketshop.network
 
 sealed interface PocketResult<out D, out E : Error> {
     data class Success<out D>(val data: D) : PocketResult<D, Nothing>
-    data class Error<out E : com.iti.pocketshop.core.networkutils.Error>(val error: E) :
+    data class Error<out E : com.iti.pocketshop.network.Error>(val error: E) :
         PocketResult<Nothing, E>
 }
 

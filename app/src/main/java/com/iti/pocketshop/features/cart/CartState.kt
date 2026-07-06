@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.cart
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 
 data class CartState(

@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.auth.register.data.datasource.shopify
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 
 interface ShopifyCustomerDataSource {
     suspend fun create(

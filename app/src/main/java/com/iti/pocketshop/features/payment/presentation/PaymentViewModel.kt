@@ -3,18 +3,16 @@ package com.iti.pocketshop.features.payment.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.components.ErrorDialogController
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.onSuccess
+import  com.iti.pocketshop.network.PocketDataError
+import  com.iti.pocketshop.network.onError
+import com.iti.pocketshop.network.onSuccess
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.iti.pocketshop.features.payment.domain.usecase.CreatePaymobPaymentUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+ import kotlinx.coroutines.flow.asStateFlow
+ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 

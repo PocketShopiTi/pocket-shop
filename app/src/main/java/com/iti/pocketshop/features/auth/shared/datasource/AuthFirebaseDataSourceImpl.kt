@@ -3,9 +3,9 @@ package com.iti.pocketshop.features.auth.shared.datasource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.UserProfileChangeRequest
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.safeFirebaseCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.safeFirebaseCall
 import com.iti.pocketshop.features.auth.register.data.toDomain
 import com.iti.pocketshop.features.auth.register.domain.model.AuthData
 import com.iti.pocketshop.features.auth.register.domain.model.AuthSignInResult

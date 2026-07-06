@@ -6,8 +6,8 @@ import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.usecase.GetLocalFavoritesUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.network.onError
+import com.iti.pocketshop.network.onSuccess
 import com.iti.pocketshop.features.home.presentation.models.toUIProduct
 import com.iti.pocketshop.features.productlist.domain.GetProductListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

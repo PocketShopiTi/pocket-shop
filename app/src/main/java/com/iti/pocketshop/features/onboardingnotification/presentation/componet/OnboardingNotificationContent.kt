@@ -62,7 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
-import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.network.toUserMessage
 import com.iti.pocketshop.features.onboardingnotification.domain.model.NotificationAd
 import com.iti.pocketshop.features.onboardingnotification.presentation.OnboardingNotificationAction
 import com.iti.pocketshop.features.onboardingnotification.presentation.OnboardingNotificationState

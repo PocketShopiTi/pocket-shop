@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.orders.presentation
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 import com.iti.pocketshop.features.orders.domain.model.OrderItem
 
 data class OrdersState(

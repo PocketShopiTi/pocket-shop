@@ -3,7 +3,7 @@ package com.iti.pocketshop.features.profile.domain.usecase
 import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.common.sessionmanager.domain.usecase.GetAccessTokenUseCase
 import com.iti.pocketshop.common.sessionmanager.domain.usecase.GetCurrentUserSessionUseCase
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
 import com.iti.pocketshop.features.profile.domain.model.UserEntity

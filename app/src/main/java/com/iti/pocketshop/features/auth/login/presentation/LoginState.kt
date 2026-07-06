@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.auth.login.presentation
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.network.PocketDataError
 
 data class LoginState(
     val email: String = "",

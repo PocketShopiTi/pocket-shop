@@ -1,8 +1,8 @@
 package com.iti.pocketshop.features.cart.domain.usecase
 
 import com.google.firebase.auth.FirebaseAuth
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
 import com.iti.pocketshop.features.auth.register.data.datasource.firebase.RegistrationFirestoreDataSource
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart

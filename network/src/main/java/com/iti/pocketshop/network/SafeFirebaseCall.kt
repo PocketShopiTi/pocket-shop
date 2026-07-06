@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.networkutils
+package com.iti.pocketshop.network
 
 import android.util.Log
 import com.google.firebase.FirebaseNetworkException

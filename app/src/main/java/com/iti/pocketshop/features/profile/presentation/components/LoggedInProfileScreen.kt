@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
 import com.iti.pocketshop.core.components.ConfirmationDialog
-import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.network.toUserMessage
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.presentation.ProfileState
 import com.iti.pocketshop.features.profile.presentation.components.loggedin.ProfileActions

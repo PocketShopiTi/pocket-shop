@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.search.domain.usecase
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.search.domain.repostory.SearchRepository
 import com.iti.pocketshop.features.search.domain.model.SearchResult
 import jakarta.inject.Inject

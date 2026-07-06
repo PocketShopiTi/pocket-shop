@@ -1,8 +1,8 @@
 package com.iti.pocketshop.features.cart.data.repository
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.map
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.map
 import com.iti.pocketshop.features.cart.data.datasource.ShopifyCartDataSource
 import com.iti.pocketshop.features.cart.data.mapper.toDomain
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart

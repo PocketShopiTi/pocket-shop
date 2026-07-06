@@ -29,3 +29,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Pocket Shop"
 include(":app")
+include(":network")

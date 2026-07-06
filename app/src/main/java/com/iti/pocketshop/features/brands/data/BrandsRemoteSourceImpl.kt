@@ -1,10 +1,10 @@
 package com.iti.pocketshop.features.brands.data
 
 import com.apollographql.apollo.ApolloClient
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.map
-import com.iti.pocketshop.core.networkutils.safeCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.map
+import com.iti.pocketshop.network.safeCall
 import com.iti.pocketshop.features.brands.domain.BrandsRemoteSource
 import com.iti.pocketshop.features.brands.domain.models.BrandItem
 import com.iti.pocketshop.shopify.GetBrandsQuery

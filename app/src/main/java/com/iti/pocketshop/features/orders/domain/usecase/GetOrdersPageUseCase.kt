@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.orders.domain.usecase
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.orders.domain.model.OrdersPage
 import com.iti.pocketshop.features.orders.domain.repository.OrdersRepository
 import javax.inject.Inject

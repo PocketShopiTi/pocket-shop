@@ -3,9 +3,9 @@ package com.iti.pocketshop.common.sessionmanager.data.datasource.customerremote
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerCredentials
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.safeFirestoreCall
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.safeFirestoreCall
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 

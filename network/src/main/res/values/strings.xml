@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Remote -->
+    <string name="request_timed_out">Request timed out, Please try again</string>
+    <string name="too_many_requests">Too many requests, Please try again later</string>
+    <string name="no_internet_connection">No internet connection, Please check your network</string>
+    <string name="server_error">Server error, Please try again</string>
+    <string name="failed_to_process_response">Bad response, Please try again</string>
+    <string name="something_went_wrong">Something went wrong, Please try again</string>
+    <string name="invalid_coupon">Invalid coupon!!</string>
+    <string name="no_results_found">No results found</string>
+    <string name="bad_request_error">Invalid request. Please check your data and try again.</string>
+
+    <!-- Auth -->
+    <string name="auth_invalid_email">Invalid email</string>
+    <string name="auth_invalid_credentials">Incorrect email or password.</string>
+    <string name="auth_user_not_found">No account found with that email.</string>
+    <string name="auth_email_already_in_use">An account with this email already exists.</string>
+    <string name="auth_weak_password">Password must be at least 6 characters.</string>
+    <string name="auth_account_disabled">This account has been disabled. Contact support.</string>
+    <string name="auth_email_not_verified">Please verify your email before signing in.</string>
+    <string name="auth_operation_not_allowed">This sign-in method is not enabled.</string>
+    <string name="error_unauthorized">You are not authorized to perform this action.</string>
+    <string name="error_network">Network error. Please check your connection.</string>
+    <string name="error_user_disabled">This account has been disabled.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
+    <string name="error_token_not_valid">Your session has expired. Please log in again.</string>
+
+    <!-- Payment -->
+    <string name="payment_canceled">Payment was canceled</string>
+    <string name="payment_no_funds">Insufficient funds. Please use another card.</string>
+    <string name="payment_rejected">Payment rejected. Please contact your bank.</string>
+    <string name="payment_expired">Card expired. Please use a different card.</string>
+    <string name="payment_invalid_card">Invalid card details. Please check and try again.</string>
+    <string name="payment_failed">Unable to complete payment. Please try again.</string>
+
+    <!-- Firestore -->
+    <string name="firestore_permission_denied">You don\'t have permission to do that.</string>
+    <string name="firestore_not_found">The requested data could not be found.</string>
+    <string name="firestore_already_exists">This item already exists.</string>
+    <string name="firestore_unavailable">Service temporarily unavailable. Try again shortly.</string>
+    <string name="firestore_quota_exceeded">Service limit reached. Please try again later.</string>
+    <string name="firestore_data_loss">Some data could not be loaded. Please contact support.</string>
+    <string name="firestore_cancelled">The operation was canceled.</string>
+</resources>

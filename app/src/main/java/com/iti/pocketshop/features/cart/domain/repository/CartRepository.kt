@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.cart.domain.repository
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import kotlinx.coroutines.flow.StateFlow
 

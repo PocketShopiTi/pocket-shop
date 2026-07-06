@@ -1,8 +1,8 @@
 package com.iti.pocketshop.features.coupons.data.repo
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.map
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.map
 import com.iti.pocketshop.features.coupons.data.datasource.CouponDataSource
 import com.iti.pocketshop.features.coupons.data.mapper.toDomain
 import com.iti.pocketshop.features.coupons.domain.model.CartCouponResult

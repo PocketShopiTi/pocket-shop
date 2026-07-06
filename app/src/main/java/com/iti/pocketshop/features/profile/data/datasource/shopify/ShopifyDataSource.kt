@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.profile.data.datasource.shopify
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.shopify.GetProfileQuery
 
 interface ShopifyDataSource {

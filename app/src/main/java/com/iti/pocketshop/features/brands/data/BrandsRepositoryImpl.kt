@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.brands.data
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
 import com.iti.pocketshop.features.brands.domain.BrandsRemoteSource
 import com.iti.pocketshop.features.brands.domain.BrandsRepository
 import com.iti.pocketshop.features.brands.domain.models.BrandItem

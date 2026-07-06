@@ -9,9 +9,9 @@ import com.iti.pocketshop.common.favorites.data.remote.FirebaseFavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.constants.FirestoreTables
 import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.repository.FavoriteRepo
-import com.iti.pocketshop.core.networkutils.PocketDataError
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.toPocketFirebaseError
+import com.iti.pocketshop.network.PocketDataError
+import com.iti.pocketshop.network.PocketResult
+import com.iti.pocketshop.network.toPocketFirebaseError
 import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

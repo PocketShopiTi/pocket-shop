@@ -1,4 +1,4 @@
-package com.iti.pocketshop.core.di
+package com.iti.pocketshop.di
 
 import dagger.Module
 import dagger.Provides

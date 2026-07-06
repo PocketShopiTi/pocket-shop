@@ -7,8 +7,8 @@ import com.iti.pocketshop.common.favorites.domain.usecase.GetLocalFavoritesUseCa
 import com.iti.pocketshop.common.favorites.domain.usecase.SyncFavoritesUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.network.onError
+import com.iti.pocketshop.network.onSuccess
 import com.iti.pocketshop.features.wishlist.presentation.action.WishlistAction
 import com.iti.pocketshop.features.wishlist.presentation.state.WishlistState
 import dagger.hilt.android.lifecycle.HiltViewModel
