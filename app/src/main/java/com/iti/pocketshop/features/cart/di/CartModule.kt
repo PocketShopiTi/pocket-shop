@@ -1,5 +1,7 @@
 package com.iti.pocketshop.features.cart.di
 
+import com.iti.pocketshop.features.cart.data.datasource.CartLocalDataSource
+import com.iti.pocketshop.features.cart.data.datasource.CartLocalDataSourceImpl
 import com.iti.pocketshop.features.cart.data.datasource.ShopifyCartDataSource
 import com.iti.pocketshop.features.cart.data.datasource.ShopifyCartDataSourceImpl
 import com.iti.pocketshop.features.cart.data.repository.CartRepositoryImpl
@@ -25,4 +27,10 @@ abstract class CartModule {
     abstract fun bindShopifyCartDataSource(
         impl: ShopifyCartDataSourceImpl
     ): ShopifyCartDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindCartLocalDataSource(
+        impl: CartLocalDataSourceImpl
+    ): CartLocalDataSource
 }

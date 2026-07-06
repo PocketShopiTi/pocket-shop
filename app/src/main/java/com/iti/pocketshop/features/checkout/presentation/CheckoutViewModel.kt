@@ -8,6 +8,8 @@ import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.address.domain.usecase.GetAddressesUseCase
 import com.iti.pocketshop.features.cart.domain.repository.CartRepository
+import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartItemsUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.checkout.domain.usecases.PlaceOrderUseCase
 import com.iti.pocketshop.features.checkout.domain.usecases.SetDeliveryAddressUseCase
 import com.iti.pocketshop.features.coupons.domain.usecase.ApplyCouponUseCase
@@ -29,23 +31,16 @@ class CheckoutViewModel @Inject constructor(
     private val removeCouponUseCase: RemoveCouponUseCase,
     private val getAddressesUseCase: GetAddressesUseCase,
     private val placeOrderUseCase: PlaceOrderUseCase,
-    cartRepository: CartRepository
+    private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase
 ) : ViewModel() {
 
     var loadedInitialData = false
     private val _state = MutableStateFlow(CheckoutState())
 
     val state = _state
-        .combine(
-            cartRepository.cartState
-        ) { internalState, shopifyCart ->
-            internalState.copy(
-                cart = shopifyCart
-            )
-        }
         .onStart {
             if (!loadedInitialData) {
-                loadAddresses()
+                fetchData()
                 loadedInitialData = true
             }
         }
@@ -54,6 +49,11 @@ class CheckoutViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5_000L),
             initialValue = CheckoutState()
         )
+
+    private fun fetchData() {
+        loadAddresses()
+        loadCart()
+    }
 
     private fun loadAddresses() {
         viewModelScope.launch {
@@ -69,7 +69,27 @@ class CheckoutViewModel @Inject constructor(
                     }
                 }
                 .onError {
-                    //todo handle error
+                    ErrorDialogController.sendEvent(PocketDataError.Remote.ADDRESS_ERROR)
+                }
+        }
+    }
+
+    private fun loadCart() {
+        viewModelScope.launch {
+            restoreOrCreateCartUseCase()
+                .onSuccess { cart ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            cart = cart
+                        )
+                    }
+                }
+                .onError {
+                    _state.update { currentState ->
+                        currentState.copy(
+                            cart = null
+                        )
+                    }
                 }
         }
     }
@@ -85,45 +105,54 @@ class CheckoutViewModel @Inject constructor(
             }
 
             is CheckoutAction.OnPaymentSuccess -> {
-                viewModelScope.launch {
-                    val cartId = state.value.cart?.id ?: return@launch
-                    val selectedAddress = state.value.selectedAddress ?: return@launch
-                    _state.update { it.copy(isLoading = true) }
-                    setDeliveryAddressUseCase(cartId, selectedAddress.id)
-                        .onSuccess { cart ->
-                            cart ?: run {
-                                _state.update {
-                                    it.copy(
-                                        isLoading = false
-                                    )
-                                }
-                                ErrorDialogController.sendEvent(PocketDataError.Remote.EMPTY_RESULT)
-                                return@onSuccess
-                            }
-                            placeOrderUseCase(
-                                cart = cart,
-                                shippingAddress = selectedAddress,
-                                customer = action.customer,
-                                payment = action.paymentConfirmation
+                createPaidOrder(action)
+            }
+        }
+    }
+
+    private fun createPaidOrder(
+        action: CheckoutAction.OnPaymentSuccess
+    ) {
+        viewModelScope.launch {
+            val cartId = state.value.cart?.id ?: return@launch
+            val selectedAddress = state.value.selectedAddress ?: return@launch
+            _state.update { it.copy(isLoading = true) }
+            setDeliveryAddressUseCase(cartId, selectedAddress.id)
+                .onSuccess { cart ->
+                    cart ?: run {
+                        _state.update {
+                            it.copy(
+                                isLoading = false
                             )
-                                .onSuccess { newOrder ->
-                                    _state.update {
-                                        it.copy(
-                                            isLoading = false,
-                                            placedOrder = newOrder
-                                        )
-                                    }
-                                }
-                                .onError {
-                                    ErrorDialogController.sendEvent(it)
-                                }
+                        }
+                        ErrorDialogController.sendEvent(PocketDataError.Remote.EMPTY_RESULT)
+                        return@onSuccess
+                    }
+                    placeOrderUseCase(
+                        cart = cart,
+                        shippingAddress = selectedAddress,
+                        customer = action.customer,
+                        payment = action.paymentConfirmation
+                    )
+                        .onSuccess { newOrder ->
+                            restoreOrCreateCartUseCase(
+                                forceRefresh = true
+                            )
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    placedOrder = newOrder
+                                )
+                            }
                         }
                         .onError {
                             ErrorDialogController.sendEvent(it)
                         }
-
                 }
-            }
+                .onError {
+                    ErrorDialogController.sendEvent(it)
+                }
+
         }
     }
 

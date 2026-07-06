@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.cart.data.mapper
 
+import com.iti.pocketshop.features.cart.data.local.CartLineItemEntity
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.shopify.fragment.CartFields
@@ -34,6 +35,34 @@ fun CartFields.Node.toDomain(): CartLineItem? {
             imageUrl = productVariant.image?.url ?: ""
         )
     }
+}
+
+fun CartLineItem.toEntity(): CartLineItemEntity {
+    return CartLineItemEntity(
+        lineId = lineId,
+        variantId = variantId,
+        productId = productId,
+        title = title,
+        variantTitle = variantTitle,
+        quantity = quantity,
+        price = price,
+        currencyCode = currencyCode,
+        imageUrl = imageUrl
+    )
+}
+
+fun CartLineItemEntity.toDomain(): CartLineItem {
+    return CartLineItem(
+        lineId = lineId,
+        variantId = variantId,
+        productId = productId,
+        title = title,
+        variantTitle = variantTitle,
+        quantity = quantity,
+        price = price,
+        currencyCode = currencyCode,
+        imageUrl = imageUrl
+    )
 }
 
 data class TotalAmount(

@@ -115,21 +115,14 @@ class RegisterRepositoryImpl @Inject constructor(
             }
         }
         
-        // Ensure customer access token is ready for linking the cart
-        val sessionResult = customerAccessTokenRepository.getValidToken()
-        val accessToken = when (sessionResult) {
-            is PocketResult.Error -> null
-            is PocketResult.Success -> sessionResult.data.accessToken
-        }
+        // Create a cart for the new user
+        val cartResult = cartRepository.createCart()
+        val cartId = if (cartResult is PocketResult.Success) cartResult.data else null
 
-        // Create and link cart if access token is available
-        var cartId: String? = null
-        if (accessToken != null) {
-            val cartResult = cartRepository.createCart()
-            if (cartResult is PocketResult.Success) {
-                cartId = cartResult.data
-                cartRepository.linkBuyerIdentity(cartId, accessToken)
-            }
+        // If we have an access token, link it immediately
+        val sessionResult = customerAccessTokenRepository.getValidToken()
+        if (sessionResult is PocketResult.Success && cartId != null) {
+            cartRepository.linkBuyerIdentity(cartId, sessionResult.data.accessToken)
         }
 
         return firestore.saveUser(
