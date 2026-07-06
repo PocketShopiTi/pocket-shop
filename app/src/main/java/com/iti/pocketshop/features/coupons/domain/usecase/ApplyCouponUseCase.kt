@@ -14,7 +14,7 @@ class ApplyCouponUseCase @Inject constructor(
     suspend operator fun invoke(
         cartId: String,
         discountCodes: List<String>,
-    ): PocketResult<CartCouponResult, PocketDataError.Remote> =
+    ): PocketResult<CartCouponResult, PocketDataError> =
         repository.applyCoupons(
             cartId = cartId,
             discountCodes = discountCodes,

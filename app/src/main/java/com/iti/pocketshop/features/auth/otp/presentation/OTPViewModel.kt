@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 sealed interface EmailVerificationEvent {
     data object NavigateLogin : EmailVerificationEvent
@@ -92,7 +93,7 @@ class EmailVerificationViewModel @Inject constructor(
         cooldownJob?.cancel()
         cooldownJob = viewModelScope.launch {
             while (_state.value.resendCooldown > 0) {
-                delay(1_000)
+                delay(1_000.milliseconds)
                 _state.update { it.copy(resendCooldown = (it.resendCooldown - 1).coerceAtLeast(0)) }
             }
         }

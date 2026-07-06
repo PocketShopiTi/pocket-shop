@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.coupons.data.repo
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
+import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.coupons.data.datasource.CouponDataSource
 import com.iti.pocketshop.features.coupons.data.mapper.toDomain
 import com.iti.pocketshop.features.coupons.domain.model.CartCouponResult
@@ -16,7 +17,7 @@ class CouponRepositoryImpl @Inject constructor(
     override suspend fun applyCoupons(
         cartId: String,
         discountCodes: List<String>,
-    ): PocketResult<CartCouponResult, PocketDataError.Remote> {
+    ): PocketResult<CartCouponResult, PocketDataError> {
         val result = dataSource.applyCoupons(
             cartId = cartId,
             discountCodes = discountCodes,
@@ -28,5 +29,13 @@ class CouponRepositoryImpl @Inject constructor(
             }
         }
         return result
+    }
+
+    override suspend fun removeCoupons(
+        cartId: String,
+    ): PocketResult<ShopifyCart?, PocketDataError> {
+        return dataSource.removeCoupons(
+            cartId = cartId,
+        )
     }
 }

@@ -6,18 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.SyncFavoritesUseCase
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.core.networkutils.onError
-import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.auth.login.domain.model.LoginOutcome
 import com.iti.pocketshop.features.auth.login.domain.usecase.ContinueAsGuestUseCase
 import com.iti.pocketshop.features.auth.login.domain.usecase.LoginWithEmailUseCase
 import com.iti.pocketshop.features.auth.login.domain.usecase.LoginWithGoogleUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,6 +32,7 @@ class LoginViewModel @Inject constructor(
     private val loginWithGoogleUseCase: LoginWithGoogleUseCase,
     private val continueAsGuestUseCase: ContinueAsGuestUseCase,
     private val syncFavorites: SyncFavoritesUseCase,
+    private val restoreCart: RestoreOrCreateCartUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -93,22 +94,23 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is PocketResult.Success -> {
-                    syncFavorites()
-                        .onSuccess {
-                            _state.update { it.copy(isLoading = false) }
-                            _events.send(
-                                when (result.data) {
-                                    LoginOutcome.Ready -> LoginEvent.NavigateHome
-                                    LoginOutcome.NeedsEmailVerification -> LoginEvent.NavigateVerification
-                                }
-                            )
-                        }
-                        .onError { error ->
-                            _state.update {
-                                it.copy(isLoading = false, generalError = error)
+                    when (result.data) {
+                        LoginOutcome.Ready -> {
+                            val j1 = launch {
+                                syncFavorites()
                             }
+                            val j2 = launch {
+                                restoreCart()
+                            }
+                            joinAll(j1, j2)
+                            _state.update { it.copy(isLoading = false) }
+                            _events.send(LoginEvent.NavigateHome)
                         }
-
+                        LoginOutcome.NeedsEmailVerification -> {
+                            _state.update { it.copy(isLoading = false) }
+                            _events.send(LoginEvent.NavigateVerification)
+                        }
+                    }
                 }
             }
         }

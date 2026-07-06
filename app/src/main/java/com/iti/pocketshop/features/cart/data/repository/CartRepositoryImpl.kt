@@ -3,49 +3,53 @@ package com.iti.pocketshop.features.cart.data.repository
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
+import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.features.cart.data.datasource.CartLocalDataSource
 import com.iti.pocketshop.features.cart.data.datasource.ShopifyCartDataSource
 import com.iti.pocketshop.features.cart.data.mapper.toDomain
+import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.cart.domain.repository.CartRepository
-import com.iti.pocketshop.shopify.fragment.CartFields
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CartRepositoryImpl @Inject constructor(
-    private val remoteDataSource: ShopifyCartDataSource
+    private val remoteDataSource: ShopifyCartDataSource,
+    private val localDataSource: CartLocalDataSource
 ) : CartRepository {
 
-    private val _cartState = MutableStateFlow<ShopifyCart?>(null)
-    override val cartState: StateFlow<ShopifyCart?> = _cartState.asStateFlow()
-
-    private fun handleResult(result: PocketResult<CartFields, PocketDataError>): PocketResult<ShopifyCart, PocketDataError> {
-        return when (result) {
-            is PocketResult.Error -> result
-            is PocketResult.Success -> {
-                val domainCart = result.data.toDomain()
-                _cartState.value = domainCart
-                PocketResult.Success(domainCart)
-            }
-        }
+    override fun getLocalCart(): Flow<ShopifyCart?> {
+        return localDataSource.getLocalCart()
     }
 
     override suspend fun createCart(): PocketResult<String, PocketDataError> {
-        return when (val result = remoteDataSource.createCart()) {
-            is PocketResult.Error -> result
-            is PocketResult.Success -> {
-                val domainCart = result.data.toDomain()
-                _cartState.value = domainCart
-                PocketResult.Success(domainCart.id)
+        return remoteDataSource.createCart()
+            .onSuccess {
+                updateLocalCart(it.toDomain())
             }
-        }
+            .map {
+                it.id
+            }
     }
 
-    override suspend fun loadCart(cartId: String): PocketResult<ShopifyCart, PocketDataError> {
-        return handleResult(remoteDataSource.getCart(cartId))
+    private suspend fun updateLocalCart(domainCart: ShopifyCart) {
+        localDataSource.replaceCart(domainCart)
+    }
+
+    override suspend fun loadCart(
+        cartId: String
+    ): PocketResult<ShopifyCart, PocketDataError> {
+        return remoteDataSource.getCart(cartId)
+            .map {
+                it.toDomain()
+            }
+            .onSuccess {
+                updateLocalCart(it)
+            }
     }
 
     override suspend fun addLines(
@@ -53,14 +57,37 @@ class CartRepositoryImpl @Inject constructor(
         variantId: String,
         quantity: Int
     ): PocketResult<ShopifyCart, PocketDataError> {
-        return handleResult(remoteDataSource.addLines(cartId, variantId, quantity))
+        return remoteDataSource.addLines(cartId, variantId, quantity)
+            .map {
+                it.toDomain()
+            }
+            .onSuccess {
+                updateLocalCart(it)
+            }
     }
 
     override suspend fun removeLines(
         cartId: String,
         lineIds: List<String>
     ): PocketResult<ShopifyCart, PocketDataError> {
-        return handleResult(remoteDataSource.removeLines(cartId, lineIds))
+        val originalItems = mutableListOf<CartLineItem>()
+        lineIds.forEach { lineId ->
+            localDataSource.getCartItemByOnce(lineId)?.let { originalItems.add(it) }
+            localDataSource.deleteCartItem(lineId)
+        }
+
+        return remoteDataSource.removeLines(cartId, lineIds)
+            .map {
+                it.toDomain()
+            }
+            .onSuccess {
+                updateLocalCart(it)
+            }
+            .onError {
+                originalItems.forEach { item ->
+                    localDataSource.saveCartItems(listOf(item))
+                }
+            }
     }
 
     override suspend fun updateLines(
@@ -68,17 +95,54 @@ class CartRepositoryImpl @Inject constructor(
         lineId: String,
         quantity: Int
     ): PocketResult<ShopifyCart, PocketDataError> {
-        return handleResult(remoteDataSource.updateLines(cartId, lineId, quantity))
+        val originalItem = localDataSource.getCartItemByOnce(lineId)
+        originalItem?.copy(quantity = quantity)?.let {
+            localDataSource.updateCartItem(it)
+        }
+
+        return remoteDataSource.updateLines(cartId, lineId, quantity)
+            .map {
+                it.toDomain()
+            }
+            .onSuccess {
+                updateLocalCart(it)
+            }
+            .onError {
+                originalItem?.let { item ->
+                    localDataSource.updateCartItem(item)
+                }
+            }
     }
 
     override suspend fun linkBuyerIdentity(
         cartId: String,
         customerAccessToken: String
     ): PocketResult<ShopifyCart, PocketDataError> {
-        return handleResult(remoteDataSource.linkBuyerIdentity(cartId, customerAccessToken))
+        return remoteDataSource.linkBuyerIdentity(cartId, customerAccessToken)
+            .map {
+                it.toDomain()
+            }
+            .onSuccess {
+                updateLocalCart(it)
+            }
     }
 
-    override fun clearLocalCart() {
-        _cartState.value = null
+    override suspend fun syncCart(cartId: String): PocketResult<ShopifyCart, PocketDataError> {
+        return loadCart(cartId)
+    }
+
+    override suspend fun clearLocalCart() {
+        localDataSource.clearCart()
+    }
+
+    override suspend fun updateLocalItemQuantity(lineId: String, quantity: Int) {
+        val item = localDataSource.getCartItemById(lineId).first()
+        item?.copy(quantity = quantity)?.let {
+            localDataSource.updateCartItem(it)
+        }
+    }
+
+    override suspend fun deleteLocalItem(lineId: String) {
+        localDataSource.deleteCartItem(lineId)
     }
 }

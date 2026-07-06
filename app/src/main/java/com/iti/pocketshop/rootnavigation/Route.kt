@@ -57,6 +57,14 @@ sealed interface Route : NavKey {
     data object OrderCheckout : Route
 
     @Serializable
+    data class OrderSuccess(
+        val orderId: String,
+        val orderName: String,
+        val totalAmount: Double,
+        val currencyCode: String
+    ) : Route
+
+    @Serializable
     data object Settings : Route
 
     @Serializable

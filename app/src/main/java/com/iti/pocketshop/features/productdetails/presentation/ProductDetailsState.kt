@@ -7,6 +7,7 @@ import com.iti.pocketshop.features.productdetails.domain.entity.Money
 data class ProductDetailsState(
     val productId: String = "",
     val product: ProductDetails? = null,
+    val cartId: String? = null,
     val selectedImageIndex: Int = 0,
     val selectedOptionValueIds: Map<String, String> = emptyMap(),
     val quantity: Int = 1,

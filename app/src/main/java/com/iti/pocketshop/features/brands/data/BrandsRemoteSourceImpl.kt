@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.brands.data
 
 import com.apollographql.apollo.ApolloClient
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
@@ -11,6 +12,7 @@ import com.iti.pocketshop.shopify.GetBrandsQuery
 import javax.inject.Inject
 
 class BrandsRemoteSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : BrandsRemoteSource {
     override suspend fun getBrands(first: Int): PocketResult<List<BrandItem>, PocketDataError.Remote> {

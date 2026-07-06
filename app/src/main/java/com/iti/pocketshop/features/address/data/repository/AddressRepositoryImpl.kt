@@ -25,7 +25,6 @@ import com.iti.pocketshop.features.address.domain.repository.AddressRepository
 import com.iti.pocketshop.shopify.CreateCustomerAddressMutation
 import com.iti.pocketshop.shopify.UpdateCustomerAddressMutation
 import com.iti.pocketshop.shopify.type.MailingAddressInput
-import javax.inject.Named
 import javax.inject.Inject
 
 class AddressRepositoryImpl @Inject constructor(

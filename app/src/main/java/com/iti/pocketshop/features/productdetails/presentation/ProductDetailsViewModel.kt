@@ -6,9 +6,12 @@ import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
 import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
 import com.iti.pocketshop.core.components.ErrorDialogController
-import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.PocketDataError
+import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.cart.domain.repository.CartRepository
+import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -30,10 +34,12 @@ class ProductDetailsViewModel @Inject constructor(
     private val getProductDetails: GetProductDetailsUseCase,
     private val isFavorite: IsFavoriteUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
-    private val cartRepository: CartRepository
+    private val addToCartUseCase: AddToCartUseCase,
+    private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProductDetailsState())
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val state = _state
         .flatMapLatest { state ->
@@ -42,10 +48,14 @@ class ProductDetailsViewModel @Inject constructor(
                     state.copy(isFavorite = it)
                 }
         }
+        .onStart {
+            fetchCart()
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000L), ProductDetailsState())
 
     private var loadJob: Job? = null
     private var cartFeedbackJob: Job? = null
+    private var addToCartJob: Job? = null
 
     private fun loadProduct(productId: String, force: Boolean = false) {
         if (!force && _state.value.productId == productId && _state.value.product != null) return
@@ -102,6 +112,7 @@ class ProductDetailsViewModel @Inject constructor(
             is ProductDetailsAction.ToggleFavorite -> {
                 toggleFavorite(action.product)
             }
+
             else -> _state.update { current -> reduceProductDetails(current, action) }
         }
     }
@@ -120,11 +131,18 @@ class ProductDetailsViewModel @Inject constructor(
 
         val currentState = _state.value
         val variant = currentState.selectedVariant
-        
-        if (variant != null) {
+        val cartId = _state.value.cartId ?: run {
             viewModelScope.launch {
-                val cartId = cartRepository.cartState.value?.id ?: return@launch
-                cartRepository.addLines(
+                ErrorDialogController.sendEvent(PocketDataError.Remote.UNKNOWN)
+                restoreOrCreateCartUseCase()
+            }
+            return
+        }
+        if (variant != null) {
+            addToCartJob?.cancel()
+            addToCartJob = viewModelScope.launch {
+                delay(300L.milliseconds)
+                addToCartUseCase(
                     cartId = cartId,
                     variantId = variant.id,
                     quantity = currentState.quantity
@@ -141,6 +159,19 @@ class ProductDetailsViewModel @Inject constructor(
             _state.update { current ->
                 reduceProductDetails(current, ProductDetailsAction.CartFeedbackFinished)
             }
+        }
+    }
+
+    private fun fetchCart() {
+        viewModelScope.launch {
+            restoreOrCreateCartUseCase()
+                .onSuccess {
+                    _state.update { current ->
+                        current.copy(
+                            cartId = it.id
+                        )
+                    }
+                }
         }
     }
 
