@@ -7,8 +7,7 @@ import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.address.domain.usecase.GetAddressesUseCase
-import com.iti.pocketshop.features.cart.domain.repository.CartRepository
-import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartItemsUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.checkout.domain.usecases.PlaceOrderUseCase
 import com.iti.pocketshop.features.checkout.domain.usecases.SetDeliveryAddressUseCase
@@ -31,13 +30,18 @@ class CheckoutViewModel @Inject constructor(
     private val removeCouponUseCase: RemoveCouponUseCase,
     private val getAddressesUseCase: GetAddressesUseCase,
     private val placeOrderUseCase: PlaceOrderUseCase,
-    private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase
+    private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase,
+    getLocalCartUseCase: GetLocalCartUseCase,
 ) : ViewModel() {
 
     var loadedInitialData = false
     private val _state = MutableStateFlow(CheckoutState())
 
     val state = _state
+        .combine(getLocalCartUseCase()) {
+            currentState, localCart ->
+            currentState.copy(cart = localCart)
+        }
         .onStart {
             if (!loadedInitialData) {
                 fetchData()
@@ -51,46 +55,30 @@ class CheckoutViewModel @Inject constructor(
         )
 
     private fun fetchData() {
-        loadAddresses()
-        loadCart()
+        loadAddressesAnd()
     }
 
-    private fun loadAddresses() {
+    private fun loadAddressesAnd() {
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
-            getAddressesUseCase()
-                .onSuccess { addressBook ->
-                    _state.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            addresses = addressBook.addresses,
-                            selectedAddress = addressBook.addresses.firstOrNull()
-                        )
+            launch {
+                getAddressesUseCase()
+                    .onSuccess { addressBook ->
+                        _state.update { currentState ->
+                            currentState.copy(
+                                isLoading = false,
+                                addresses = addressBook.addresses,
+                                selectedAddress = addressBook.addresses.firstOrNull()
+                            )
+                        }
                     }
-                }
-                .onError {
-                    ErrorDialogController.sendEvent(PocketDataError.Remote.ADDRESS_ERROR)
-                }
-        }
-    }
-
-    private fun loadCart() {
-        viewModelScope.launch {
-            restoreOrCreateCartUseCase()
-                .onSuccess { cart ->
-                    _state.update { currentState ->
-                        currentState.copy(
-                            cart = cart
-                        )
+            }
+            launch {
+                restoreOrCreateCartUseCase()
+                    .onError {
+                        ErrorDialogController.sendEvent(it)
                     }
-                }
-                .onError {
-                    _state.update { currentState ->
-                        currentState.copy(
-                            cart = null
-                        )
-                    }
-                }
+            }
         }
     }
 
@@ -162,10 +150,10 @@ class CheckoutViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             removeCouponUseCase(cartId)
                 .onSuccess {
+                    restoreOrCreateCartUseCase()
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            appliedCouponCode = ""
                         )
                     }
                 }
@@ -196,9 +184,9 @@ class CheckoutViewModel @Inject constructor(
                         it.copy(
                             isLoading = false,
                             couponCodeInput = "",
-                            appliedCouponCode = code
                         )
                     }
+                    restoreOrCreateCartUseCase()
                 }
                 .onError { error ->
                     ErrorDialogController.sendEvent(error)

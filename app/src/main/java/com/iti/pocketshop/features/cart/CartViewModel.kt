@@ -6,7 +6,7 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
-import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartItemsUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RemoveCartItemUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.UpdateCartQuantityUseCase
@@ -25,7 +25,7 @@ class CartViewModel @Inject constructor(
     private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase,
     private val updateCartQuantityUseCase: UpdateCartQuantityUseCase,
     private val removeCartItemUseCase: RemoveCartItemUseCase,
-    getLocalCartItemsUseCase: GetLocalCartItemsUseCase,
+    getLocalCartUseCase: GetLocalCartUseCase,
 ) : ViewModel() {
 
     private var loadedInitialData = false
@@ -33,15 +33,17 @@ class CartViewModel @Inject constructor(
 
     val state = _state
         .combine(
-            getLocalCartItemsUseCase(),
-        ) { currentState, localItems ->
+            getLocalCartUseCase(),
+        ) { currentState, localCart ->
+            val items = localCart?.lines ?: emptyList()
             currentState.copy(
-                items = localItems,
-                subTotal = localItems.sumOf { it.price * it.quantity },
-                currencyCode = localItems.firstOrNull()?.currencyCode ?: "",
-                shipping = 0.0,
-                itemsCounts = localItems.groupBy { it.variantId }.mapValues { it.value.size }.values.sum(),
-                total = localItems.sumOf { it.price * it.quantity }
+                cartId = localCart?.id ?: currentState.cartId,
+                items = items,
+                subTotal = localCart?.subtotalAmount?.amount ?: 0.0,
+                currencyCode = localCart?.totalAmount?.currencyCode?.name ?: items.firstOrNull()?.currencyCode ?: "",
+                itemsCounts = localCart?.totalQuantity ?: 0,
+                total = localCart?.totalAmount?.amount ?: 0.0,
+                appliedDiscountCodes = localCart?.appliedDiscountCodes ?: emptyList(),
             )
         }
         .onStart {

@@ -11,7 +11,6 @@ data class CheckoutState(
     val addresses: List<Address> = emptyList(),
     val selectedAddress: Address? = null,
     val couponCodeInput: String = "",
-    val appliedCouponCode: String = "",
     val paymentConfirmation: PaymentConfirmation? = null,
     val placedOrder: Order? = null,
 )

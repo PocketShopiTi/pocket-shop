@@ -9,7 +9,10 @@ interface CartDao {
     fun getAllCartItems(): Flow<List<CartLineItemEntity>>
 
     @Query("SELECT * FROM cart_items where lineId = :lineId")
-    fun getCartItemById(lineId: String): Flow<CartLineItemEntity>
+    fun getCartItemById(lineId: String): Flow<CartLineItemEntity?>
+
+    @Query("SELECT * FROM cart_items where lineId = :lineId")
+    suspend fun getCartItemByOnce(lineId: String): CartLineItemEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCartItems(items: List<CartLineItemEntity>)
@@ -18,8 +21,17 @@ interface CartDao {
     suspend fun deleteCartItem(lineId: String)
 
     @Query("DELETE FROM cart_items")
-    suspend fun clearCart()
+    suspend fun clearCartItems()
     
     @Update
     suspend fun updateCartItem(item: CartLineItemEntity)
+
+    @Query("SELECT * FROM shopify_cart LIMIT 1")
+    fun getCartMetadata(): Flow<ShopifyCartEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCartMetadata(metadata: ShopifyCartEntity)
+
+    @Query("DELETE FROM shopify_cart")
+    suspend fun clearCartMetadata()
 }

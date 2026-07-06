@@ -6,10 +6,11 @@ import com.iti.pocketshop.common.favorites.data.local.FavoriteDao
 import com.iti.pocketshop.common.favorites.data.local.FavoriteProductEntity
 import com.iti.pocketshop.features.cart.data.local.CartDao
 import com.iti.pocketshop.features.cart.data.local.CartLineItemEntity
+import com.iti.pocketshop.features.cart.data.local.ShopifyCartEntity
 
 @Database(
-    entities = [FavoriteProductEntity::class, CartLineItemEntity::class],
-    version = 2,
+    entities = [FavoriteProductEntity::class, CartLineItemEntity::class, ShopifyCartEntity::class],
+    version = 1,
     exportSchema = false
 )
 abstract class PocketDatabase : RoomDatabase() {

@@ -9,5 +9,5 @@ data class ShopifyCart(
     val subtotalAmount: SubtotalAmount,
     val totalAmount: TotalAmount,
     val totalQuantity: Int,
-    val appliedDiscountCodes: List<String> = emptyList()
+    val appliedDiscountCodes: List<String> = emptyList(),
 )

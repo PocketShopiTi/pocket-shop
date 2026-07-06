@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.cart.data.mapper
 
 import com.iti.pocketshop.features.cart.data.local.CartLineItemEntity
+import com.iti.pocketshop.features.cart.data.local.ShopifyCartEntity
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.shopify.fragment.CartFields
@@ -16,7 +17,39 @@ fun CartFields.toDomain(): ShopifyCart {
             val node = edge.node
             node.toDomain()
         },
-        appliedDiscountCodes = this.discountCodes.filter { it.applicable }.map { it.code }
+        appliedDiscountCodes = this.discountCodes.filter { it.applicable }.map { it.code },
+    )
+}
+
+fun ShopifyCart.toEntity(): ShopifyCartEntity {
+    return ShopifyCartEntity(
+        id = this.id,
+        subtotalAmount = this.subtotalAmount.amount,
+        totalAmount = this.totalAmount.amount,
+        totalQuantity = this.totalQuantity,
+        currencyCode = this.totalAmount.currencyCode.name,
+        appliedDiscountCodes = this.appliedDiscountCodes.filter(String::isNotBlank)
+            .joinToString("^")
+    )
+}
+
+fun ShopifyCartEntity.toDomain(lines: List<CartLineItem>): ShopifyCart {
+    return ShopifyCart(
+        id = this.id,
+        subtotalAmount = SubtotalAmount(
+            amount = this.subtotalAmount,
+            currencyCode = CurrencyCode.entries.firstOrNull { it.name == this.currencyCode }
+                ?: CurrencyCode.EGP
+        ),
+        totalAmount = TotalAmount(
+            amount = this.totalAmount,
+            currencyCode = CurrencyCode.entries.firstOrNull { it.name == this.currencyCode }
+                ?: CurrencyCode.EGP
+        ),
+        totalQuantity = this.totalQuantity,
+        appliedDiscountCodes = appliedDiscountCodes.takeIf { it.isNotBlank() }?.split("^")
+            ?: emptyList(),
+        lines = lines
     )
 }
 

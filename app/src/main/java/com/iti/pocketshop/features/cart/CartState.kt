@@ -1,7 +1,6 @@
 package com.iti.pocketshop.features.cart
 
 import androidx.compose.runtime.Immutable
-import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 
 @Immutable
@@ -14,5 +13,6 @@ data class CartState(
     val total: Double = 0.0,
     val itemToRemove: CartLineItem? = null,
     val isLoading: Boolean = false,
-    val itemsCounts: Int = 0
+    val itemsCounts: Int = 0,
+    val appliedDiscountCodes: List<String> = emptyList()
 )
