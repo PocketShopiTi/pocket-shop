@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.search.domain.model.ProductFilterValue
+import com.iti.pocketshop.features.search.domain.model.SearchResult
+import com.iti.pocketshop.features.search.domain.model.SearchResultItem
 import com.iti.pocketshop.features.search.domain.model.SortOption
 import com.iti.pocketshop.features.search.domain.model.extractPriceRangeBounds
 import com.iti.pocketshop.features.search.domain.model.hasSameSelectionAs
@@ -15,6 +17,7 @@ import com.iti.pocketshop.features.search.presentation.state.SearchPhase
 import com.iti.pocketshop.features.search.presentation.state.SearchState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,6 +37,8 @@ class SearchViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(SearchState())
     val state: StateFlow<SearchState> = _state.asStateFlow()
+
+    private var predictiveJob: Job? = null
 
     private val _effect = Channel<SearchEffect>(Channel.BUFFERED)
     val effect: Flow<SearchEffect> = _effect.receiveAsFlow()
@@ -65,6 +70,9 @@ class SearchViewModel @Inject constructor(
             is SearchAction.ClearSearch -> clearSearch()
             is SearchAction.ToggleFilter -> toggleFilter(intent.filterValue)
             is SearchAction.ClearFilters -> clearFilters()
+            is SearchAction.QuickToggleFilter -> quickToggleFilter(intent.filterValue)
+            is SearchAction.QuickUpdatePriceRange -> quickUpdatePriceRange(intent.range)
+            SearchAction.QuickClearPriceRange -> quickClearPriceRange()
             is SearchAction.LoadNextPage -> loadNextPage()
             is SearchAction.ClickQuerySuggestion -> queryExtracted(intent)
             is SearchAction.ClickBrowseCategories -> clearSearch()
@@ -106,18 +114,16 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun selectSortOption(option: SortOption) {
-        _state.update { it.copy(activeSortOption = option) }
-        submitSearch()
+         _state.update { it.copy(activeSortOption = option) }
     }
 
     private fun updatePriceRange(range: ClosedFloatingPointRange<Float>) {
+
         _state.update { it.copy(activePriceRange = range) }
-        submitSearch()
     }
 
     private fun clearPriceRange() {
-        _state.update { it.copy(activePriceRange = null) }
-        submitSearch()
+         _state.update { it.copy(activePriceRange = null) }
     }
 
     private fun clearError() {
@@ -132,16 +138,18 @@ class SearchViewModel @Inject constructor(
     private fun updateQuery(query: String) {
         _state.update { it.copy(query = query) }
         if (query.isBlank()) {
-            _state.update { it.copy(phase = SearchPhase.Initial) }
+            predictiveJob?.cancel()
+            _state.update { it.copy(phase = SearchPhase.Initial, lastPredictiveResult = null) }
             return
         }
-        viewModelScope.launch {
+        predictiveJob?.cancel()
+        predictiveJob = viewModelScope.launch {
             when (val result = getPredictiveSearchUseCase(query)) {
                 is PocketResult.Success -> _state.update {
                     it.copy(
-                        phase = SearchPhase.Predictive(
-                            result.data
-                        ), isLoading = false
+                        phase = SearchPhase.Predictive(result.data),
+                        lastPredictiveResult = result.data,
+                        isLoading = false
                     )
                 }
 
@@ -157,6 +165,10 @@ class SearchViewModel @Inject constructor(
     private fun submitSearch() {
         val currentQuery = _state.value.query
         if (currentQuery.isBlank()) return
+        val predictiveFallback = _state.value.lastPredictiveResult
+
+        predictiveJob?.cancel()
+        predictiveJob = null
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -173,16 +185,59 @@ class SearchViewModel @Inject constructor(
                     val newBounds = _state.value.priceRangeBounds
                         ?: result.data.filters.extractPriceRangeBounds()
 
-                    val newPhase = if (result.data.items.isEmpty()) {
-                        SearchPhase.Empty
-                    } else {
-                        SearchPhase.Results(result.data)
+                    val hasActiveFilters = _state.value.activeFilters.isNotEmpty() ||
+                            _state.value.activePriceRange != null
+
+                    val newPhase = when {
+                        result.data.products.isNotEmpty() -> SearchPhase.Results(result.data)
+
+                        hasActiveFilters -> {
+
+                            SearchPhase.Empty
+                        }
+
+                        else -> {
+                            val predictiveItems = predictiveFallback
+                                ?.products
+                                ?.map { p ->
+                                    SearchResultItem.ProductItem(
+                                        id = p.id,
+                                        title = p.title,
+                                        handle = p.handle,
+                                        imageUrl = p.imageUrl,
+                                        imageAlt = p.imageAlt,
+                                        price = p.price,
+                                        currencyCode = p.currencyCode,
+                                        vendor = "",
+                                        productType = "",
+                                        tags = emptyList(),
+                                        options = emptyList()
+                                    )
+                                }
+                                .orEmpty()
+
+                            if (predictiveItems.isNotEmpty()) {
+                                SearchPhase.Results(
+                                    SearchResult(
+                                        items = predictiveItems,
+                                        totalCount = predictiveItems.size,
+                                        hasNextPage = false,
+                                        endCursor = null,
+                                        filters = emptyList()
+                                    )
+                                )
+                            } else {
+                                SearchPhase.Empty
+                            }
+                        }
                     }
+
                     _state.update {
                         it.copy(
                             phase = newPhase,
                             isLoading = false,
-                            priceRangeBounds = newBounds
+                            priceRangeBounds = newBounds,
+
                         )
                     }
                 }
@@ -196,6 +251,8 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun clearSearch() {
+        predictiveJob?.cancel()
+        predictiveJob = null
         _state.update {
             it.copy(
                 query = "",
@@ -204,30 +261,44 @@ class SearchViewModel @Inject constructor(
                 activeFilters = emptyList(),
                 activePriceRange = null,
                 priceRangeBounds = null,
+                lastPredictiveResult = null,
             )
         }
     }
 
     private fun toggleFilter(filter: ProductFilterValue) {
-        _state.update { currentState ->
+         _state.update { currentState ->
             val currentFilters = currentState.activeFilters.toMutableList()
             val existingIndex = currentFilters.indexOfFirst { it.hasSameSelectionAs(filter) }
             if (existingIndex >= 0) currentFilters.removeAt(existingIndex)
             else currentFilters.add(filter)
             currentState.copy(activeFilters = currentFilters)
         }
+    }
+
+    private fun quickToggleFilter(filter: ProductFilterValue) {
+         toggleFilter(filter)
+        submitSearch()
+    }
+
+    private fun quickUpdatePriceRange(range: ClosedFloatingPointRange<Float>) {
+         _state.update { it.copy(activePriceRange = range) }
+        submitSearch()
+    }
+
+    private fun quickClearPriceRange() {
+             _state.update { it.copy(activePriceRange = null) }
         submitSearch()
     }
 
     private fun clearFilters() {
-        _state.update {
+         _state.update {
             it.copy(
                 activeFilters = emptyList(),
                 activePriceRange = null,
                 activeSortOption = SortOption.RELEVANCE,
             )
         }
-        submitSearch()
     }
 
     private fun loadNextPage() {
