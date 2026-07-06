@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.cart.data.datasource
 
 import com.apollographql.apollo.ApolloClient
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeCall
@@ -17,6 +18,7 @@ import com.iti.pocketshop.shopify.type.CartLineUpdateInput
 import javax.inject.Inject
 
 class ShopifyCartDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient
 ) : ShopifyCartDataSource {
 

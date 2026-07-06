@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.search.data.datasource
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
@@ -16,6 +17,7 @@ import com.iti.pocketshop.shopify.type.SearchSortKeys
 import javax.inject.Inject
 
 class SearchRemoteDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient
 ) : SearchRemoteDataSource {
 

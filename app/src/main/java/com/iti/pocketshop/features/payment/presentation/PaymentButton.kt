@@ -33,7 +33,8 @@ import com.paymob.paymob_sdk.ui.PaymobSdkListener
 fun PaymentButton(
     amountMinor: Long,
     currency: PaymentCurrency,
-    userData: UserData,
+    userData: UserData?,
+    enabled: Boolean,
     onSuccess: (transactionId: String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PaymentViewModel = hiltViewModel(),
@@ -75,9 +76,11 @@ fun PaymentButton(
 
     Button(
         onClick = {
-            viewModel.onAction(PaymentAction.Pay(amountMinor, currency, userData))
+            userData?.let {
+                viewModel.onAction(PaymentAction.Pay(amountMinor, currency, userData))
+            }
         },
-        enabled = !state.isLoading,
+        enabled = enabled && !state.isLoading,
         modifier = modifier,
         shape = CircleShape,
     ) {

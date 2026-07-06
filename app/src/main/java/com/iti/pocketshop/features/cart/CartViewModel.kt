@@ -29,10 +29,10 @@ class CartViewModel @Inject constructor(
         } else {
             internalState.copy(
                 items = shopifyCart.lines,
-                subTotal = shopifyCart.subtotalAmount,
-                currencyCode = shopifyCart.subtotalCurrencyCode,
+                subTotal = shopifyCart.subtotalAmount.amount,
+                currencyCode = shopifyCart.subtotalAmount.currencyCode.rawValue,
                 shipping = 0.0,
-                total = shopifyCart.totalAmount
+                total = shopifyCart.totalAmount.amount
             )
         }
     }.stateIn(
@@ -78,20 +78,14 @@ class CartViewModel @Inject constructor(
             CartAction.CancelRemoveItem -> {
                 _internalState.update { it.copy(itemToRemove = null) }
             }
-            CartAction.StartShoppingClicked -> {
-                // Handled in UI navigation
-            }
-            CartAction.CheckoutClicked -> {
-                val url = cartRepository.cartState.value?.checkoutUrl
-                if (url != null) {
-                    _internalState.update { it.copy(checkoutUrl = url) }
-                }
-            }
             CartAction.CheckoutHandled -> {
                 _internalState.update { it.copy(checkoutUrl = null) }
             }
             CartAction.ErrorHandled -> {
                 _internalState.update { it.copy(error = null) }
+            }
+            else -> {
+
             }
         }
     }

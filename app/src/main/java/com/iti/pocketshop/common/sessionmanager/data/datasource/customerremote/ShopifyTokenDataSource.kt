@@ -3,6 +3,7 @@ package com.iti.pocketshop.common.sessionmanager.data.datasource.customerremote
 import com.apollographql.apollo.ApolloClient
 import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerCredentials
 import com.iti.pocketshop.common.sessionmanager.domain.model.CustomerSession
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
@@ -21,6 +22,7 @@ interface ShopifyTokenDataSource {
 }
 
 class ShopifyTokenDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : ShopifyTokenDataSource {
 

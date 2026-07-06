@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.auth.register.data.datasource.shopify
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeCall
@@ -10,6 +11,7 @@ import com.iti.pocketshop.shopify.type.CustomerCreateInput
 import javax.inject.Inject
 
 class ShopifyCustomerDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : ShopifyCustomerDataSource {
 

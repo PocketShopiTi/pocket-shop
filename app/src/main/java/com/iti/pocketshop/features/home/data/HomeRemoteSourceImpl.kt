@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.home.data
 
 import com.apollographql.apollo.ApolloClient
 import com.google.firebase.firestore.FirebaseFirestore
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
@@ -15,6 +16,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class HomeRemoteSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
     private val firestore: FirebaseFirestore,
 ) : HomeRemoteSource {

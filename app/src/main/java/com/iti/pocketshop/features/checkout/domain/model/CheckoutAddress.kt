@@ -1,12 +1,14 @@
 package com.iti.pocketshop.features.checkout.domain.model
 
-data class CheckoutAddress(
-    val id: String,
-    val firstName: String,
-    val lastName: String,
-    val address1: String,
-    val address2: String,
-    val city: String,
-    val country: String,
-    val phone: String
-)
+import com.iti.pocketshop.features.address.domain.model.Address
+import com.iti.pocketshop.features.payment.domain.models.UserData
+
+
+fun Address.toUserData(email: String?) : UserData {
+    return UserData(
+        firstName = firstName,
+        lastName = lastName,
+        email = email ?: phone,
+        phoneNumber = phone,
+    )
+}
