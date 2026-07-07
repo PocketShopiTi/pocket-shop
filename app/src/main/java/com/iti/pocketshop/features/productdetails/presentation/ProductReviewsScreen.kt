@@ -24,7 +24,7 @@ import com.iti.pocketshop.R
 import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 import com.iti.pocketshop.features.productdetails.presentation.components.ArrowBackIcon
-import com.iti.pocketshop.features.productdetails.presentation.components.ErrorContent
+import com.iti.pocketshop.features.productdetails.presentation.components.EmptyProductContent
 import com.iti.pocketshop.features.productdetails.presentation.components.LoadingContent
 import com.iti.pocketshop.features.productdetails.presentation.components.NoRippleTextButton
 import com.iti.pocketshop.features.productdetails.presentation.components.RatingStars
@@ -43,9 +43,9 @@ fun ProductReviewsScreen(
     ) { innerPadding ->
         when {
             state.isLoading -> LoadingContent(Modifier.padding(innerPadding))
-            state.errorMessage != null || state.product == null -> ErrorContent(
-                modifier = Modifier.padding(innerPadding),
+            state.error != null || state.product == null -> EmptyProductContent(
                 onRetry = { onAction(ProductDetailsAction.Retry) },
+                modifier = Modifier.padding(innerPadding),
             )
             else -> LazyColumn(
                 modifier = Modifier

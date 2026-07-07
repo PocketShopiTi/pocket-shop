@@ -1,8 +1,10 @@
 package com.iti.pocketshop.features.productdetails.presentation
 
-import com.iti.pocketshop.R
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,14 +24,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
+import com.iti.pocketshop.core.components.ScreenStateLayout
 import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.productdetails.domain.entity.toFavoriteProduct
-import com.iti.pocketshop.features.productdetails.presentation.components.ErrorContent
+import com.iti.pocketshop.features.productdetails.presentation.components.EmptyProductContent
 import com.iti.pocketshop.features.productdetails.presentation.components.LoadingContent
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductBottomBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductContent
+import com.iti.pocketshop.features.productdetails.presentation.components.ProductDetailsTopAppBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ReviewEditorSheet
+import com.iti.pocketshop.R
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -37,16 +44,23 @@ import kotlinx.coroutines.launch
 fun ProductDetailsRoot(
     productId: String,
     onBack: () -> Unit,
-    onSeeAllReviews: (productId: String) -> Unit = {},
-    viewModel: ProductDetailsViewModel = hiltViewModel(),
+    viewModel: ProductDetailsViewModel = hiltViewModel(
+        key = productId,
+        creationCallback = { factory: ProductDetailsViewModel.Factory ->
+            factory.create(productId)
+        },
+    ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     val user = LocalUser.current
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(productId) {
-        viewModel.onAction(ProductDetailsAction.ProductChanged(productId))
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ProductDetailsEvent.ShowError -> ErrorDialogController.sendEvent(event.error)
+            }
+        }
     }
 
     ProductDetailsScreen(
@@ -59,7 +73,7 @@ fun ProductDetailsRoot(
                         action == ProductDetailsAction.AddToCartClicked ||
                                 action == ProductDetailsAction.IncreaseQuantity ||
                                 action == ProductDetailsAction.DecreaseQuantity ||
-                                action is ProductDetailsAction.ToggleFavorite ||
+                                action == ProductDetailsAction.ToggleFavorite ||
                                 action is ProductDetailsAction.WriteReviewClicked ||
                                 action is ProductDetailsAction.EditReviewClicked ||
                                 action is ProductDetailsAction.DeleteReviewClicked ||
@@ -67,14 +81,11 @@ fun ProductDetailsRoot(
                                 action == ProductDetailsAction.DeleteReviewConfirmed
                         )
             ) {
-                scope.launch {
-                    SignInDialogController.sendEvent(true)
-                }
+                scope.launch { SignInDialogController.sendEvent(true) }
                 return@ProductDetailsScreen
             }
             when (action) {
                 ProductDetailsAction.BackClicked -> onBack()
-                ProductDetailsAction.SeeAllReviewsClicked -> viewModel.onAction(action)
                 is ProductDetailsAction.EditReviewClicked -> {
                     if (action.review.customerId == user?.uid) viewModel.onAction(action)
                 }
@@ -106,6 +117,20 @@ fun ProductDetailsScreen(
         onAction(ProductDetailsAction.HideAllReviewsClicked)
     }
 
+    val listState = rememberLazyListState()
+
+    val onFavoriteClick: () -> Unit = {
+        state.product?.let { product ->
+            if (state.isFavorite) {
+                scope.launch {
+                    DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
+                }
+            } else {
+                onAction(ProductDetailsAction.ToggleFavorite)
+            }
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
@@ -120,54 +145,57 @@ fun ProductDetailsScreen(
             }
         },
     ) { innerPadding ->
-        when {
-            state.isLoading -> LoadingContent(Modifier.padding(innerPadding))
-            state.errorMessage != null || state.product == null -> ErrorContent(
-                modifier = Modifier.padding(innerPadding),
-                onRetry = { onAction(ProductDetailsAction.Retry) },
-            )
-
-            else -> {
-                if (state.isShowingAllReviews) {
-                    com.iti.pocketshop.features.productdetails.presentation.ProductReviewsScreen(
-                        state = state,
-                        onAction = { action ->
-                            if (action == ProductDetailsAction.BackClicked) {
-                                onAction(ProductDetailsAction.HideAllReviewsClicked)
-                            } else {
-                                onAction(action)
-                            }
-                        },
-                        currentUserId = currentUserId,
-                        defaultReviewCustomerName = defaultReviewCustomerName,
-                    )
-                } else {
-                    ProductContent(
-                        product = state.product,
-                        state = state,
-                        onAction = onAction,
-                        onFavoriteClick = {
-                            if (state.isFavorite) {
-                                scope.launch {
-                                    DeleteFavoriteDialogController.sendEvent(state.product.toFavoriteProduct())
-                                }
-                            } else {
-                                onAction(ProductDetailsAction.ToggleFavorite(state.product.toFavoriteProduct()))
-                            }
-                        } ,
-                        currentUserId = currentUserId,
-                        defaultReviewCustomerName = defaultReviewCustomerName,
-                        modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
-                    )
-                }
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (state.isShowingAllReviews && state.product != null) {
+                ProductReviewsScreen(
+                    state = state,
+                    onAction = { action ->
+                        if (action == ProductDetailsAction.BackClicked) {
+                            onAction(ProductDetailsAction.HideAllReviewsClicked)
+                        } else {
+                            onAction(action)
+                        }
+                    },
+                    currentUserId = currentUserId,
+                    defaultReviewCustomerName = defaultReviewCustomerName,
+                )
+            } else {
+                ScreenStateLayout(
+                    isLoading = state.isLoading,
+                    error = state.error,
+                    isEmpty = state.product == null,
+                    onRetry = { onAction(ProductDetailsAction.Retry) },
+                    modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                    loadingContent = { LoadingContent() },
+                    emptyContent = {
+                        EmptyProductContent(onRetry = { onAction(ProductDetailsAction.Retry) })
+                    },
+                    content = {
+                        state.product?.let { product ->
+                            ProductContent(
+                                product = product,
+                                state = state,
+                                onAction = onAction,
+                                listState = listState,
+                                currentUserId = currentUserId,
+                                defaultReviewCustomerName = defaultReviewCustomerName,
+                            )
+                        }
+                    },
+                )
+                ProductDetailsTopAppBar(
+                    isFavorite = state.isFavorite,
+                    favoriteEnabled = state.product != null,
+                    onBack = { onAction(ProductDetailsAction.BackClicked) },
+                    onFavoriteClick = onFavoriteClick,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                )
             }
         }
     }
 
     RemoveFavoriteDialog(
-        onConfirm = {
-            onAction(ProductDetailsAction.ToggleFavorite(it))
-        }
+        onConfirm = { onAction(ProductDetailsAction.ToggleFavorite) },
     )
 
     if (state.isReviewEditorVisible) {
@@ -214,7 +242,6 @@ private fun UserSession?.defaultReviewCustomerName(): String {
         ?: ""
 }
 
-
 @Preview(showBackground = true, widthDp = 390, heightDp = 1180)
 @Composable
 private fun ProductDetailsPreview() {
@@ -224,7 +251,7 @@ private fun ProductDetailsPreview() {
             state = ProductDetailsState(
                 productId = product.id,
                 product = product,
-                selectedOptionValueIds = mapOf("colour" to "ecru", "size" to "m"),
+                selectedOptionValueIds = product.defaultVariant?.selectedOptionValueIds.orEmpty(),
                 isLoading = false,
             ),
             onAction = {},

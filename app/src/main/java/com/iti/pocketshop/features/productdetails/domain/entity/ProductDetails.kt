@@ -10,13 +10,34 @@ data class ProductDetails(
     val images: List<ProductImage>,
     val options: List<ProductOption> = emptyList(),
     val variants: List<ProductVariant>,
-    val rating: Double,
-    val reviewCount: Int,
-    val reviews: List<ProductReview>,
+    val rating: Double = 0.0,
+    val reviewCount: Int = 0,
+    val reviews: List<ProductReview> = emptyList(),
     val isFavorite: Boolean,
 ) {
     val defaultVariant = variants.firstOrNull { it.availableForSale }
         ?: variants.firstOrNull()
+
+    fun isOptionValueAvailable(optionId: String, valueId: String): Boolean =
+        variants.any { variant ->
+            variant.availableForSale && variant.selectedOptionValueIds[optionId] == valueId
+        }
+
+    fun resolveAvailableVariant(
+        optionId: String,
+        valueId: String,
+        currentSelections: Map<String, String>,
+    ): ProductVariant? = variants
+        .asSequence()
+        .filter { variant ->
+            variant.availableForSale && variant.selectedOptionValueIds[optionId] == valueId
+        }
+        .minByOrNull { variant ->
+            variant.selectedOptionValueIds.count { (candidateOptionId, candidateValueId) ->
+                currentSelections[candidateOptionId] != candidateValueId
+            }
+        }
+
 }
 
 fun ProductDetails.toFavoriteProduct(): FavoriteProduct {

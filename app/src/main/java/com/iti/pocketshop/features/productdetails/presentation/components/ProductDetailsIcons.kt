@@ -1,6 +1,8 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -63,6 +65,13 @@ internal fun StarIcon(filled: Boolean, iconSize: Dp = 12.dp) {
         }
         path.close()
         if (filled) drawPath(path, color) else drawPath(path, color, style = Stroke(1.dp.toPx()))
+    }
+}
+
+@Composable
+internal fun RatingStars(rating: Double, starSize: Dp) {
+    Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
+        repeat(5) { index -> StarIcon(filled = index < rating.toInt(), iconSize = starSize) }
     }
 }
 

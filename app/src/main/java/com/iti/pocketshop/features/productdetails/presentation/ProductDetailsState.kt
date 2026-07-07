@@ -1,9 +1,11 @@
 package com.iti.pocketshop.features.productdetails.presentation
 
-import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
-import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
+import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.features.productdetails.domain.entity.Money
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 
 data class ProductDetailsState(
     val productId: String = "",
@@ -22,15 +24,15 @@ data class ProductDetailsState(
     val reviewToDelete: ProductReview? = null,
     val isShowingAllReviews: Boolean = false,
     val isLoading: Boolean = true,
-    val errorMessage: String? = null,
+    val error: PocketDataError? = null,
 ) {
     val selectedVariant: ProductVariant?
-        get() {
-            val selectedValues = selectedOptionValueIds.values.toSet()
-            return product?.variants?.firstOrNull { variant ->
-                variant.selectedOptionValueIds == selectedValues
-            }
+        get() = product?.variants?.firstOrNull { variant ->
+            variant.selectedOptionValueIds == selectedOptionValueIds
         }
+
+    val galleryImages: List<ProductImage>
+        get() = product?.images.orEmpty()
 
     val totalPrice: Money?
         get() = selectedVariant?.price?.let { price ->
@@ -38,12 +40,6 @@ data class ProductDetailsState(
         }
 
     fun isOptionValueAvailable(optionId: String, valueId: String): Boolean {
-        val product = product ?: return false
-        val candidateValues = selectedOptionValueIds.toMutableMap().apply {
-            put(optionId, valueId)
-        }.values.toSet()
-        return product.variants.any { variant ->
-            variant.availableForSale && candidateValues.all(variant.selectedOptionValueIds::contains)
-        }
+        return product?.isOptionValueAvailable(optionId, valueId) == true
     }
 }
