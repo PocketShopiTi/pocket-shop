@@ -9,20 +9,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -43,21 +41,18 @@ import com.iti.pocketshop.ui.theme.LocalExtendedColors
 internal fun AddressEditorContent(
     state: AddressState,
     onAction: (AddressAction) -> Unit,
+    onOpenMapPicker: () -> Unit,
+    onPickContact: () -> Unit,
 ) {
     val editor = state.editor
     val scrollState = rememberScrollState()
     val isBusy = state.isLoading || state.isSaving
     val locationBusy = editor.isLocationSearching || editor.isLocationResolving
     val context = LocalContext.current
-    var isMapExpanded by rememberSaveable { mutableStateOf(false) }
     val extendedColors = LocalExtendedColors.current
     val mapErrorMessage = when (val error = state.error) {
         is AddressError.MapsService -> error.toUiMessage(context)
-        is AddressError.Remote -> error.toUiMessage(context)
-        AddressError.LocationNotFound -> error.toUiMessage(context)
         AddressError.MissingMapsApiKey -> error.toUiMessage(context)
-        AddressError.CurrentLocationUnavailable -> error.toUiMessage(context)
-        AddressError.LocationPermissionDenied -> error.toUiMessage(context)
         else -> null
     }
 
@@ -70,23 +65,18 @@ internal fun AddressEditorContent(
             .padding(bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        LocationSearchSection(
-            editor = editor,
-            enabled = !isBusy,
-            onAction = onAction,
-        )
+        SectionTitle(
+            title = stringResource(R.string.address_section_location),
+
+            )
 
         MapPreviewCard(
             latitude = editor.latitude,
             longitude = editor.longitude,
             isLoading = editor.isLocationResolving,
             enabled = !isBusy,
-            isExpanded = isMapExpanded,
-            onToggleExpanded = { isMapExpanded = !isMapExpanded },
             errorMessage = mapErrorMessage,
-            onLocationPicked = { latitude, longitude ->
-                onAction(AddressAction.MapLocationPicked(latitude, longitude))
-            },
+            onOpenMapPicker = onOpenMapPicker,
         )
 
         SectionTitle(
@@ -155,6 +145,15 @@ internal fun AddressEditorContent(
                         contentDescription = null,
                         tint = extendedColors.textSecondary,
                     )
+                },
+                trailingIcon = {
+                    IconButton(onClick = onPickContact, enabled = !isBusy) {
+                        Icon(
+                            Icons.Filled.Contacts,
+                            contentDescription = stringResource(R.string.pick_from_contacts),
+                            tint = extendedColors.textSecondary,
+                        )
+                    }
                 },
                 onValueChange = { onAction(AddressAction.FieldChanged(AddressField.PHONE, it)) },
             )

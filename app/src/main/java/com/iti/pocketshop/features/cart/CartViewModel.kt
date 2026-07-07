@@ -2,97 +2,139 @@ package com.iti.pocketshop.features.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.features.cart.domain.repository.CartRepository
+import com.iti.pocketshop.core.components.ErrorDialogController
+import com.iti.pocketshop.core.networkutils.onError
+import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
+import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.RemoveCartItemUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.UpdateCartQuantityUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class CartViewModel @Inject constructor(
-    private val cartRepository: CartRepository
+    private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase,
+    private val updateCartQuantityUseCase: UpdateCartQuantityUseCase,
+    private val removeCartItemUseCase: RemoveCartItemUseCase,
+    getLocalCartUseCase: GetLocalCartUseCase,
 ) : ViewModel() {
 
-    private val _internalState = MutableStateFlow(CartState())
-    
-    val state = combine(
-        cartRepository.cartState,
-        _internalState
-    ) { shopifyCart, internalState ->
-        if (shopifyCart == null) {
-            internalState.copy(items = emptyList(), subTotal = 0.0, total = 0.0)
-        } else {
-            internalState.copy(
-                items = shopifyCart.lines,
-                subTotal = shopifyCart.subtotalAmount,
-                currencyCode = shopifyCart.subtotalCurrencyCode,
-                shipping = 0.0,
-                total = shopifyCart.totalAmount
+    private var loadedInitialData = false
+    private var updateQuantityJob: Job? = null
+    private val _state = MutableStateFlow(CartState())
+
+    val state = _state
+        .combine(
+            getLocalCartUseCase(),
+        ) { currentState, localCart ->
+            val items = localCart?.lines ?: emptyList()
+            currentState.copy(
+                cartId = localCart?.id ?: currentState.cartId,
+                items = items,
+                subTotal = localCart?.subtotalAmount?.amount ?: 0.0,
+                currencyCode = localCart?.totalAmount?.currencyCode?.name ?: items.firstOrNull()?.currencyCode ?: "",
+                itemsCounts = localCart?.totalQuantity ?: 0,
+                total = localCart?.totalAmount?.amount ?: 0.0,
+                appliedDiscountCodes = localCart?.appliedDiscountCodes ?: emptyList(),
             )
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5_000L),
-        initialValue = CartState()
-    )
+        .onStart {
+            if (!loadedInitialData) {
+                fetchCart()
+                loadedInitialData = true
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = CartState()
+        )
 
     fun onAction(action: CartAction) {
         when (action) {
-            is CartAction.UpdateQuantity -> {
-                viewModelScope.launch {
-                    val cartId = cartRepository.cartState.value?.id ?: return@launch
-                    _internalState.update { it.copy(isLoading = true, error = null) }
-                    val result = cartRepository.updateLines(cartId, action.lineId, action.quantity)
-                    if (result is PocketResult.Error) {
-                        _internalState.update { it.copy(isLoading = false, error = result.error) }
-                    } else {
-                        _internalState.update { it.copy(isLoading = false) }
+            CartAction.FetchCart -> fetchCart()
+            is CartAction.UpdateQuantity -> updateItemQuantity(action)
+            is CartAction.PrepareDeletingItem -> prepareItemForDeletion(action.item)
+            CartAction.ConfirmRemoveItem -> confirmDeleteSelectedItem()
+            CartAction.CancelDeletingItem -> cancelDeletingItem()
+        }
+    }
+
+    private fun confirmDeleteSelectedItem() {
+        viewModelScope.launch {
+            val item = _state.value.itemToRemove ?: return@launch
+            val cartId = state.value.cartId ?: return@launch
+            _state.update {
+                it.copy(
+                    itemToRemove = null,
+                    isLoading = true,
+                )
+            }
+            removeCartItemUseCase(cartId, item.lineId)
+                .onSuccess {
+                    _state.update { it.copy(isLoading = false) }
+                }
+                .onError { error ->
+                    ErrorDialogController.sendEvent(error)
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+    private fun cancelDeletingItem() {
+        _state.update { it.copy(itemToRemove = null) }
+    }
+
+    private fun prepareItemForDeletion(item: CartLineItem) {
+        _state.update { it.copy(itemToRemove = item) }
+    }
+
+    private fun updateItemQuantity(action: CartAction.UpdateQuantity) {
+        updateQuantityJob?.cancel()
+        updateQuantityJob = viewModelScope.launch {
+            delay(500L.milliseconds)
+            val cartId = state.value.cartId ?: return@launch
+            _state.update { it.copy(isLoading = true) }
+            updateCartQuantityUseCase(cartId, action.lineId, action.quantity)
+                .onSuccess {
+                    _state.update { it.copy(isLoading = false) }
+                }
+                .onError { error ->
+                    ErrorDialogController.sendEvent(error)
+                    _state.update { it.copy(isLoading = false) }
+                }
+        }
+    }
+
+
+    fun fetchCart() {
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true) }
+            restoreOrCreateCartUseCase()
+                .onSuccess { cart ->
+                    _state.update {
+                        it.copy(
+                            cartId = cart.id,
+                            isLoading = false
+                        )
                     }
                 }
-            }
-            is CartAction.RemoveItemClicked -> {
-                _internalState.update { it.copy(itemToRemove = action.item) }
-            }
-            CartAction.ConfirmRemoveItem -> {
-                val item = _internalState.value.itemToRemove
-                val cartId = cartRepository.cartState.value?.id
-                if (item != null && cartId != null) {
-                    viewModelScope.launch {
-                        _internalState.update { it.copy(itemToRemove = null, isLoading = true, error = null) }
-                        val result = cartRepository.removeLines(cartId, listOf(item.lineId))
-                        if (result is PocketResult.Error) {
-                            _internalState.update { it.copy(isLoading = false, error = result.error) }
-                        } else {
-                            _internalState.update { it.copy(isLoading = false) }
-                        }
-                    }
-                } else {
-                    _internalState.update { it.copy(itemToRemove = null) }
+                .onError { error ->
+                    ErrorDialogController.sendEvent(error)
+                    _state.update { it.copy(isLoading = false) }
                 }
-            }
-            CartAction.CancelRemoveItem -> {
-                _internalState.update { it.copy(itemToRemove = null) }
-            }
-            CartAction.StartShoppingClicked -> {
-                // Handled in UI navigation
-            }
-            CartAction.CheckoutClicked -> {
-                val url = cartRepository.cartState.value?.checkoutUrl
-                if (url != null) {
-                    _internalState.update { it.copy(checkoutUrl = url) }
-                }
-            }
-            CartAction.CheckoutHandled -> {
-                _internalState.update { it.copy(checkoutUrl = null) }
-            }
-            CartAction.ErrorHandled -> {
-                _internalState.update { it.copy(error = null) }
-            }
         }
     }
 }

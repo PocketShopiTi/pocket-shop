@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.address.presentation
 
 import com.iti.pocketshop.features.address.presentation.state.AddressEditorState
-import com.iti.pocketshop.features.address.presentation.state.PhoneCountryCode
+import com.iti.pocketshop.features.address.utils.PhoneCountryCode
 import org.junit.Assert.assertEquals
 import org.junit.Test
 

@@ -42,6 +42,11 @@ internal fun reduceAddressState(
         error = null,
     )
 
+    is AddressAction.ContactPicked -> state.copy(
+        editor = state.editor.withContactPicked(action.displayName, action.phoneNumber),
+        error = null,
+    )
+
     is AddressAction.LocationSearchChanged -> state.copy(
         editor = state.editor.withLocationSearch(action.query),
         error = null,

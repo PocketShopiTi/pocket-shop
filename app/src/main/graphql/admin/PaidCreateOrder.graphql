@@ -1,0 +1,12 @@
+mutation paidOrderCreate($order: OrderCreateOrderInput!, $options: OrderCreateOptionsInput) {
+    orderCreate(order: $order, options: $options) {
+        order {
+            id
+            name
+            displayFinancialStatus
+            totalPriceSet {
+                shopMoney { amount currencyCode }
+            }
+        }
+    }
+}

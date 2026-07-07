@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.productlist.data
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
@@ -13,6 +14,7 @@ import com.iti.pocketshop.shopify.type.ProductSortKeys
 import javax.inject.Inject
 
 class ProductListRemoteSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : ProductListRemoteSource {
 

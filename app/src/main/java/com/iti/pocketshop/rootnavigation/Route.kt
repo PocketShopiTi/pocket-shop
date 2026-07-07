@@ -13,6 +13,9 @@ sealed interface Route : NavKey {
     data object Onboarding : Route
 
     @Serializable
+    data class OnboardingNotification(val adId: String) : Route
+
+    @Serializable
     data object Login : Route
 
     @Serializable
@@ -52,6 +55,14 @@ sealed interface Route : NavKey {
 
     @Serializable
     data object OrderCheckout : Route
+
+    @Serializable
+    data class OrderSuccess(
+        val orderId: String,
+        val orderName: String,
+        val totalAmount: Double,
+        val currencyCode: String
+    ) : Route
 
     @Serializable
     data object Settings : Route

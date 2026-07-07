@@ -12,11 +12,19 @@ fragment CartFields on Cart {
             currencyCode
         }
     }
+    discountCodes {
+        code
+        applicable
+    }
     lines(first: 50) {
         edges {
             node {
                 id
                 quantity
+                cost {
+                    totalAmount { amount currencyCode }
+                    amountPerQuantity { amount currencyCode }
+                }
                 merchandise {
                     ... on ProductVariant {
                         id

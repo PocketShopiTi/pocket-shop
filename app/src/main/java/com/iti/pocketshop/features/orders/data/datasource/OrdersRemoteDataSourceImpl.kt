@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.orders.data.datasource
 
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.api.Optional
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
@@ -10,6 +11,7 @@ import com.iti.pocketshop.shopify.GetCustomerOrdersQuery
 import javax.inject.Inject
 
 class OrdersRemoteDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : OrdersRemoteDataSource {
 

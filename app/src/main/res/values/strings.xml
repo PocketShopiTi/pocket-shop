@@ -72,6 +72,8 @@
     <string name="server_error">Server error, Please try again</string>
     <string name="failed_to_process_response">Bad response, Please try again</string>
     <string name="something_went_wrong">Something went wrong, Please try again</string>
+    <string name="bad_request_error">Invalid request. Please check your data and try again.</string>
+    <string name="invalid_coupon">Invalid coupon!!</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_re_offline">You are offline!</string>
     <string name="shop_by_brand">Shop by Brand</string>
@@ -87,6 +89,10 @@
     <string name="big_sale">BIG SALE</string>
     <string name="up_to_50_off">Up to\n50% Off</string>
     <string name="shop_now">Shop now</string>
+    <string name="home_coupon_your_code">Your coupon code</string>
+    <string name="home_coupon_copy_code">Copy code</string>
+    <string name="home_coupon_clip_label">Pocket Shop coupon</string>
+    <string name="home_coupon_close">Close offer</string>
     <string name="search">Search</string>
     <string name="search_placeholder">Search products, brands, and more</string>
     <string name="search_clear_query">Clear search</string>
@@ -287,7 +293,27 @@
     <string name="select_theme">Select Theme</string>
     <string name="done">Done</string>
     <string name="currency_unit">Currency:</string>
-    <string name="orders_title">My orders</string>
+ 
+    <!-- Notification onboarding -->
+    <string name="notification_channel_promotions">Promotions</string>
+    <string name="notification_ad_title">New offer from Pocket Shop</string>
+    <string name="notification_ad_body">Tap to reveal your latest coupon.</string>
+    <string name="notification_onboarding_back">Back</string>
+    <string name="notification_onboarding_loading">Loading your offer</string>
+    <string name="notification_onboarding_image">Promotion image</string>
+    <string name="notification_onboarding_intro_subtitle">A new deal is ready for you.</string>
+    <string name="notification_onboarding_details_title">Offer details</string>
+    <string name="notification_onboarding_coupon_title">Your coupon is ready</string>
+    <string name="notification_onboarding_coupon_body">Use this code at checkout before the offer ends.</string>
+    <string name="notification_onboarding_coupon_label">Coupon code</string>
+    <string name="notification_onboarding_coupon_copy">Copy code</string>
+    <string name="notification_onboarding_coupon_copied">Copied</string>
+    <string name="notification_onboarding_no_coupon">No code needed</string>
+    <string name="notification_onboarding_page_indicator">%1$d / %2$d</string>
+    <string name="notification_onboarding_error_title">We could not load this offer</string>
+    <string name="notification_onboarding_unavailable_title">Offer unavailable</string>
+    <string name="notification_onboarding_unavailable_body">This promotion has ended or is no longer active.</string>
+     <string name="orders_title">My orders</string>
     <string name="orders_back">Back</string>
     <string name="orders_track">Track</string>
     <string name="orders_view">View</string>
@@ -299,7 +325,6 @@
     <string name="orders_status_processing">Processing</string>
     <string name="orders_status_delivered">Delivered</string>
     <string name="orders_status_cancelled">Cancelled</string>
-
     <string name="create_account">Create account</string>
     <string name="join_millions_of_online_shoppers">Join millions of online shoppers!</string>
     <string name="enter_first_name">Enter first name</string>
@@ -327,6 +352,17 @@
     <string name="items_count">%1$d items</string>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
+
+    <string name="payment_pay_now">Pay now</string>
+    <string name="payment_completed">Payment completed successfully</string>
+    <string name="payment_canceled">Payment was canceled</string>
+    <string name="payment_failed">Unable to complete payment. Please try again.</string>
+    <string name="payment_no_funds">Insufficient funds. Please use another card.</string>
+    <string name="payment_rejected">Payment rejected. Please contact your bank.</string>
+    <string name="payment_expired">Card expired. Please use a different card.</string>
+    <string name="payment_invalid_card">Invalid card details. Please check and try again.</string>
+    <string name="cart_currency_egp">EGP</string>
+    <string name="cart_currency_usd">USD</string>
     <string name="all_categories">All Categories</string>
     <string name="men">Men</string>
     <string name="women">Women</string>
@@ -337,4 +373,36 @@
     <string name="accessories">Accessories</string>
     <string name="pets">Pets</string>
     <string name="try_searching_for_something_else">Try searching for something else.</string>
+ 
+    <string name="cart_coupon_test_title">Cart coupon test</string>
+    <string name="cart_mock_applied_coupons">Mock applied coupons: AMR, SUMMER20</string>
+    <string name="cart_id_label">Cart ID</string>
+    <string name="cart_coupon_code_label">Coupon code</string>
+    <string name="cart_apply_coupon">Apply coupon</string>
+    <string name="cart_applying_coupon">Applying coupon…</string>
+    <string name="cart_coupon_applicable">applicable</string>
+    <string name="cart_coupon_not_applicable">not applicable</string>
+    <string name="cart_empty_discount_code">empty code</string>
+    <string name="cart_discount_status">Code: %1$s — %2$s</string>
+    <string name="cart_subtotal">Subtotal: %1$.2f %2$s</string>
+    <string name="cart_total">Total: %1$.2f %2$s</string>
+    <string name="cart_coupon_warning">Warning (%1$s): %2$s</string>
+    <string name="cart_coupon_user_error">User error (%1$s): %2$s</string>
+    <string name="cart_unknown_error_code">unknown</string>
+    <string name="coupon_code">Coupon code</string>
+    <string name="delivery_address">Delivery Address</string>
+    <string name="no_saved_addresses_yet">No saved addresses yet</string>
+    <string name="select_a_delivery_address_to_continue">Select a delivery address to continue</string>
+    <string name="apply">Apply</string>
+    <string name="remove_coupon_code">Remove %1$s</string>
+    <string name="coupons">Coupons</string>
+    <string name="checkout">Checkout</string>
+    <string name="fetch_address_error">Loading addresses has failed. please try again.</string>
+    <string name="order_success_title">Order Placed!</string>
+    <string name="order_success_message">Your order has been placed successfully and is being processed.</string>
+    <string name="order_number">Order Number</string>
+    <string name="continue_shopping">Continue Shopping</string>
+    <string name="view_my_orders">View All Orders</string>
+    <string name="processing_your_order">Processing your order…</string>
+    <string name="please_wait_a_moment">Please wait a moment while we finalize your order.</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.address.data.datasource
 
 import com.apollographql.apollo.ApolloClient
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeCall
@@ -13,6 +14,7 @@ import com.iti.pocketshop.shopify.type.MailingAddressInput
 import javax.inject.Inject
 
 class AddressRemoteDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : AddressRemoteDataSource {
     override suspend fun getAddresses(

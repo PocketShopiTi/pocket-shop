@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.productdetails.data.datasource
 import com.apollographql.apollo.ApolloClient
 import com.apollographql.apollo.exception.ApolloException
 import com.apollographql.apollo.exception.ApolloNetworkException
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.exceptions.AppException
 import com.iti.pocketshop.core.exceptions.ShopifyExceptions
 import com.iti.pocketshop.shopify.GetProductByIdQuery
@@ -11,6 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RemoteDataSource @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient
 ) {
     suspend fun getProductById(productId: String): GetProductByIdQuery.Product {

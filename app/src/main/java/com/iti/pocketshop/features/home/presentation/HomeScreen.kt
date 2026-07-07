@@ -26,6 +26,7 @@ import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.home.domain.models.toFavoriteProduct
 import com.iti.pocketshop.features.home.presentation.components.BrandRow
 import com.iti.pocketshop.features.home.presentation.components.CategoriesRow
+import com.iti.pocketshop.features.home.presentation.components.CouponOfferScreen
 import com.iti.pocketshop.features.home.presentation.components.EmptyHome
 import com.iti.pocketshop.features.home.presentation.components.HeroBanner
 import com.iti.pocketshop.features.home.presentation.components.HomeShimmer
@@ -108,9 +109,8 @@ private fun HomeScreen(
                     if (!state.isEmptyState) {
                         item(key = "hero_banner") {
                             HeroBanner(
-                                openSales = {
-                                    //TODO()
-                                }
+                                ads = state.promotionAds,
+                                onAdClick = { ad -> onAction(HomeAction.OpenPromotionAd(ad)) },
                             )
                         }
                     }
@@ -239,4 +239,10 @@ private fun HomeScreen(
             onAction(HomeAction.ToggleFavorite(it))
         }
     )
+    state.selectedPromotionAd?.let { ad ->
+        CouponOfferScreen(
+            ad = ad,
+            onClose = { onAction(HomeAction.ClosePromotionAd) },
+        )
+    }
 }

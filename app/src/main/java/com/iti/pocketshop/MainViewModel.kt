@@ -8,11 +8,9 @@ import com.iti.pocketshop.common.settings.domain.UserSettingsRepo
 import com.iti.pocketshop.common.settings.domain.models.LanguageSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
 import com.iti.pocketshop.common.sessionmanager.domain.repository.UserRepo
-import com.iti.pocketshop.features.cart.domain.usecase.RestoreCartUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -22,20 +20,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     userRepo: UserRepo,
     private val userSettingsRepo: UserSettingsRepo,
-    private val restoreCartUseCase: RestoreCartUseCase
 ) : ViewModel() {
-
-    init {
-        viewModelScope.launch {
-            userRepo.observeSession()
-                .distinctUntilChanged()
-                .collect { session ->
-                    if (session != null && !session.isAnonymous) {
-                        restoreCartUseCase()
-                    }
-                }
-        }
-    }
 
     val mainUiState: Flow<MainUiState> = userSettingsRepo.settingsFlow
         .map {

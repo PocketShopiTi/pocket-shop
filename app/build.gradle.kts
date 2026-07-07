@@ -88,6 +88,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        dataBinding = true
     }
 }
 
@@ -170,11 +171,14 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
-    // firebase auth
+    // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.ai)
+    implementation(libs.firebase.appcheck.debug)
 
     // Credential Manager for Google Sign-In
     //noinspection LoginCredentials
@@ -185,4 +189,6 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.osmdroid.android)
 
+    // paymob
+    implementation(libs.paymob.sdk)
 }

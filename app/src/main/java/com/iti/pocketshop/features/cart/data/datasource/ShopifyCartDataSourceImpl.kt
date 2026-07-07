@@ -1,6 +1,8 @@
 package com.iti.pocketshop.features.cart.data.datasource
 
 import com.apollographql.apollo.ApolloClient
+import com.apollographql.apollo.api.Optional
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeCall
@@ -17,6 +19,7 @@ import com.iti.pocketshop.shopify.type.CartLineUpdateInput
 import javax.inject.Inject
 
 class ShopifyCartDataSourceImpl @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient
 ) : ShopifyCartDataSource {
 
@@ -49,7 +52,7 @@ class ShopifyCartDataSourceImpl @Inject constructor(
         variantId: String,
         quantity: Int
     ): PocketResult<CartFields, PocketDataError.Remote> {
-        val line = CartLineInput(merchandiseId = variantId, quantity = com.apollographql.apollo.api.Optional.present(quantity))
+        val line = CartLineInput(merchandiseId = variantId, quantity = Optional.present(quantity))
         val result = apolloClient.mutation(CartLinesAddMutation(cartId, listOf(line))).safeCall()
         return when (result) {
             is PocketResult.Error -> result
@@ -81,7 +84,7 @@ class ShopifyCartDataSourceImpl @Inject constructor(
         lineId: String,
         quantity: Int
     ): PocketResult<CartFields, PocketDataError.Remote> {
-        val line = CartLineUpdateInput(id = lineId, quantity = com.apollographql.apollo.api.Optional.present(quantity))
+        val line = CartLineUpdateInput(id = lineId, quantity = Optional.present(quantity))
         val result = apolloClient.mutation(CartLinesUpdateMutation(cartId, listOf(line))).safeCall()
         return when (result) {
             is PocketResult.Error -> result
@@ -97,7 +100,7 @@ class ShopifyCartDataSourceImpl @Inject constructor(
         cartId: String,
         customerAccessToken: String
     ): PocketResult<CartFields, PocketDataError.Remote> {
-        val identity = CartBuyerIdentityInput(customerAccessToken = com.apollographql.apollo.api.Optional.present(customerAccessToken))
+        val identity = CartBuyerIdentityInput(customerAccessToken = Optional.present(customerAccessToken))
         val result = apolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity)).safeCall()
         return when (result) {
             is PocketResult.Error -> result

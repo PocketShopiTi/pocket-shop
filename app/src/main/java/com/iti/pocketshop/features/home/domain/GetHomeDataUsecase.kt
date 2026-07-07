@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.home.domain
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.home.domain.models.HomeData
+import com.iti.pocketshop.features.home.domain.models.PromotionAd
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(
@@ -21,4 +22,12 @@ class GetHomeDataUseCase @Inject constructor(
             newArrivalsCount = newArrivalsCount,
         )
     }
+}
+
+class GetPromotionAdsUseCase @Inject constructor(
+    private val repository: HomeRepository,
+) {
+    suspend operator fun invoke(): PocketResult<List<PromotionAd>, PocketDataError.Auth> =
+          repository.getPromotionAds()
+
 }

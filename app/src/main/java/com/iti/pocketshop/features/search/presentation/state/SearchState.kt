@@ -16,6 +16,7 @@ data class SearchState(
     val activeSortOption: SortOption = SortOption.RELEVANCE,
     val priceRangeBounds: ClosedFloatingPointRange<Float>? = null,
     val activePriceRange: ClosedFloatingPointRange<Float>? = null,
+    val lastPredictiveResult: PredictiveSearchResult? = null,
 )
 
 sealed class SearchPhase {

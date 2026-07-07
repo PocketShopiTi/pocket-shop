@@ -23,7 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.iti.pocketshop.features.address.presentation.state.PhoneCountryCode
+import com.iti.pocketshop.features.address.utils.PhoneCountryCode
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @OptIn(ExperimentalMaterial3Api::class)

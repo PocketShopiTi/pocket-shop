@@ -72,7 +72,7 @@ fun PriceRangeSheet(
                 onValueChange = { sliderPosition = it },
                 valueRange = bounds,
                 onValueChangeFinished = {
-                    onAction(SearchAction.UpdatePriceRange(sliderPosition))
+                    onAction(SearchAction.QuickUpdatePriceRange(sliderPosition))
                 },
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.primary,
@@ -90,7 +90,7 @@ fun PriceRangeSheet(
                 OutlinedButton(
                     onClick = {
                         sliderPosition = bounds
-                        onAction(SearchAction.ClearPriceRange)
+                        onAction(SearchAction.QuickClearPriceRange)
                     },
                     modifier = Modifier.weight(1f),
 

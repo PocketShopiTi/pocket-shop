@@ -1,16 +1,18 @@
 package com.iti.pocketshop.features.cart
 
-import com.iti.pocketshop.core.networkutils.PocketDataError
+import androidx.compose.runtime.Immutable
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 
+@Immutable
 data class CartState(
+    val cartId: String? = null,
     val items: List<CartLineItem> = emptyList(),
     val subTotal: Double = 0.0,
-    val currencyCode: String = "USD",
+    val currencyCode: String = "",
     val shipping: Double = 0.0,
     val total: Double = 0.0,
     val itemToRemove: CartLineItem? = null,
-    val checkoutUrl: String? = null,
     val isLoading: Boolean = false,
-    val error: PocketDataError? = null
+    val itemsCounts: Int = 0,
+    val appliedDiscountCodes: List<String> = emptyList()
 )

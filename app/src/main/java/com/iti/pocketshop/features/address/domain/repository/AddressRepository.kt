@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.address.domain.repository
 
+import android.net.Uri
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.address.domain.error.AddressError
 import com.iti.pocketshop.features.address.domain.model.Address
@@ -7,6 +8,7 @@ import com.iti.pocketshop.features.address.domain.model.AddressBook
 import com.iti.pocketshop.features.address.domain.model.AddressDraft
 import com.iti.pocketshop.features.address.domain.model.AddressLocationDetails
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion
+import com.iti.pocketshop.features.address.domain.model.ContactInfo
 import com.iti.pocketshop.features.address.domain.model.LocationCoordinates
 
 interface AddressRepository {
@@ -35,4 +37,6 @@ interface AddressRepository {
     ): PocketResult<AddressLocationDetails, AddressError>
 
     suspend fun getCurrentLocation(): PocketResult<LocationCoordinates, AddressError>
+    suspend fun getContact(uri: Uri): ContactInfo?
+
 }

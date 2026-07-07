@@ -2,7 +2,6 @@ package com.iti.pocketshop.features.address.utils
 
 import com.iti.pocketshop.features.address.presentation.state.AddressEditorState
 import com.iti.pocketshop.features.address.presentation.state.AddressField
-import com.iti.pocketshop.features.address.presentation.state.PhoneCountryCode
 import java.util.Locale
 
 internal fun validateAddressEditor(
