@@ -203,11 +203,18 @@ fun RootNavDisplay(
                     },
                     openOrderCheckout = {
                         rootBackStack.navigateSingleTop(Route.OrderCheckout)
+                    },
+                    openAiChat = {
+                        rootBackStack.navigateSingleTop(Route.AiChat)
                     }
                 )
             }
             entry<Route.AiChat> {
-                AiChatRoot()
+                AiChatRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    }
+                )
             }
             entry<Route.ProductDetails> {
                 ProductDetailsRoot(

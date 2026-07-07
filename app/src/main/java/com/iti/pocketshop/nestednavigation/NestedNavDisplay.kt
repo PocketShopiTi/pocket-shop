@@ -43,6 +43,7 @@ fun NestedNavDisplay(
     openLogin: () -> Unit,
     openRegister: () -> Unit,
     openOrderCheckout: () -> Unit,
+    openAiChat: () -> Unit,
 ) {
 
     val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
@@ -112,7 +113,8 @@ fun NestedNavDisplay(
                         openProductDetails = openProductDetails,
                         openSearch = openSearch,
                         openBrands = openBrands,
-                        openProductList = openProductList
+                        openProductList = openProductList,
+                        openAiChat = openAiChat
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {
