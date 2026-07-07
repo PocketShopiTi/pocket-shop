@@ -187,12 +187,13 @@ class AiChatViewModel @Inject constructor(
             }
             "get_product_details" -> {
                 val productId = toolCall.arguments["productId"] as? String ?: ""
-                val result = getProductDetailsUseCase(productId)
-                if (result.isSuccess) {
-                    val data = result.getOrThrow()
-                    "Product: ${data.title}\nDescription: ${data.description}\nVariants: ${data.variants.joinToString { v -> "${v.id} - ${v.price.amount} ${v.price.currencyCode}" }}"
-                } else {
-                    "Error getting details: ${result.exceptionOrNull()}"
+                when (val result = getProductDetailsUseCase(productId)) {
+                    is PocketResult.Error -> "Error getting details: ${result.error}"
+                    is PocketResult.Success -> {
+                        val data = result.data
+                        "Product: ${data.title}\nDescription: ${data.description}\nVariants: ${data.variants.joinToString { v -> "${v.id} - ${v.price.amount} ${v.price.currencyCode}" }}"
+
+                    }
                 }
             }
             "add_to_cart" -> {
