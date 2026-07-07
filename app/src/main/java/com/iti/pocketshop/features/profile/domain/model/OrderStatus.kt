@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.profile.domain.model
 
 enum class OrderStatus {
-    PENDING,
+    ORDERED,
     PROCESSING,
     FULFILLED,
     CANCELLED,

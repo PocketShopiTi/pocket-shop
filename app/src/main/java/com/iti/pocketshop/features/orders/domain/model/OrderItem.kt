@@ -12,7 +12,7 @@ data class OrderItem(
 )
 
 enum class OrderStatus {
-    PENDING,
+    ORDERED,
     PROCESSING,
     FULFILLED,
     CANCELLED,

@@ -9,10 +9,14 @@ import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.address.domain.usecase.GetAddressesUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
+import com.iti.pocketshop.features.checkout.data.mappers.COD_GATEWAY_NAME
+import com.iti.pocketshop.features.checkout.data.mappers.PaymentConfirmation
 import com.iti.pocketshop.features.checkout.domain.usecases.PlaceOrderUseCase
 import com.iti.pocketshop.features.checkout.domain.usecases.SetDeliveryAddressUseCase
 import com.iti.pocketshop.features.coupons.domain.usecase.ApplyCouponUseCase
 import com.iti.pocketshop.features.coupons.domain.usecase.RemoveCouponUseCase
+import com.iti.pocketshop.features.home.domain.models.Money
+import com.iti.pocketshop.features.payment.domain.models.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -92,14 +96,37 @@ class CheckoutViewModel @Inject constructor(
                 _state.update { it.copy(selectedAddress = action.address) }
             }
 
+            is CheckoutAction.SelectPaymentMethod -> {
+                _state.update { it.copy(selectedPaymentMethod = action.method) }
+            }
+
+            is CheckoutAction.PlaceCodOrder -> placeCodOrder(action.customer)
+
             is CheckoutAction.OnPaymentSuccess -> {
-                createPaidOrder(action)
+                placeOrder(action.customer, action.paymentConfirmation)
             }
         }
     }
 
-    private fun createPaidOrder(
-        action: CheckoutAction.OnPaymentSuccess
+    private fun placeCodOrder(customer: UserData) {
+        val total = state.value.cart?.totalAmount ?: return
+        placeOrder(
+            customer = customer,
+            payment = PaymentConfirmation(
+                transactionId = null,
+                gateway = COD_GATEWAY_NAME,
+                amount = Money(
+                    amount = total.amount,
+                    currencyCode = total.currencyCode.rawValue,
+                ),
+                isPaid = false,
+            ),
+        )
+    }
+
+    private fun placeOrder(
+        customer: UserData,
+        payment: PaymentConfirmation,
     ) {
         viewModelScope.launch {
             val cartId = state.value.cart?.id ?: return@launch
@@ -119,8 +146,8 @@ class CheckoutViewModel @Inject constructor(
                     placeOrderUseCase(
                         cart = cart,
                         shippingAddress = selectedAddress,
-                        customer = action.customer,
-                        payment = action.paymentConfirmation
+                        customer = customer,
+                        payment = payment
                     )
                         .onSuccess { newOrder ->
                             restoreOrCreateCartUseCase(

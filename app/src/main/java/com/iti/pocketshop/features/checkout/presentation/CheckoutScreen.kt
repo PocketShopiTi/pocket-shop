@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
@@ -35,6 +36,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -54,11 +56,14 @@ import com.iti.pocketshop.R
 import com.iti.pocketshop.features.address.domain.model.Address
 import com.iti.pocketshop.features.checkout.data.mappers.Order
 import com.iti.pocketshop.features.checkout.data.mappers.PaymentConfirmation
+import com.iti.pocketshop.features.checkout.domain.model.PaymentMethod
 import com.iti.pocketshop.features.checkout.domain.model.toUserData
+import com.iti.pocketshop.features.checkout.presentation.components.PaymentMethodCard
 import com.iti.pocketshop.features.home.domain.models.Money
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 import com.iti.pocketshop.features.payment.domain.models.PaymentGateway
 import com.iti.pocketshop.features.payment.presentation.PaymentButton
+import kotlin.math.roundToLong
 
 
 @Composable
@@ -145,6 +150,12 @@ fun OrderCheckoutScreen(
                         )
                     }
                     item {
+                        PaymentMethodCard(
+                            selectedMethod = state.selectedPaymentMethod,
+                            onSelect = { onAction(CheckoutAction.SelectPaymentMethod(it)) }
+                        )
+                    }
+                    item {
                         AddressSection(
                             state = state,
                             onAction = onAction
@@ -217,9 +228,41 @@ private fun OrderSummaryCard(
 
             HorizontalDivider()
 
+            val subtotal = state.cart?.subtotalAmount
+            val total = state.cart?.totalAmount
+            val discountAmount = if (subtotal != null && total != null) {
+                ((subtotal.amount - total.amount) * 100).roundToLong() / 100.0
+            } else {
+                0.0
+            }
+            val appliedCodes = state.cart?.appliedDiscountCodes.orEmpty()
+
+            SummaryRow(
+                label = stringResource(R.string.subtotal),
+                value = "${subtotal?.amount ?: 0.0} ${subtotal?.currencyCode ?: ""}",
+                labelStyle = MaterialTheme.typography.bodyLarge,
+                valueStyle = MaterialTheme.typography.titleMedium,
+            )
+
+            if (appliedCodes.isNotEmpty() && discountAmount > 0.0) {
+                SummaryRow(
+                    label = stringResource(
+                        R.string.checkout_discount_with_code,
+                        appliedCodes.joinToString()
+                    ),
+                    value = stringResource(
+                        R.string.checkout_negative_amount,
+                        "$discountAmount ${total?.currencyCode ?: ""}"
+                    ),
+                    labelStyle = MaterialTheme.typography.bodyLarge,
+                    valueStyle = MaterialTheme.typography.titleMedium,
+                    valueColor = MaterialTheme.colorScheme.primary,
+                )
+            }
+
             SummaryRow(
                 label = stringResource(R.string.total),
-                value = "${state.cart?.totalAmount?.amount ?: 0.0} ${state.cart?.totalAmount?.currencyCode ?: ""}",
+                value = "${total?.amount ?: 0.0} ${total?.currencyCode ?: ""}",
                 labelStyle = MaterialTheme.typography.titleMedium,
                 valueStyle = MaterialTheme.typography.titleLarge,
             )
@@ -233,6 +276,7 @@ fun SummaryRow(
     value: String,
     labelStyle: TextStyle,
     valueStyle: TextStyle,
+    valueColor: Color = Color.Unspecified,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -246,7 +290,8 @@ fun SummaryRow(
         Text(
             value,
             style = valueStyle,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            color = valueColor
         )
     }
 }
@@ -451,30 +496,42 @@ private fun CheckoutBottomBar(
 
             if (total != null && selectedAddress != null) {
                 val user = selectedAddress.toUserData(user?.email)
-                PaymentButton(
-                    amountMinor = (total.amount * 100).toLong(),
-                    currency = PaymentCurrency.EGP,
-                    userData = user,
-                    onSuccess = { transactionId ->
-                        onAction(
-                            CheckoutAction.OnPaymentSuccess(
-                                customer = user,
-                                paymentConfirmation = PaymentConfirmation(
-                                    transactionId = transactionId,
-                                    gateway = PaymentGateway.PayMob.gatewayName,
-                                    amount = Money(
-                                        total.amount,
-                                        total.currencyCode.name
+                when (state.selectedPaymentMethod) {
+                    PaymentMethod.CARD -> PaymentButton(
+                        amountMinor = (total.amount * 100).toLong(),
+                        currency = PaymentCurrency.EGP,
+                        userData = user,
+                        onSuccess = { transactionId ->
+                            onAction(
+                                CheckoutAction.OnPaymentSuccess(
+                                    customer = user,
+                                    paymentConfirmation = PaymentConfirmation(
+                                        transactionId = transactionId,
+                                        gateway = PaymentGateway.PayMob.gatewayName,
+                                        amount = Money(
+                                            total.amount,
+                                            total.currencyCode.name
+                                        )
                                     )
                                 )
                             )
-                        )
-                    },
-                    enabled = canCheckout,
-                    modifier = Modifier
-                        .height(52.dp)
-                        .fillMaxWidth()
-                )
+                        },
+                        enabled = canCheckout,
+                        modifier = Modifier
+                            .height(52.dp)
+                            .fillMaxWidth()
+                    )
+
+                    PaymentMethod.CASH_ON_DELIVERY -> Button(
+                        onClick = { onAction(CheckoutAction.PlaceCodOrder(user)) },
+                        enabled = canCheckout && !state.isProcessingOrder,
+                        modifier = Modifier
+                            .height(52.dp)
+                            .fillMaxWidth()
+                    ) {
+                        Text(stringResource(R.string.checkout_place_order))
+                    }
+                }
             }
         }
     }
