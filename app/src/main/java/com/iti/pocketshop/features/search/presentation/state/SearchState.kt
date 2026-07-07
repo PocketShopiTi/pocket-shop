@@ -10,6 +10,7 @@ data class SearchState(
     val query: String = "",
     val phase: SearchPhase = SearchPhase.Initial,
     val isLoading: Boolean = false,
+    val isLoadingNextPage: Boolean = false,
     val error: String? = null,
     val activeFilters: List<ProductFilterValue> = emptyList(),
     val initialProducts: List<SearchResultItem.ProductItem> = emptyList(),

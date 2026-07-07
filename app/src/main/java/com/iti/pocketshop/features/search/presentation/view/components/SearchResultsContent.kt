@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -24,6 +26,7 @@ import com.iti.pocketshop.features.search.presentation.action.SearchAction
 fun SearchResultsContent(
     query: String,
     searchResult: SearchResult,
+    isLoadingNextPage: Boolean,
     onAction: (SearchAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -64,11 +67,16 @@ fun SearchResultsContent(
             item(span = { GridItemSpan(maxLineSpan) }) {
                 TextButton(
                     onClick = { onAction(SearchAction.LoadNextPage) },
+                    enabled = !isLoadingNextPage,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
                 ) {
-                    Text(stringResource(R.string.search_load_more))
+                    if (isLoadingNextPage) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    } else {
+                        Text(stringResource(R.string.search_load_more))
+                    }
                 }
             }
         }
