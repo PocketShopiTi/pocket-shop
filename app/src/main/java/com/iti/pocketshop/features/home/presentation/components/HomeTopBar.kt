@@ -28,7 +28,6 @@ import com.iti.pocketshop.R
 @Composable
 fun HomeTopBar(
     onSearchClick: () -> Unit,
-    onAiChatClick: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -41,13 +40,6 @@ fun HomeTopBar(
             )
         },
         actions = {
-            IconButton(onClick = onAiChatClick) {
-                Icon(
-                    imageVector = Icons.Default.AutoAwesome,
-                    contentDescription = "AI Assistant",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
             IconButton(onClick = onSearchClick) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_search),

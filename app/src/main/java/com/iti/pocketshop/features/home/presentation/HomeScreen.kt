@@ -44,7 +44,6 @@ fun HomeRoot(
     openBrands: () -> Unit,
     openProductList: (ProductListRouteInfo) -> Unit,
     openProductDetails: (String) -> Unit,
-    openAiChat: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -56,7 +55,6 @@ fun HomeRoot(
         openBrands = openBrands,
         openProductList = openProductList,
         openProductDetails = openProductDetails,
-        openAiChat = openAiChat,
         state = state,
         onAction = viewModel::onAction,
         onWishlistClick = { uiProduct ->
@@ -82,7 +80,6 @@ private fun HomeScreen(
     openBrands: () -> Unit,
     openProductList: (ProductListRouteInfo) -> Unit,
     openProductDetails: (String) -> Unit,
-    openAiChat: () -> Unit,
     state: HomeState,
     onAction: (HomeAction) -> Unit,
     onWishlistClick: (UIProduct) -> Unit,
@@ -94,7 +91,6 @@ private fun HomeScreen(
     ) {
         HomeTopBar(
             onSearchClick = openSearch,
-            onAiChatClick = openAiChat
         )
         PullToRefreshBox(
             isRefreshing = state.isLoading && !state.isEmptyState,
