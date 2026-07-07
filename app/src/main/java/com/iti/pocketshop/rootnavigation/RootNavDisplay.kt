@@ -214,6 +214,7 @@ fun RootNavDisplay(
                     },
                     openAiChat = {
                         rootBackStack.navigateSingleTop(Route.AiChat)
+                    },
                     openOrderDetails = { orderId ->
                         rootBackStack.navigateSingleTop(Route.OrderDetails(orderId = orderId))
                     }
