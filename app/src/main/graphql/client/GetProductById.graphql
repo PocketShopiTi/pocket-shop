@@ -71,5 +71,23 @@ query GetProductById($id: ID!) {
             maxVariantPrice { amount currencyCode }
         }
         seo { title description }
+        reviewsMetafield: metafield(namespace: "marketak", key: "items") {
+            references(first: 50) {
+                nodes {
+                    ... on Metaobject {
+                        id
+                        type
+                        updatedAt
+                        customerId: field(key: "customer_id") { value }
+                        customerName: field(key: "customer_name") { value }
+                        rating: field(key: "rating") { value }
+                        title: field(key: "title") { value }
+                        body: field(key: "body") { value }
+                        createdAt: field(key: "created_at") { value }
+                        approved: field(key: "approved") { value }
+                    }
+                }
+            }
+        }
     }
 }

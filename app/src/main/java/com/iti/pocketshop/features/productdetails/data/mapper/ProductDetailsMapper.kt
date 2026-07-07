@@ -7,8 +7,14 @@ import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOption
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionType
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionValue
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 import com.iti.pocketshop.shopify.GetProductByIdQuery
+import kotlinx.datetime.Instant
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.math.round
 import java.util.Locale
 
 fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
@@ -65,6 +71,17 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
         }
     }.distinctBy { it.url }
 
+    val reviews = reviewsMetafield
+        ?.references
+        ?.nodes
+        .orEmpty()
+        .mapNotNull { it.onMetaobject?.toProductReview() }
+    val rating = if (reviews.isEmpty()) {
+        0.0
+    } else {
+        round(reviews.map { it.rating }.average() * 10.0) / 10.0
+    }
+
     val options = visibleOptions.map { option ->
         val optionName = option.name
         val optionType = classifyOptionType(
@@ -120,7 +137,6 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
         )
     }
 
-
     return ProductDetails(
         id = id,
         vendor = vendor,
@@ -129,8 +145,43 @@ fun GetProductByIdQuery.Product.toDomain(): ProductDetails {
         images = images,
         options = options,
         variants = variants,
+        rating = rating,
+        reviewCount = reviews.size,
+        reviews = reviews,
         isFavorite = false,
     )
+}
+
+private fun GetProductByIdQuery.OnMetaobject.toProductReview(): ProductReview? {
+    val approvedValue = approved?.value
+    if (approvedValue != null && approvedValue.equals("false", ignoreCase = true)) return null
+
+    val ratingValue = rating?.value?.toIntOrNull()?.takeIf { it in 1..5 } ?: return null
+    val bodyValue = body?.value.orEmpty().trim()
+    val titleValue = title?.value.orEmpty().trim()
+    val authorValue = customerName?.value.orEmpty().trim().ifBlank { "Shopper" }
+
+    return ProductReview(
+        id = id,
+        author = authorValue,
+        avatarUrl = null,
+        rating = ratingValue,
+        date = parseReviewDate(createdAt?.value, updatedAt),
+        body = bodyValue,
+        title = titleValue,
+        customerId = customerId?.value?.takeIf { it.isNotBlank() },
+    )
+}
+
+internal fun parseReviewDate(createdAt: String?, updatedAt: String): LocalDate {
+    val source = createdAt?.takeIf { it.isNotBlank() } ?: updatedAt
+    return runCatching {
+        Instant.parse(source).toLocalDateTime(TimeZone.UTC).date
+    }.getOrElse {
+        runCatching {
+            LocalDate.parse(source.take(10))
+        }.getOrDefault(LocalDate(1970, 1, 1))
+    }
 }
 
 private fun optionValueId(optionId: String, value: String): String =

@@ -1,0 +1,16 @@
+mutation UpdateProductReview($reviewId: ID!, $metaobject: MetaobjectUpdateInput!) {
+    metaobjectUpdate(id: $reviewId, metaobject: $metaobject) {
+        metaobject {
+            id
+            fields {
+                key
+                value
+            }
+        }
+        userErrors {
+            field
+            message
+            code
+        }
+    }
+}

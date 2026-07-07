@@ -25,9 +25,15 @@ import com.iti.pocketshop.R
 
 @Composable
 fun OnboardingPage1Hero(
+    visible: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val anim = rememberOnboardingAnimState(itemCount = 6, staggerMs = 120L, initialScale = 0.7f)
+    val anim = rememberOnboardingAnimState(
+        itemCount = 6,
+        staggerMs = 120L,
+        initialScale = 0.7f,
+        visible = visible,
+    )
 
     val tagModifier = Modifier
         .zIndex(2f)

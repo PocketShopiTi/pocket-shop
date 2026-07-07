@@ -12,7 +12,7 @@ internal fun reduceAddressState(
         editor = AddressEditorState.blank(isDefault = state.addresses.isEmpty()).copy(visible = true),
         pendingDeleteAddressId = null,
         error = null,
-        message = null,
+        messageId = null,
     )
 
     is AddressAction.EditAddressClicked -> {
@@ -21,7 +21,7 @@ internal fun reduceAddressState(
             editor = AddressEditorState.fromAddress(address),
             pendingDeleteAddressId = null,
             error = null,
-            message = null,
+            messageId = null,
         )
     }
 
@@ -29,7 +29,7 @@ internal fun reduceAddressState(
         editor = AddressEditorState(),
         pendingDeleteAddressId = null,
         error = null,
-        message = null,
+        messageId = null,
     )
 
     is AddressAction.FieldChanged -> state.copy(
@@ -63,7 +63,7 @@ internal fun reduceAddressState(
     is AddressAction.DeleteClicked -> state.copy(
         pendingDeleteAddressId = action.addressId,
         error = null,
-        message = null,
+        messageId = null,
     )
 
     AddressAction.CancelDelete -> state.copy(
@@ -75,7 +75,7 @@ internal fun reduceAddressState(
     )
 
     AddressAction.DismissMessage -> state.copy(
-        message = null,
+        messageId = null,
     )
 
     else -> state

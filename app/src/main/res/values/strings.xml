@@ -403,4 +403,33 @@
     <string name="view_my_orders">View All Orders</string>
     <string name="processing_your_order">Processing your order…</string>
     <string name="please_wait_a_moment">Please wait a moment while we finalize your order.</string>
+    <!-- Search -->
+    <string name="search_sort_by">Sort by</string>
+    <string name="search_favorite">Favorite</string>
+    <string name="search_see_options">See options</string>
+    <string name="search_fill_search">Fill search</string>
+    <string name="search_fill_search_product">Fill search with product name</string>
+    <string name="search_price_range">Price Range</string>
+    <string name="search_sort_featured">Featured</string>
+    <string name="search_sort_price_asc">Price: Low to High</string>
+    <string name="search_sort_price_desc">Price: High to Low</string>
+    <string name="review_form_title">Write a review</string>
+    <string name="review_customer_name_label">Your name</string>
+    <string name="review_title_label">Review title</string>
+    <string name="review_body_label">Your review</string>
+    <string name="review_submit_button">Submit review</string>
+    <string name="review_rating_star_content_description">Star %1$d</string>
+    <string name="review_error_empty_customer_name">Please enter your name</string>
+    <string name="review_error_empty_title">Please enter a title</string>
+    <string name="review_error_empty_body">Please write your review</string>
+    <string name="review_error_invalid_rating">Please select a rating from 1 to 5</string>
+    <string name="product_details_rating_count">Rating count</string>
+    <string name="product_details_write_review">Write review</string>
+    <string name="product_details_edit_review">Edit review</string>
+    <string name="product_details_delete_review">Delete review</string>
+    <string name="product_details_delete_review_title">Delete review?</string>
+    <string name="product_details_delete_review_message">This review will be removed from the product.</string>
+    <string name="product_details_reviews">Reviews</string>
+    <string name="product_details_see_all_reviews">See all reviews</string>
+    <string name="product_details_no_reviews">No reviews yet</string>
 </resources>

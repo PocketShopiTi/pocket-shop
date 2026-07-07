@@ -51,9 +51,9 @@ fun SearchRoot(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is SearchEffect.NavigateToProductDetails -> openProductDetails(effect.id)
-                is SearchEffect.NavigateToCollection -> Unit // TODO: navigate to collection
-                is SearchEffect.NavigateToArticle -> Unit    // TODO: navigate to article
-                is SearchEffect.NavigateToPage -> Unit       // TODO: navigate to page
+                is SearchEffect.NavigateToCollection -> Unit
+                is SearchEffect.NavigateToArticle -> Unit
+                is SearchEffect.NavigateToPage -> Unit
                 SearchEffect.NavigateToFilters -> onOpenFiltersScreen()
                 SearchEffect.NavigateBack -> onBack()
                 is SearchEffect.ShowError -> snackbarHostState.showSnackbar(effect.error.toString())
@@ -129,6 +129,7 @@ fun SearchScreen(
                                 SearchResultsContent(
                                     query = state.query,
                                     searchResult = phase.searchResult,
+                                    isLoadingNextPage = state.isLoadingNextPage,
                                     onAction = onAction,
                                 )
                             }

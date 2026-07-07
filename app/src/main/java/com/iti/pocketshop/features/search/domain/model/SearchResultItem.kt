@@ -1,8 +1,10 @@
 package com.iti.pocketshop.features.search.domain.model
 
 sealed class SearchResultItem {
+    abstract val id: String
+
     data class ProductItem(
-        val id: String,
+        override val id: String,
         val title: String,
         val handle: String,
         val imageUrl: String?,
@@ -16,7 +18,7 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 
     data class ArticleItem(
-        val id: String,
+        override val id: String,
         val title: String,
         val handle: String,
         val excerpt: String?,
@@ -25,7 +27,7 @@ sealed class SearchResultItem {
     ) : SearchResultItem()
 
     data class PageItem(
-        val id: String,
+        override val id: String,
         val title: String,
         val handle: String
     ) : SearchResultItem()

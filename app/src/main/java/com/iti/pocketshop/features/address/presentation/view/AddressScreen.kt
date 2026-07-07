@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -54,8 +55,10 @@ fun AddressScreen(
         isMapPickerOpen = false
     }
 
-    LaunchedEffect(state.message) {
-        state.message?.let { message ->
+    val context = LocalContext.current
+    LaunchedEffect(state.messageId) {
+        state.messageId?.let { messageId ->
+            val message = context.getString(messageId)
             snackbarHostState.showSnackbar(message)
             onAction(AddressAction.DismissMessage)
         }
