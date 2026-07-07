@@ -100,15 +100,12 @@ class MainActivity : AppCompatActivity() {
                     LocalSettingsUser provides ((mainUiState as? MainUiState.Ready)?.userSettings
                         ?: UserSettings())
                 ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        RootNavDisplay(
-                            pendingNotificationAdId = pendingNotificationAdId,
-                            onNotificationAdHandled = {
-                                pendingNotificationAdId = null
-                            },
-                        )
-                        StatusBarBackground(modifier = Modifier.align(Alignment.TopCenter))
-                    }
+                    RootNavDisplay(
+                        pendingNotificationAdId = pendingNotificationAdId,
+                        onNotificationAdHandled = {
+                            pendingNotificationAdId = null
+                        },
+                    )
                     ErrorDialogListener()
                 }
             }

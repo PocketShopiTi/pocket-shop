@@ -405,8 +405,8 @@
     <string name="please_wait_a_moment">Please wait a moment while we finalize your order.</string>
     <string name="shopping_assistant">Shopping Assistant</string>
     <string name="scroll_to_latest">Scroll to latest</string>
-    <string name="empty_chat_title">Nothing here for now</string>
-    <string name="empty_chat_subtitle">Start with text or upload an image</string>
+    <string name="empty_chat_title">How can I help?</string>
+    <string name="empty_chat_subtitle">Find products, search by image, or get recommendations.</string>
     <string name="found_products_for">Found products for you</string>
     <string name="found_products_for_you">Found products for you</string>
     <string name="attached_image">selected image</string>
@@ -415,4 +415,5 @@
     <string name="add_image">Add image</string>
     <string name="ask_about_products">Ask about a product</string>
     <string name="send">Send</string>
+    <string name="see_options">See options</string>
 </resources>

@@ -44,7 +44,7 @@ class GeminiAiRepository @Inject constructor(
         } else null
 
         val model = Firebase.ai.generativeModel(
-            modelName = "gemini-2.5-flash",
+            modelName = "gemini-2.5-flash-lite",
             systemInstruction = content { text(systemPrompt) },
             tools = geminiTools
         )
