@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="address_summary_saved_address_count">
+        <item quantity="zero">ليس لديك أي عناوين محفوظة في بوكيت.</item>
+        <item quantity="one">لديك عنوان واحد محفوظ في بوكيت.</item>
+        <item quantity="two">لديك عنوانان محفوظان في بوكيت.</item>
+        <item quantity="few">لديك %d عناوين محفوظة في بوكيت.</item>
+        <item quantity="many">لديك %d عنوانًا محفوظًا في بوكيت.</item>
+        <item quantity="other">لديك %d عنوان محفوظ في بوكيت.</item>
+    </plurals>
+</resources>

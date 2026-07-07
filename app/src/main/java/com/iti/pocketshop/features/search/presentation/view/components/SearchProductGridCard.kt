@@ -28,7 +28,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.R
 import com.iti.pocketshop.features.search.utils.formatSearchPrice
 
 @Composable
@@ -72,7 +74,7 @@ fun SearchProductGridCard(
             ) {
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = "Favorite",
+                    contentDescription = stringResource(R.string.search_favorite),
                     modifier = Modifier.size(18.dp),
                     tint = Color.Gray
                 )

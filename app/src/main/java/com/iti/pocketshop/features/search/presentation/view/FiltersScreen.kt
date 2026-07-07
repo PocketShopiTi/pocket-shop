@@ -120,7 +120,7 @@ fun FiltersScreen(
                 items(sidebarItems, key = { it.stableKey }) { item ->
                     val isSelected = item.stableKey == selectedSidebarItem?.stableKey
                     val label = when (item) {
-                        is SidebarItem.Sort -> "Sort by"
+                        is SidebarItem.Sort -> stringResource(R.string.search_sort_by)
                         is SidebarItem.FilterGroup -> item.group.label
                     }
                     val activeCountInItem = when (item) {

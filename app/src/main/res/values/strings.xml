@@ -405,4 +405,14 @@
     <string name="view_my_orders">View All Orders</string>
     <string name="processing_your_order">Processing your order…</string>
     <string name="please_wait_a_moment">Please wait a moment while we finalize your order.</string>
+    <!-- Search -->
+    <string name="search_sort_by">Sort by</string>
+    <string name="search_favorite">Favorite</string>
+    <string name="search_see_options">See options</string>
+    <string name="search_fill_search">Fill search</string>
+    <string name="search_fill_search_product">Fill search with product name</string>
+    <string name="search_price_range">Price Range</string>
+    <string name="search_sort_featured">Featured</string>
+    <string name="search_sort_price_asc">Price: Low to High</string>
+    <string name="search_sort_price_desc">Price: High to Low</string>
 </resources>

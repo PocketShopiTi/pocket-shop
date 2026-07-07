@@ -10,8 +10,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 
@@ -24,6 +24,7 @@ data class OnboardingAnimValues(
 @Composable
 fun rememberOnboardingAnimState(
     itemCount: Int,
+    visible: Boolean,
     staggerMs: Long = 150L,
     initialScale: Float = 0.8f,
 ): OnboardingAnimValues {
@@ -39,14 +40,20 @@ fun rememberOnboardingAnimState(
     val alphas   = remember { List(itemCount) { Animatable(0f) } }
     val offsetYs = remember { List(itemCount) { Animatable(initialOffsetPx) } }
 
-    LaunchedEffect(Unit) {
-        scales.indices.forEach { i ->
-            launch {
-                delay((i * staggerMs).milliseconds)
-                launch { scales[i].animateTo(1f, springSpec) }
-                launch { alphas[i].animateTo(1f, tween(500)) }
-                launch { offsetYs[i].animateTo(0f, springSpec) }
+    LaunchedEffect(visible) {
+        if (visible) {
+            scales.indices.forEach { i ->
+                launch {
+                    delay((i * staggerMs).milliseconds)
+                    launch { scales[i].animateTo(1f, springSpec) }
+                    launch { alphas[i].animateTo(1f, tween(500)) }
+                    launch { offsetYs[i].animateTo(0f, springSpec) }
+                }
             }
+        } else {
+            scales.forEach { it.snapTo(initialScale) }
+            alphas.forEach { it.snapTo(0f) }
+            offsetYs.forEach { it.snapTo(initialOffsetPx) }
         }
     }
 

@@ -6,6 +6,7 @@ import com.iti.pocketshop.features.address.domain.model.AddressDraft
 import com.iti.pocketshop.features.address.domain.model.AddressLocationDetails
 import com.iti.pocketshop.features.address.domain.model.AddressLocationSuggestion
 import com.iti.pocketshop.features.address.utils.PhoneCountryCode
+import androidx.annotation.StringRes
 
 enum class AddressField {
     FIRST_NAME,
@@ -29,7 +30,7 @@ data class AddressState(
     val editor: AddressEditorState = AddressEditorState(),
     val pendingDeleteAddressId: String? = null,
     val error: AddressError? = null,
-    val message: String? = null,
+    @StringRes val messageId: Int? = null,
 )
 
 data class AddressEditorState(

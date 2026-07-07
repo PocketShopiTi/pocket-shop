@@ -9,12 +9,12 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
- import androidx.compose.foundation.background
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,12 +67,13 @@ fun HeroBanner(
 
     var currentIndex by remember(ads) { mutableStateOf(0) }
 
-    LaunchedEffect(ads.size) {
+    // Keyed on currentIndex so the countdown restarts after EVERY change,
+    // whether it came from a manual swipe or from this same auto-scroll —
+    // this is what stops the manual and automatic navigation from colliding.
+    LaunchedEffect(currentIndex, ads.size) {
         if (ads.size > 1) {
-            while (true) {
-                delay(BANNER_AUTO_SCROLL_DELAY_MILLIS.milliseconds)
-                currentIndex = (currentIndex + 1) % ads.size
-            }
+            delay(BANNER_AUTO_SCROLL_DELAY_MILLIS.milliseconds)
+            currentIndex = (currentIndex + 1) % ads.size
         }
     }
 
@@ -81,25 +83,47 @@ fun HeroBanner(
             .height(220.dp)
             .padding(horizontal = 20.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surface),
+            .background(MaterialTheme.colorScheme.surface)
+            .pointerInput(ads.size) {
+                if (ads.size > 1) {
+                    var accumulatedDrag = 0f
+                    detectHorizontalDragGestures(
+                        onDragStart = { accumulatedDrag = 0f },
+                        onHorizontalDrag = { change, delta ->
+                            change.consume()
+                            accumulatedDrag += delta
+                        },
+                        onDragEnd = {
+                            when {
+                                accumulatedDrag <= -SWIPE_THRESHOLD_PX ->
+                                    currentIndex = (currentIndex + 1) % ads.size
+
+                                accumulatedDrag >= SWIPE_THRESHOLD_PX ->
+                                    currentIndex = (currentIndex - 1 + ads.size) % ads.size
+                            }
+                            accumulatedDrag = 0f
+                        },
+                    )
+                }
+            },
     ) {
         AnimatedContent(
             targetState = currentIndex,
             transitionSpec = {
                 (slideInHorizontally(
-                    animationSpec = tween(520, easing = FastOutSlowInEasing),
-                    initialOffsetX = { width -> width / 2 },
-                ) + fadeIn(tween(300)) + scaleIn(
-                    initialScale = 0.96f,
-                    animationSpec = tween(520, easing = FastOutSlowInEasing),
-                )) togetherWith
+                    animationSpec = tween(400, easing = FastOutSlowInEasing),
+                    initialOffsetX = { width -> width },
+                ) + fadeIn(tween(300))).togetherWith(
                     (slideOutHorizontally(
-                        animationSpec = tween(520, easing = FastOutSlowInEasing),
-                        targetOffsetX = { width -> -width / 2 },
-                    ) + fadeOut(tween(260)) + scaleOut(
-                        targetScale = 1.04f,
-                        animationSpec = tween(520, easing = FastOutSlowInEasing),
-                    )) using SizeTransform(clip = true)
+                        animationSpec = tween(600, easing = FastOutSlowInEasing),
+                        targetOffsetX = { width -> -width },
+                    ) + fadeOut(tween(500)) + scaleOut(
+                        targetScale = 1.2f,
+                        animationSpec = tween(600, easing = FastOutSlowInEasing),
+                    ))
+                ).using(
+                    SizeTransform(clip = false)
+                )
             },
             label = "promotionAdContent",
             modifier = Modifier.fillMaxSize(),
@@ -121,7 +145,7 @@ private fun PromotionAdContent(
     val infiniteTransition = rememberInfiniteTransition(label = "promotionBannerMotion")
     val imageScale by infiniteTransition.animateFloat(
         initialValue = 1f,
-        targetValue = 1.06f,
+        targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = BANNER_IMAGE_MOTION_DELAY_MILLIS,
@@ -287,3 +311,4 @@ private fun StaticHeroBanner(
 
 private const val BANNER_AUTO_SCROLL_DELAY_MILLIS = 3_500L
 private const val BANNER_IMAGE_MOTION_DELAY_MILLIS = 4_800
+private const val SWIPE_THRESHOLD_PX = 100f
