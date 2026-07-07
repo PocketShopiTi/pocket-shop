@@ -23,6 +23,7 @@ import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
 import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
 import com.iti.pocketshop.features.orders.presentation.OrdersRoot
+import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import com.iti.pocketshop.features.profile.presentation.ProfileRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
@@ -33,13 +34,15 @@ fun NestedNavDisplay(
     currentRootRoute: NavKey?,
     navigateBack: () -> Unit,
     openSearch: () -> Unit,
-    openCategories: () -> Unit,
-    openProductList: (String) -> Unit,
+    openBrands: () -> Unit,
+    openProductList: (ProductListRouteInfo) -> Unit,
     logout: () -> Unit,
     openProductDetails: (String) -> Unit,
     openSettings: () -> Unit,
+    openAddresses: () -> Unit,
     openLogin: () -> Unit,
     openRegister: () -> Unit,
+    openOrderCheckout: () -> Unit,
 ) {
 
     val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
@@ -108,7 +111,7 @@ fun NestedNavDisplay(
                     HomeRoot(
                         openProductDetails = openProductDetails,
                         openSearch = openSearch,
-                        openCategories = openCategories,
+                        openBrands = openBrands,
                         openProductList = openProductList
                     )
                 }
@@ -118,13 +121,21 @@ fun NestedNavDisplay(
                     )
                 }
                 entry<Route.NestedNav.Cart> {
-                    CartRoot()
+                    CartRoot(
+                        onStartShoppingClick = {
+                            nestedBackStack.navigateSingleTop(Route.NestedNav.Home)
+                        },
+                        onCheckoutClick = {
+                            openOrderCheckout()
+                        }
+                    )
                 }
                 entry<Route.NestedNav.Profile> {
                     ProfileRoot(
                         openLogin = openLogin,
                         openRegister = openRegister,
                         openSettings = openSettings,
+                        openAddresses = openAddresses,
                         openWishList = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Wishlist)
                         },

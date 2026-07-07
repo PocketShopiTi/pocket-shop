@@ -16,4 +16,5 @@ data class AuthSignInResult(
 data class RegistrationRecord(
     val shopifyPassword: String,
     val shopifyCustomerId: String?,
+    val shopifyCartId: String? = null,
 )

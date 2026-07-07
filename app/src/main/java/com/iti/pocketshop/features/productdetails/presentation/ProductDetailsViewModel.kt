@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
+import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
+import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.toFavoriteProduct
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
@@ -30,6 +33,8 @@ class ProductDetailsViewModel @AssistedInject constructor(
     private val getProductDetails: GetProductDetailsUseCase,
     private val isFavorite: IsFavoriteUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val addToCartUseCase: AddToCartUseCase,
+    private val restoreOrCreateCartUseCase: RestoreOrCreateCartUseCase,
     @Assisted private val productId: String,
 ) : ViewModel() {
 
@@ -41,6 +46,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
     private var hasLoadedInitialData = false
     private var loadJob: Job? = null
     private var cartFeedbackJob: Job? = null
+    private var addToCartJob: Job? = null
 
     private val _state = MutableStateFlow(ProductDetailsState(productId = productId))
     val state = combine(_state, isFavorite(productId)) { state, favorite ->
@@ -48,6 +54,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
     }.onStart {
         if (!hasLoadedInitialData) {
             loadProduct()
+            fetchCart()
             hasLoadedInitialData = true
         }
     }.stateIn(
@@ -104,6 +111,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
                 selectedImageIndex = selectedImageIndex,
                 selectedOptionValueIds = defaultVariant?.selectedOptionValueIds.orEmpty(),
                 isFavorite = state.isFavorite,
+                cartId = state.cartId,
                 isLoading = false,
             )
         }
@@ -153,17 +161,51 @@ class ProductDetailsViewModel @AssistedInject constructor(
     }
 
     private fun showAddToCartFeedback() {
-        if (_state.value.selectedVariant?.availableForSale != true) return
-        _state.update { state -> state.copy(isAddedToCart = true) }
+        val state = _state.value
+        val variant = state.selectedVariant
+        if (variant?.availableForSale != true) return
+
+        val cartId = state.cartId ?: run {
+            viewModelScope.launch {
+                _events.send(ProductDetailsEvent.ShowError(PocketDataError.Remote.UNKNOWN))
+                restoreOrCreateCartUseCase()
+                    .onSuccess { cart ->
+                        _state.update { current -> current.copy(cartId = cart.id) }
+                    }
+            }
+            return
+        }
+
+        addToCartJob?.cancel()
+        addToCartJob = viewModelScope.launch {
+            delay(ADD_TO_CART_DEBOUNCE_MILLIS)
+            addToCartUseCase(
+                cartId = cartId,
+                variantId = variant.id,
+                quantity = state.quantity,
+            )
+        }
+
+        _state.update { current -> current.copy(isAddedToCart = true) }
         cartFeedbackJob?.cancel()
         cartFeedbackJob = viewModelScope.launch {
             delay(CART_FEEDBACK_DURATION_MILLIS)
-            _state.update { state -> state.copy(isAddedToCart = false) }
+            _state.update { current -> current.copy(isAddedToCart = false) }
+        }
+    }
+
+    private fun fetchCart() {
+        viewModelScope.launch {
+            restoreOrCreateCartUseCase()
+                .onSuccess { cart ->
+                    _state.update { current -> current.copy(cartId = cart.id) }
+                }
         }
     }
 
     private companion object {
         const val MAX_QUANTITY = 99
         const val CART_FEEDBACK_DURATION_MILLIS = 1_200L
+        const val ADD_TO_CART_DEBOUNCE_MILLIS = 300L
     }
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.iti.pocketshop.common.favorites.data.local.FavoriteDao
 import com.iti.pocketshop.core.database.PocketDatabase
+import com.iti.pocketshop.features.cart.data.local.CartDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,5 +32,11 @@ object DatabaseModule {
     @Singleton
     fun provideFavoritesDao(database: PocketDatabase): FavoriteDao {
         return database.favoriteDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartDao(database: PocketDatabase): CartDao {
+        return database.cartDao()
     }
 }

@@ -26,8 +26,7 @@ fun PredictiveSearchContent(
                 suggestion = suggestion,
                 onFillQuery = { onAction(SearchAction.UpdateQuery(it)) },
                 onClick = {
-                    onAction(SearchAction.UpdateQuery(suggestion.text))
-                    onAction(SearchAction.SubmitSearch)
+                    onAction(SearchAction.ClickQuerySuggestion(suggestion.text))
                 },
             )
             HorizontalDivider(

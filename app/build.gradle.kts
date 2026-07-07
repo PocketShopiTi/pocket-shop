@@ -68,10 +68,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        val mapsApiKey = localProperties["MAPS_API_KEY"]
+        manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey as? String ?: ""
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        
-        buildConfigField("String", "STORE_FRONT_TOKEN", "\"${localProperties.getProperty("STORE_FRONT_TOKEN", "")}\"")
-        buildConfigField("String", "ADMIN_TOKEN", "\"${localProperties.getProperty("ADMIN_TOKEN", "")}\"")
     }
 
     buildTypes {
@@ -88,6 +88,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        dataBinding = true
     }
 }
 
@@ -109,10 +110,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     //todo: remove these
-    implementation(libs.androidx.compose.material)
-    implementation(libs.androidx.compose.material3.lint)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.tv.material)
 
     // collect as state with lifecycle
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -137,6 +135,11 @@ dependencies {
     // coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
+
+    // google maps
+    implementation(libs.play.services.maps)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.location)
 
     //work manager
     implementation(libs.androidx.work.runtime.ktx)
@@ -168,11 +171,14 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
-    // firebase auth
+    // firebase
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.ai)
+    implementation(libs.firebase.appcheck.debug)
 
     // Credential Manager for Google Sign-In
     //noinspection LoginCredentials
@@ -181,4 +187,8 @@ dependencies {
     implementation(libs.androidx.credentials.play.services.auth)
     //noinspection LoginCredentials
     implementation(libs.googleid)
+    implementation(libs.osmdroid.android)
+
+    // paymob
+    implementation(libs.paymob.sdk)
 }

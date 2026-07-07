@@ -17,7 +17,10 @@ sealed interface PocketDataError : Error {
         SERVER,
         SERIALIZATION,
         UNKNOWN,
-        EMPTY_RESULT
+        EMPTY_RESULT,
+        BAD_REQUEST,
+        INVALID_COUPON,
+        ADDRESS_ERROR,
     }
 
     enum class Auth : PocketDataError {
@@ -35,6 +38,15 @@ sealed interface PocketDataError : Error {
         UNKNOWN,
         USER_DISABLED,
         TOKEN_NOT_VALID,
+    }
+
+    enum class Payment : PocketDataError {
+        CANCELED,
+        NO_FUNDS,
+        REJECTED,
+        EXPIRED ,
+        INVALID_CARD,
+        FAILED
     }
 
     enum class Firestore : PocketDataError {
@@ -55,10 +67,13 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.SERVER -> context.getString(R.string.server_error)
     PocketDataError.Remote.SERIALIZATION -> context.getString(R.string.failed_to_process_response)
     PocketDataError.Remote.UNKNOWN -> context.getString(R.string.something_went_wrong)
+    PocketDataError.Remote.INVALID_COUPON -> context.getString(R.string.invalid_coupon)
     PocketDataError.Remote.EMPTY_RESULT -> context.getString(R.string.no_results_found)
+    PocketDataError.Remote.BAD_REQUEST -> context.getString(R.string.bad_request_error)
+    PocketDataError.Remote.ADDRESS_ERROR -> context.getString(R.string.fetch_address_error)
 
     // Auth
-    PocketDataError.Auth.INVALID_EMAIL-> context.getString(R.string.auth_invalid_email)
+    PocketDataError.Auth.INVALID_EMAIL -> context.getString(R.string.auth_invalid_email)
     PocketDataError.Auth.INVALID_CREDENTIALS -> context.getString(R.string.auth_invalid_credentials)
     PocketDataError.Auth.USER_NOT_FOUND -> context.getString(R.string.auth_user_not_found)
     PocketDataError.Auth.EMAIL_ALREADY_IN_USE -> context.getString(R.string.auth_email_already_in_use)
@@ -71,6 +86,15 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Auth.NO_INTERNET -> context.getString(R.string.error_network)
     PocketDataError.Auth.USER_DISABLED -> context.getString(R.string.error_user_disabled)
     PocketDataError.Auth.UNKNOWN -> context.getString(R.string.error_unknown)
+    PocketDataError.Auth.TOKEN_NOT_VALID -> context.getString(R.string.error_token_not_valid)
+
+    // Payment
+    PocketDataError.Payment.CANCELED -> context.getString(R.string.payment_canceled)
+    PocketDataError.Payment.NO_FUNDS -> context.getString(R.string.payment_no_funds)
+    PocketDataError.Payment.REJECTED -> context.getString(R.string.payment_rejected)
+    PocketDataError.Payment.EXPIRED -> context.getString(R.string.payment_expired)
+    PocketDataError.Payment.INVALID_CARD -> context.getString(R.string.payment_invalid_card)
+    PocketDataError.Payment.FAILED -> context.getString(R.string.payment_failed)
 
     // Firestore
     PocketDataError.Firestore.PERMISSION_DENIED -> context.getString(R.string.firestore_permission_denied)
@@ -80,8 +104,6 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Firestore.QUOTA_EXCEEDED -> context.getString(R.string.firestore_quota_exceeded)
     PocketDataError.Firestore.DATA_LOSS -> context.getString(R.string.firestore_data_loss)
     PocketDataError.Firestore.CANCELLED -> context.getString(R.string.firestore_cancelled)
-    PocketDataError.Auth.TOKEN_NOT_VALID -> context.getString(R.string.error_token_not_valid)
-
 }
 
 // for firebase errors

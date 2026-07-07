@@ -10,6 +10,8 @@ import com.iti.pocketshop.features.auth.register.domain.model.AuthData
 import com.iti.pocketshop.features.auth.register.domain.model.AuthUser
 import com.iti.pocketshop.features.auth.register.domain.repository.RegisterRepository
 import com.iti.pocketshop.features.auth.shared.datasource.AuthFirebaseDataSource
+import com.iti.pocketshop.common.sessionmanager.domain.repository.CustomerAccessTokenRepository
+import com.iti.pocketshop.features.cart.domain.repository.CartRepository
 import java.security.SecureRandom
 import javax.inject.Inject
 
@@ -17,6 +19,8 @@ class RegisterRepositoryImpl @Inject constructor(
     private val firebaseAuth: AuthFirebaseDataSource,
     private val firestore: RegistrationFirestoreDataSource,
     private val shopify: ShopifyCustomerDataSource,
+    private val cartRepository: CartRepository,
+    private val customerAccessTokenRepository: CustomerAccessTokenRepository,
 ) : RegisterRepository {
     private val TAG = "RegisterRepositoryImpl"
     override suspend fun register(data: AuthData): PocketResult<Unit, PocketDataError> {
@@ -110,6 +114,16 @@ class RegisterRepositoryImpl @Inject constructor(
                     return PocketResult.Error(PocketDataError.Auth.EMAIL_ALREADY_IN_USE)
             }
         }
+        
+        // Create a cart for the new user
+        val cartResult = cartRepository.createCart()
+        val cartId = if (cartResult is PocketResult.Success) cartResult.data else null
+
+        // If we have an access token, link it immediately
+        val sessionResult = customerAccessTokenRepository.getValidToken()
+        if (sessionResult is PocketResult.Success && cartId != null) {
+            cartRepository.linkBuyerIdentity(cartId, sessionResult.data.accessToken)
+        }
 
         return firestore.saveUser(
             uid = user.uid,
@@ -117,7 +131,8 @@ class RegisterRepositoryImpl @Inject constructor(
             firstName = firstName,
             lastName = lastName,
             customerId = customerId,
-            password = password
+            password = password,
+            cartId = cartId
         )
     }
 

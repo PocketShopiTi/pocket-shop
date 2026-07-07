@@ -95,10 +95,13 @@ fun FiltersScreen(
                     Text(stringResource(R.string.search_filters_clear_all))
                 }
                 Button(
-                    onClick = { onAction(SearchAction.BackClicked) },
+                    onClick = {
+                        onAction(SearchAction.SubmitSearch)
+                        onAction(SearchAction.BackClicked)
+                    },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text(stringResource(R.string.search_filters_show_results_count, resultsCount))
+                    Text(stringResource(R.string.search_filters_show_results))
                 }
             }
         },

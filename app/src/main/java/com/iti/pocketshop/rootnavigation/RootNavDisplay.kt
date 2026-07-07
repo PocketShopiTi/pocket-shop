@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -12,14 +13,18 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.iti.pocketshop.core.components.SignInDialog
+import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.aichat.AiChatRoot
 import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
 import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
 import com.iti.pocketshop.features.auth.otp.presentation.EmailVerificationRoot
 import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
-import com.iti.pocketshop.features.categories.presentation.CategoriesRoot
+import com.iti.pocketshop.features.brands.presentation.BrandsRoot
+import com.iti.pocketshop.features.checkout.data.mappers.Order
+import com.iti.pocketshop.features.checkout.presentation.OrderCheckoutRoot
+import com.iti.pocketshop.features.ordersuccess.OrderSuccessScreen
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
-import com.iti.pocketshop.features.ordercheckout.OrderCheckoutRoot
+import com.iti.pocketshop.features.onboardingnotification.presentation.OnboardingNotificationRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
 import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
@@ -28,12 +33,21 @@ import com.iti.pocketshop.features.splash.presention.SplashRoot
 import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 
 @Composable
-fun RootNavDisplay() {
+fun RootNavDisplay(
+    pendingNotificationAdId: String? = null,
+    onNotificationAdHandled: () -> Unit = {},
+) {
 
     val rootBackStack = rememberNavBackStack(Route.Splash)
 
     fun openProductDetails(id: String) {
         rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
+    }
+
+    LaunchedEffect(pendingNotificationAdId) {
+        val adId = pendingNotificationAdId?.takeIf { it.isNotBlank() } ?: return@LaunchedEffect
+        rootBackStack.navigateSingleTop(Route.OnboardingNotification(adId = adId))
+        onNotificationAdHandled()
     }
 
     NavDisplay(
@@ -83,6 +97,17 @@ fun RootNavDisplay() {
                             navigateSingleTop(Route.Login)
                         }
                     }
+                )
+            }
+            entry<Route.OnboardingNotification> {
+                OnboardingNotificationRoot(
+                    adId = it.adId,
+                    openHome = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.NestedNav)
+                        }
+                    },
                 )
             }
             entry<Route.Login> {
@@ -158,6 +183,9 @@ fun RootNavDisplay() {
                     openSettings = {
                         rootBackStack.navigateSingleTop(Route.Settings)
                     },
+                    openAddresses = {
+                        rootBackStack.navigateSingleTop(Route.Address)
+                    },
                     openLogin = {
                         rootBackStack.navigateSingleTop(Route.Login)
                     },
@@ -167,12 +195,15 @@ fun RootNavDisplay() {
                     openSearch = {
                         rootBackStack.navigateSingleTop(Route.SearchNav)
                     },
-                    openCategories = {
-                        rootBackStack.navigateSingleTop(Route.Categories)
+                    openBrands = {
+                        rootBackStack.navigateSingleTop(Route.Brands)
                     },
-                    openProductList = { type ->
-                        rootBackStack.navigateSingleTop(Route.ProductList(type = type))
+                    openProductList = { routeInfo ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(routeInfo))
                     },
+                    openOrderCheckout = {
+                        rootBackStack.navigateSingleTop(Route.OrderCheckout)
+                    }
                 )
             }
             entry<Route.AiChat> {
@@ -187,13 +218,46 @@ fun RootNavDisplay() {
                 )
             }
             entry<Route.OrderCheckout> {
-                OrderCheckoutRoot()
+                OrderCheckoutRoot(
+                    onBack = {
+                        rootBackStack.popIfCurrentIs<Route.OrderCheckout>()
+                    },
+                    onOrderPlaced = { order: Order ->
+                        rootBackStack.apply {
+                            popIfCurrentIs<Route.OrderCheckout>()
+                            navigateSingleTop(
+                                Route.OrderSuccess(
+                                    orderId = order.id,
+                                    orderName = order.name,
+                                    totalAmount = order.totalPrice.amount,
+                                    currencyCode = order.totalPrice.currencyCode
+                                )
+                            )
+                        }
+                    }
+                )
+            }
+            entry<Route.OrderSuccess> {
+                OrderSuccessScreen(
+                    orderName = it.orderName,
+                    totalAmount = it.totalAmount,
+                    currencyCode = it.currencyCode,
+                    onContinueShopping = {
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.NestedNav)
+                        }
+                    },
+                    onViewOrders = {
+                        // TODO
+                    }
+                )
             }
             entry<Route.Settings> {
                 SettingsRoot(
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.Settings>()
-                    }
+                    },
                 )
             }
             entry<Route.SearchNav> {
@@ -204,16 +268,26 @@ fun RootNavDisplay() {
                     openProductDetails = { id -> openProductDetails(id) }
                 )
             }
-            entry<Route.Categories> {
-                CategoriesRoot(
+            entry<Route.Address> {
+                AddressRoot(
                     onBack = {
                         rootBackStack.removeLastOrNull()
                     }
                 )
             }
+            entry<Route.Brands> {
+                BrandsRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    onBrandClick = { brandName ->
+                        rootBackStack.navigateSingleTop(Route.ProductList(brandName))
+                    }
+                )
+            }
             entry<Route.ProductList> {
                 ProductListRoot(
-                    type = it.type,
+                    routeInfo = it.routeInfo,
                     onBack = {
                         rootBackStack.removeLastOrNull()
                     },

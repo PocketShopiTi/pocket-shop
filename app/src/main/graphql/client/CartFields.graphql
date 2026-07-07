@@ -1,0 +1,50 @@
+fragment CartFields on Cart {
+    id
+    checkoutUrl
+    totalQuantity
+    cost {
+        subtotalAmount {
+            amount
+            currencyCode
+        }
+        totalAmount {
+            amount
+            currencyCode
+        }
+    }
+    discountCodes {
+        code
+        applicable
+    }
+    lines(first: 50) {
+        edges {
+            node {
+                id
+                quantity
+                cost {
+                    totalAmount { amount currencyCode }
+                    amountPerQuantity { amount currencyCode }
+                }
+                merchandise {
+                    ... on ProductVariant {
+                        id
+                        title
+                        price {
+                            amount
+                            currencyCode
+                        }
+                        image {
+                            url
+                            altText
+                        }
+                        product {
+                            id
+                            title
+                            handle
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

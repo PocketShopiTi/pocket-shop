@@ -1,5 +1,6 @@
 package com.iti.pocketshop
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.SystemBarStyle
@@ -29,20 +30,34 @@ import com.iti.pocketshop.common.settings.domain.models.ThemeSetting
 import com.iti.pocketshop.common.settings.domain.models.UserSettings
 import com.iti.pocketshop.core.components.ErrorDialogListener
 import com.iti.pocketshop.core.components.StatusBarBackground
+import com.iti.pocketshop.core.notification.NotificationNavigation
+import com.iti.pocketshop.core.notification.NotificationPermissionManager
+import com.iti.pocketshop.core.notification.NotificationTopicSubscriber
 import com.iti.pocketshop.rootnavigation.RootNavDisplay
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var notificationTopicSubscriber: NotificationTopicSubscriber
+
+    @Inject
+    lateinit var notificationPermissionManager: NotificationPermissionManager
+
     private val viewModel: MainViewModel by viewModels()
     private var mainUiState: MainUiState by mutableStateOf(MainUiState.Loading)
+    private var pendingNotificationAdId: String? by mutableStateOf(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        pendingNotificationAdId = intent.notificationAdId()
+        notificationTopicSubscriber.subscribeToAllTopic()
+        notificationPermissionManager.requestPermissionIfNeeded(this)
 
         splashScreen.setKeepOnScreenCondition {
             mainUiState == MainUiState.Loading
@@ -86,7 +101,12 @@ class MainActivity : AppCompatActivity() {
                         ?: UserSettings())
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        RootNavDisplay()
+                        RootNavDisplay(
+                            pendingNotificationAdId = pendingNotificationAdId,
+                            onNotificationAdHandled = {
+                                pendingNotificationAdId = null
+                            },
+                        )
                         StatusBarBackground(modifier = Modifier.align(Alignment.TopCenter))
                     }
                     ErrorDialogListener()
@@ -94,6 +114,26 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        pendingNotificationAdId = intent.notificationAdId()
+    }
+
+    private fun Intent?.notificationAdId(): String? {
+        val adId = this?.getStringExtra(NotificationNavigation.EXTRA_AD_ID)
+            ?.takeIf { it.isNotBlank() }
+
+        val type = this?.getStringExtra(NotificationNavigation.EXTRA_TYPE)
+        return when {
+            adId == null -> null
+            type == null -> adId
+            type == NotificationNavigation.TYPE_AD_ONBOARDING -> adId
+            else -> null
+        }
+    }
+
 }
 
 @Composable

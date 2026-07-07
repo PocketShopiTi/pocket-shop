@@ -2,36 +2,43 @@ query HomeQuery(
     $featuredCount: Int!
     $bestSellerCount: Int!
     $newArrivalCount: Int!
-    $categoryCount: Int!
+    $brandCount: Int!
 ) {
-    # 1. Categories
-    categories: collections(first: $categoryCount) {
+    # 1. Brands
+    brands: metaobjects(type: "brand", first: $brandCount) {
         nodes {
             id
-            title
             handle
-            image {
-                url(transform: { maxWidth: 300, maxHeight: 300 }) # Explicitly size images
-                altText
-            }
+            brandName: field(key: "name") { value }
+            brandLogo: field(key: "logo") { value }
         }
     }
 
-    # 2. Featured Products
+    # 2. Categories
+    categories: metaobjects(type: "cats", first: $brandCount) {
+        nodes {
+            id
+            handle
+            catName: field(key: "name") { value }
+            catLogo: field(key: "logo") { value }
+        }
+    }
+
+    # 3. Featured Products
     featuredProducts: products(first: $featuredCount) {
         nodes {
             ...ProductFields
         }
     }
 
-    # 3. Best Sellers
+    # 4. Best Sellers
     bestSellers: products(first: $bestSellerCount, sortKey: BEST_SELLING) {
         nodes {
             ...ProductFields
         }
     }
 
-    # 4. New Arrivals
+    # 5. New Arrivals
     newArrivals: products(first: $newArrivalCount, sortKey: CREATED_AT, reverse: true) {
         nodes {
             ...ProductFields

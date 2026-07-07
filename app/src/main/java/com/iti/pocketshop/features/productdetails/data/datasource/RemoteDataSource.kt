@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.productdetails.data.datasource
 
 import com.apollographql.apollo.ApolloClient
+import com.iti.pocketshop.core.di.StorefrontApolloClient
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.safeCall
@@ -10,6 +11,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ShopifyProductDetailsDataSource @Inject constructor(
+    @param:StorefrontApolloClient
     private val apolloClient: ApolloClient,
 ) : ProductDetailsDataSource {
     override suspend fun getProductById(

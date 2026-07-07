@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     userRepo: UserRepo,
-    private val userSettingsRepo: UserSettingsRepo
+    private val userSettingsRepo: UserSettingsRepo,
 ) : ViewModel() {
 
     val mainUiState: Flow<MainUiState> = userSettingsRepo.settingsFlow
