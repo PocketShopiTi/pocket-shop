@@ -76,6 +76,9 @@ class AiChatViewModel @Inject constructor(
             }
             AiChatAction.OnSendMessage,
             AiChatAction.OnRetry -> sendMessage()
+            AiChatAction.OnDismissError -> {
+                _state.update { it.copy(error = null) }
+            }
         }
     }
 

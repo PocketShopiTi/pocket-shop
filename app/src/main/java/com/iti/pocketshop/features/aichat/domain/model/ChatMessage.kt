@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.aichat.domain.model
 
 import android.net.Uri
 import com.iti.pocketshop.features.search.domain.model.SearchResultItem
+import java.util.UUID
 
 enum class MessageSender {
     USER, AI, SYSTEM, TOOL
@@ -10,6 +11,7 @@ enum class MessageSender {
 data class ChatCall(val name: String, val args: Map<String, String>)
 
 data class ChatMessage(
+    val id: String = UUID.randomUUID().toString(),
     val content: String,
     val sender: MessageSender,
     val isTyping: Boolean = false,
