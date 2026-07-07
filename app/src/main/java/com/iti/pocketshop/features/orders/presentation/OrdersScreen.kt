@@ -38,8 +38,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun OrdersRoot(
     onBack: () -> Unit,
-    onTrack: (String) -> Unit = {},
-    onView: (String) -> Unit = {},
+    onView: (String) -> Unit,
     viewModel: OrdersViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -48,7 +47,6 @@ fun OrdersRoot(
         state = state,
         onAction = viewModel::onAction,
         onBack = onBack,
-        onTrack = onTrack,
         onView = onView,
     )
 }
@@ -58,7 +56,6 @@ fun OrdersScreen(
     state: OrdersState,
     onAction: (OrdersAction) -> Unit,
     onBack: () -> Unit,
-    onTrack: (String) -> Unit,
     onView: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -97,7 +94,6 @@ fun OrdersScreen(
                 errorMessage = state.error?.toUserMessage(context),
                 onLoadNextPage = { onAction(OrdersAction.LoadNextPage) },
                 onRetry = { onAction(OrdersAction.Retry) },
-                onTrack = onTrack,
                 onView = onView,
                 modifier = Modifier.weight(1f),
             )
@@ -111,7 +107,6 @@ private fun OrdersList(
     errorMessage: String?,
     onLoadNextPage: () -> Unit,
     onRetry: () -> Unit,
-    onTrack: (String) -> Unit,
     onView: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -145,7 +140,6 @@ private fun OrdersList(
         ) { order ->
             OrderHistoryCard(
                 order = order,
-                onTrack = onTrack,
                 onView = onView,
             )
         }

@@ -1,0 +1,62 @@
+query GetOrderDetails($orderId: ID!) {
+    node(id: $orderId) {
+        __typename
+        ... on Order {
+            id
+            name
+            orderNumber
+            processedAt
+            financialStatus
+            fulfillmentStatus
+            currencyCode
+            currentSubtotalPrice { amount currencyCode }
+            currentTotalShippingPrice { amount currencyCode }
+            currentTotalTax { amount currencyCode }
+            currentTotalPrice { amount currencyCode }
+            discountApplications(first: 5) {
+                nodes {
+                    __typename
+                    ... on AutomaticDiscountApplication { title }
+                    ... on DiscountCodeApplication { code }
+                    ... on ManualDiscountApplication { title }
+                    ... on ScriptDiscountApplication { title }
+                }
+            }
+            lineItems(first: 50) {
+                edges {
+                    node {
+                        title
+                        quantity
+                        currentQuantity
+                        originalTotalPrice { amount currencyCode }
+                        discountedTotalPrice { amount currencyCode }
+                        discountAllocations {
+                            allocatedAmount { amount currencyCode }
+                        }
+                        variant {
+                            id
+                            title
+                            image { url altText }
+                            selectedOptions { name value }
+                            product { id vendor }
+                        }
+                    }
+                }
+            }
+            shippingAddress {
+                firstName
+                lastName
+                address1
+                address2
+                city
+                province
+                country
+                zip
+                phone
+            }
+            shippingDiscountAllocations {
+                allocatedAmount { amount currencyCode }
+            }
+        }
+    }
+}

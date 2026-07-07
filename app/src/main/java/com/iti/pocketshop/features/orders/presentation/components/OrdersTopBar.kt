@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -23,10 +24,12 @@ import com.iti.pocketshop.R
 fun OrdersTopBar(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    title: String? = null,
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -44,7 +47,7 @@ fun OrdersTopBar(
             }
         }
         Text(
-            text = stringResource(R.string.orders_title),
+            text = title ?: stringResource(R.string.orders_title),
             modifier = Modifier.padding(start = 10.dp),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,

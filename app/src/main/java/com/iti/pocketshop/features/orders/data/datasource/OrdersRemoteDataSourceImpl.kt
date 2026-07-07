@@ -8,6 +8,7 @@ import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.core.networkutils.map
 import com.iti.pocketshop.core.networkutils.safeCall
 import com.iti.pocketshop.shopify.GetCustomerOrdersQuery
+import com.iti.pocketshop.shopify.GetOrderDetailsQuery
 import javax.inject.Inject
 
 class OrdersRemoteDataSourceImpl @Inject constructor(
@@ -30,4 +31,12 @@ class OrdersRemoteDataSourceImpl @Inject constructor(
             )
             .safeCall()
             .map { data -> data.customer }
+
+    override suspend fun getOrderDetails(
+        orderId: String,
+    ): PocketResult<GetOrderDetailsQuery.OnOrder?, PocketDataError.Remote> =
+        apolloClient
+            .query(GetOrderDetailsQuery(orderId = orderId))
+            .safeCall()
+            .map { data -> data.node?.onOrder }
 }

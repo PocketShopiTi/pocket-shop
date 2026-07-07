@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.orders.presentation.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,12 +42,13 @@ import java.util.Currency
 @Composable
 fun OrderHistoryCard(
     order: OrderItem,
-    onTrack: (String) -> Unit,
     onView: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OutlinedCard(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onView(order.id) },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -103,16 +104,6 @@ fun OrderHistoryCard(
                 modifier = Modifier.padding(top = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                OutlinedButton(
-                    onClick = { onTrack(order.id) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(36.dp),
-                    shape = CircleShape,
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
-                ) {
-                    Text(stringResource(R.string.orders_track))
-                }
                 Button(
                     onClick = { onView(order.id) },
                     modifier = Modifier
@@ -165,7 +156,7 @@ private fun OrderStatusChip(
 ) {
     val colors = LocalExtendedColors.current
     val (label, color) = when (status) {
-        OrderStatus.PENDING -> stringResource(R.string.orders_status_pending) to colors.info
+        OrderStatus.ORDERED -> stringResource(R.string.orders_status_ordered) to colors.info
         OrderStatus.PROCESSING -> stringResource(R.string.orders_status_processing) to colors.warning
         OrderStatus.FULFILLED -> stringResource(R.string.orders_status_delivered) to colors.success
         OrderStatus.CANCELLED -> stringResource(R.string.orders_status_cancelled) to colors.error
