@@ -1,25 +1,11 @@
 package com.iti.pocketshop.features.aichat
 
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -28,28 +14,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.AddPhotoAlternate
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.aichat.domain.model.ChatMessage
 import com.iti.pocketshop.features.aichat.domain.model.MessageSender
@@ -83,6 +60,10 @@ fun AiChatScreen(
     onAction: (AiChatAction) -> Unit,
 ) {
     val listState = rememberLazyListState()
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri -> onAction(AiChatAction.OnImageSelected(uri)) }
+    )
 
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty()) {
@@ -116,8 +97,13 @@ fun AiChatScreen(
         bottomBar = {
             ChatInput(
                 text = state.inputText,
+                selectedImageUri = state.selectedImageUri,
                 onTextChanged = { onAction(AiChatAction.OnTextChanged(it)) },
                 onSend = { onAction(AiChatAction.OnSendMessage) },
+                onPickImage = {
+                    imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                },
+                onRemoveImage = { onAction(AiChatAction.OnImageSelected(null)) },
                 enabled = !state.isLoading
             )
         }
@@ -172,7 +158,20 @@ fun ChatBubble(message: ChatMessage) {
             tonalElevation = 2.dp,
             modifier = Modifier.widthIn(max = 300.dp)
         ) {
-            Box(modifier = Modifier.padding(12.dp)) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                if (message.imageUri != null) {
+                    AsyncImage(
+                        model = message.imageUri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+
                 if (message.isTyping) {
                     TypingIndicator()
                 } else {
@@ -191,45 +190,92 @@ fun ChatBubble(message: ChatMessage) {
 @Composable
 fun ChatInput(
     text: String,
+    selectedImageUri: android.net.Uri?,
     onTextChanged: (String) -> Unit,
     onSend: () -> Unit,
+    onPickImage: () -> Unit,
+    onRemoveImage: () -> Unit,
     enabled: Boolean
 ) {
     Surface(
         tonalElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .navigationBarsPadding()
-                .imePadding(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TextField(
-                value = text,
-                onValueChange = onTextChanged,
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Ask about products...") },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                ),
-                maxLines = 4,
-                enabled = enabled
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            IconButton(
-                onClick = onSend,
-                enabled = enabled && text.isNotBlank(),
-                colors = IconButtonDefaults.iconButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
-                )
+        Column {
+            if (selectedImageUri != null) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 16.dp, top = 8.dp)
+                        .size(80.dp)
+                ) {
+                    AsyncImage(
+                        model = selectedImageUri,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                    IconButton(
+                        onClick = onRemoveImage,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(8.dp, (-8).dp)
+                            .size(24.dp)
+                            .background(MaterialTheme.colorScheme.error, CircleShape)
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "Remove Image",
+                            tint = MaterialTheme.colorScheme.onError,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .navigationBarsPadding()
+                    .imePadding(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                IconButton(onClick = onPickImage, enabled = enabled) {
+                    Icon(
+                        Icons.Default.AddPhotoAlternate,
+                        contentDescription = "Add Image",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                TextField(
+                    value = text,
+                    onValueChange = onTextChanged,
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Ask about products...") },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),
+                    maxLines = 4,
+                    enabled = enabled
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                IconButton(
+                    onClick = onSend,
+                    enabled = enabled && (text.isNotBlank() || selectedImageUri != null),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.Send, contentDescription = "Send")
+                }
             }
         }
     }

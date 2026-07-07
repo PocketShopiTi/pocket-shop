@@ -1,16 +1,23 @@
 package com.iti.pocketshop.features.aichat.data.repository
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
 import com.google.firebase.ai.type.*
 import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import kotlinx.serialization.json.*
 
-class GeminiAiRepository @Inject constructor() : AiRepository {
+class GeminiAiRepository @Inject constructor(
+    @param:ApplicationContext private val context: Context
+) : AiRepository {
 
     override fun streamChat(
         messages: List<ChatMessage>,
@@ -44,14 +51,32 @@ class GeminiAiRepository @Inject constructor() : AiRepository {
 
         val history = messages.map { msg ->
             when (msg.sender) {
-                MessageSender.USER -> content("user") { text(msg.content) }
-                MessageSender.AI -> content("model") { text(msg.content) }
+                MessageSender.USER -> content("user") {
+                    text(msg.content)
+                    msg.imageUri?.let { uri ->
+                        val bitmap = uriToBitmap(uri)
+                        bitmap?.let { image(it) }
+                    }
+                }
+                MessageSender.AI -> content("model") {
+                    if (msg.toolCalls.isNotEmpty()) {
+                        msg.toolCalls.forEach { call ->
+                            part(FunctionCallPart(call.name, call.args.mapValues { JsonPrimitive(it.value) }))
+                        }
+                    }
+                    if (msg.content.isNotEmpty()) {
+                        text(msg.content)
+                    }
+                }
                 MessageSender.TOOL -> content("function") {
-                    // Placeholder - handled in the last message logic
+                    part(FunctionResponsePart(
+                        name = msg.toolCallName ?: "",
+                        response = JsonObject(mapOf("result" to JsonPrimitive(msg.content)))
+                    ))
                 }
                 else -> content("user") { text(msg.content) }
             }
-        }.filter { it.role != "function" }
+        }
 
         val lastMessage = messages.lastOrNull() ?: return@flow
         
@@ -64,7 +89,14 @@ class GeminiAiRepository @Inject constructor() : AiRepository {
             )
             chat.sendMessageStream(content("function") { part(responsePart) })
         } else {
-            chat.sendMessageStream(lastMessage.content)
+            val lastContent = content("user") {
+                text(lastMessage.content)
+                lastMessage.imageUri?.let { uri ->
+                    val bitmap = uriToBitmap(uri)
+                    bitmap?.let { image(it) }
+                }
+            }
+            chat.sendMessageStream(lastContent)
         }
 
         responseFlow.collect { chunk ->
@@ -80,5 +112,14 @@ class GeminiAiRepository @Inject constructor() : AiRepository {
             }
         }
         emit(AiResponse.Finished)
+    }
+
+    private fun uriToBitmap(uri: Uri): Bitmap? {
+        return try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+            BitmapFactory.decodeStream(inputStream)
+        } catch (e: Exception) {
+            null
+        }
     }
 }

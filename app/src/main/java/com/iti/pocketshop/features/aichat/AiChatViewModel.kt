@@ -3,11 +3,7 @@ package com.iti.pocketshop.features.aichat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.networkutils.PocketResult
-import com.iti.pocketshop.features.aichat.domain.model.AiParameter
-import com.iti.pocketshop.features.aichat.domain.model.AiResponse
-import com.iti.pocketshop.features.aichat.domain.model.AiTool
-import com.iti.pocketshop.features.aichat.domain.model.ChatMessage
-import com.iti.pocketshop.features.aichat.domain.model.MessageSender
+import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
@@ -18,7 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -75,20 +70,30 @@ class AiChatViewModel @Inject constructor(
             is AiChatAction.OnTextChanged -> {
                 _state.update { it.copy(inputText = action.text) }
             }
+            is AiChatAction.OnImageSelected -> {
+                _state.update { it.copy(selectedImageUri = action.uri) }
+            }
             AiChatAction.OnSendMessage -> sendMessage()
             AiChatAction.OnRetry -> sendMessage()
+            AiChatAction.OnBack -> { /* Handle in Screen */ }
         }
     }
 
     private fun sendMessage() {
         val userText = _state.value.inputText.trim()
-        if (userText.isEmpty()) return
+        val imageUri = _state.value.selectedImageUri
+        if (userText.isEmpty() && imageUri == null) return
 
-        val userMessage = ChatMessage(content = userText, sender = MessageSender.USER)
+        val userMessage = ChatMessage(
+            content = userText,
+            sender = MessageSender.USER,
+            imageUri = imageUri
+        )
         _state.update {
             it.copy(
                 messages = it.messages + userMessage,
                 inputText = "",
+                selectedImageUri = null,
                 error = null
             )
         }
@@ -126,6 +131,7 @@ class AiChatViewModel @Inject constructor(
                             }
                             is AiResponse.ToolCall -> {
                                 toolCall = response
+                                updateLastMessage(fullResponseText, isTyping = false, toolCall = response)
                             }
                             AiResponse.Finished -> {
                                 updateLastMessage(fullResponseText, isTyping = false)
@@ -141,7 +147,6 @@ class AiChatViewModel @Inject constructor(
                         toolCallName = toolCall.name
                     )
                     _state.update { it.copy(messages = it.messages + toolMessage) }
-                    // Continue loop to let AI process tool result
                 } else {
                     isLooping = false
                 }
@@ -149,13 +154,20 @@ class AiChatViewModel @Inject constructor(
         }
     }
 
-    private fun updateLastMessage(content: String, isTyping: Boolean) {
+    private fun updateLastMessage(content: String, isTyping: Boolean, toolCall: AiResponse.ToolCall? = null) {
         _state.update { state ->
             val updatedMessages = state.messages.toMutableList()
             if (updatedMessages.isNotEmpty()) {
-                updatedMessages[updatedMessages.lastIndex] = updatedMessages.last().copy(
+                val last = updatedMessages.last()
+                val newToolCalls = if (toolCall != null) {
+                    last.toolCalls + ChatCall(toolCall.name, toolCall.arguments.mapValues { it.value.toString() })
+                } else {
+                    last.toolCalls
+                }
+                updatedMessages[updatedMessages.lastIndex] = last.copy(
                     content = content,
-                    isTyping = isTyping
+                    isTyping = isTyping,
+                    toolCalls = newToolCalls
                 )
             }
             state.copy(messages = updatedMessages)
@@ -208,7 +220,8 @@ class AiChatViewModel @Inject constructor(
             You have access to tools to search for products, get details, and add to cart.
             
             RULES:
-            - ALWAYS use the search_products tool if the user asks for something you don't have information about.
+            - ALWAYS use the search_products tool if the user asks for something or provides an image.
+            - If an image is provided, describe it briefly and search for similar products in the store using search_products.
             - When recommending products, provide their titles and prices.
             - If the user wants to buy or add something, search for it first, then get details for the specific variants, then use add_to_cart with a variantId.
             - Answer politely and professionally.
