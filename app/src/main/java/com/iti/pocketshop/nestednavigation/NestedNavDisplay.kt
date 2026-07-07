@@ -22,10 +22,10 @@ import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.cart.CartRoot
 import com.iti.pocketshop.features.home.presentation.HomeRoot
-import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
 import com.iti.pocketshop.features.orders.presentation.OrdersRoot
 import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import com.iti.pocketshop.features.profile.presentation.ProfileRoot
+import com.iti.pocketshop.features.wishlist.presentation.screen.WishlistRoot
 import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
 import kotlinx.coroutines.launch
@@ -44,6 +44,7 @@ fun NestedNavDisplay(
     openLogin: () -> Unit,
     openRegister: () -> Unit,
     openOrderCheckout: () -> Unit,
+    openAiChat: () -> Unit,
     openOrderDetails: (String) -> Unit,
     openOrdersOnLaunch: Boolean = false,
     onOrdersLaunchHandled: () -> Unit = {},
@@ -64,7 +65,7 @@ fun NestedNavDisplay(
     Scaffold(
         bottomBar = {
             NavigationBar {
-                BottomBarDestination.entries.forEach { destination ->
+                BottomBarDestination.entries.forEachIndexed { index, destination  ->
                     val currentRoute = nestedBackStack.lastOrNull()
                     val isSelected = currentRoute == destination.route ||
                             destination == BottomBarDestination.Profile &&
@@ -73,8 +74,9 @@ fun NestedNavDisplay(
                         onClick = {
                             if (currentUser?.isAnonymous == true && (
                                         destination.route == Route.NestedNav.Wishlist ||
-                                        destination.route == Route.NestedNav.Cart
-                                    )) {
+                                                destination.route == Route.NestedNav.Cart
+                                        )
+                            ) {
                                 scope.launch {
                                     SignInDialogController.sendEvent(true)
                                 }
@@ -94,9 +96,12 @@ fun NestedNavDisplay(
                         selected = isSelected,
                         label = destination.title
                     )
+                    if (index == 1) {
+                        AiChatFab(onClick = openAiChat)
+                    }
                 }
             }
-        }
+        },
     ) { innerPadding ->
         NavDisplay(
             modifier = Modifier
@@ -123,7 +128,7 @@ fun NestedNavDisplay(
                         openProductDetails = openProductDetails,
                         openSearch = openSearch,
                         openBrands = openBrands,
-                        openProductList = openProductList
+                        openProductList = openProductList,
                     )
                 }
                 entry<Route.NestedNav.Wishlist> {

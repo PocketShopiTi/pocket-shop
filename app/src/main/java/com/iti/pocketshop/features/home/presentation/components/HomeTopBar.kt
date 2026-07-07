@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +27,7 @@ import com.iti.pocketshop.R
 
 @Composable
 fun HomeTopBar(
-    onSearchClick: () -> Unit
+    onSearchClick: () -> Unit,
 ) {
     TopAppBar(
         title = {

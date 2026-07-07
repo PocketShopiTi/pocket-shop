@@ -18,7 +18,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.iti.pocketshop.core.components.SignInDialog
 import com.iti.pocketshop.features.address.presentation.view.AddressRoot
-import com.iti.pocketshop.features.aichat.AiChatRoot
+import com.iti.pocketshop.features.aichat.presentation.AiChatRoot
 import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
 import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
 import com.iti.pocketshop.features.auth.otp.presentation.EmailVerificationRoot
@@ -212,13 +212,22 @@ fun RootNavDisplay(
                     openOrderCheckout = {
                         rootBackStack.navigateSingleTop(Route.OrderCheckout)
                     },
+                    openAiChat = {
+                        rootBackStack.navigateSingleTop(Route.AiChat)
                     openOrderDetails = { orderId ->
                         rootBackStack.navigateSingleTop(Route.OrderDetails(orderId = orderId))
                     }
                 )
             }
             entry<Route.AiChat> {
-                AiChatRoot()
+                AiChatRoot(
+                    onBack = {
+                        rootBackStack.removeLastOrNull()
+                    },
+                    onProductClick = { productId ->
+                        openProductDetails(productId)
+                    }
+                )
             }
             entry<Route.ProductDetails> {
                 ProductDetailsRoot(

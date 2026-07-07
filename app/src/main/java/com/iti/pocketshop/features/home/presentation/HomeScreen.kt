@@ -90,7 +90,7 @@ private fun HomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         HomeTopBar(
-            onSearchClick = openSearch
+            onSearchClick = openSearch,
         )
         PullToRefreshBox(
             isRefreshing = state.isLoading && !state.isEmptyState,
