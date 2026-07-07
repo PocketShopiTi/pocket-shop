@@ -1,5 +1,8 @@
 package com.iti.pocketshop.features.profile.data.mapper
 
+import com.iti.pocketshop.features.orders.domain.OrderTimeline
+import com.iti.pocketshop.features.orders.domain.OrderTimelinePhase
+import com.iti.pocketshop.features.orders.domain.toEpochMillisOrZero
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
 import com.iti.pocketshop.shopify.GetProfileQuery
@@ -11,27 +14,24 @@ internal fun GetProfileQuery.Customer.toOrdersList(): List<OrderEntity> =
         OrderEntity(
             id = order.id,
             name = order.name,
-            status = order.fulfillmentStatus.toOrderStatus(),
+            status = order.toOrderStatus(),
             total = order.currentTotalPrice.amount,
             currencyCode = order.currentTotalPrice.currencyCode.name,
             imageUrl = order.lineItems.edges.firstOrNull()?.node?.variant?.image?.url,
         )
     }
 
-private fun OrderFulfillmentStatus?.toOrderStatus(): OrderStatus {
-    return when (this) {
-        OrderFulfillmentStatus.FULFILLED -> OrderStatus.FULFILLED
-
-        OrderFulfillmentStatus.IN_PROGRESS,
-        OrderFulfillmentStatus.PARTIALLY_FULFILLED,
-        OrderFulfillmentStatus.PENDING_FULFILLMENT -> OrderStatus.PROCESSING
-
-        OrderFulfillmentStatus.UNFULFILLED,
-        OrderFulfillmentStatus.OPEN,
-        OrderFulfillmentStatus.ON_HOLD,
-        OrderFulfillmentStatus.RESTOCKED,
-        OrderFulfillmentStatus.SCHEDULED,
-        null,
-        OrderFulfillmentStatus.UNKNOWN__ -> OrderStatus.PENDING
+private fun GetProfileQuery.Node1.toOrderStatus(): OrderStatus {
+    if (fulfillmentStatus == OrderFulfillmentStatus.FULFILLED) {
+        return OrderStatus.FULFILLED
+    }
+    val phase = OrderTimeline.phaseFor(
+        processedAtEpochMillis = processedAt.toEpochMillisOrZero(),
+        nowEpochMillis = System.currentTimeMillis(),
+    )
+    return when (phase) {
+        OrderTimelinePhase.ORDERED -> OrderStatus.ORDERED
+        OrderTimelinePhase.PROCESSING -> OrderStatus.PROCESSING
+        OrderTimelinePhase.DELIVERED -> OrderStatus.FULFILLED
     }
 }

@@ -12,17 +12,23 @@ import com.iti.pocketshop.shopify.admin.type.CurrencyCode
 import com.iti.pocketshop.shopify.admin.type.MailingAddressInput
 import com.iti.pocketshop.shopify.admin.type.MoneyBagInput
 import com.iti.pocketshop.shopify.admin.type.MoneyInput
+import com.iti.pocketshop.shopify.admin.type.OrderCreateDiscountCodeInput
+import com.iti.pocketshop.shopify.admin.type.OrderCreateFinancialStatus
+import com.iti.pocketshop.shopify.admin.type.OrderCreateFixedDiscountCodeAttributesInput
 import com.iti.pocketshop.shopify.admin.type.OrderCreateLineItemInput
 import com.iti.pocketshop.shopify.admin.type.OrderCreateOrderInput
 import com.iti.pocketshop.shopify.admin.type.OrderCreateOrderTransactionInput
 import com.iti.pocketshop.shopify.admin.type.OrderTransactionKind
 import com.iti.pocketshop.shopify.admin.type.OrderTransactionStatus
+import kotlin.math.roundToLong
 
+const val COD_GATEWAY_NAME = "Cash on Delivery (COD)"
 
 data class PaymentConfirmation(
-    val transactionId: String,
+    val transactionId: String?,
     val gateway: String,
     val amount: Money,
+    val isPaid: Boolean = true,
 )
 
 enum class OrderFinancialStatus {
@@ -58,13 +64,42 @@ fun toOrderInput(
     customer: UserData,
     payment: PaymentConfirmation,
 ): OrderCreateOrderInput {
+    val currency =
+        CurrencyCode.entries.firstOrNull { cart.totalAmount.currencyCode.rawValue == it.rawValue }
+            ?: CurrencyCode.EGP
     return OrderCreateOrderInput(
-        currency = Optional.present(CurrencyCode.entries.firstOrNull { cart.totalAmount.currencyCode.rawValue == it.rawValue }
-            ?: CurrencyCode.EGP),
+        currency = Optional.present(currency),
         email = Optional.present(customer.email),
         lineItems = Optional.present(cart.lines.map { it.toLineItemInput() }),
         shippingAddress = Optional.present(shippingAddress.toMailingAddressInput()),
         transactions = Optional.present(listOf(payment.toTransactionInput())),
+        financialStatus = Optional.present(
+            if (payment.isPaid) OrderCreateFinancialStatus.PAID
+            else OrderCreateFinancialStatus.PENDING
+        ),
+
+        discountCode = Optional.presentIfNotNull(cart.toDiscountCodeInput(currency)),
+    )
+}
+
+private fun ShopifyCart.toDiscountCodeInput(currency: CurrencyCode): OrderCreateDiscountCodeInput? {
+    val code = appliedDiscountCodes.firstOrNull() ?: return null
+    val discountAmount = ((subtotalAmount.amount - totalAmount.amount) * 100).roundToLong() / 100.0
+    if (discountAmount <= 0.0) return null
+    return OrderCreateDiscountCodeInput(
+        itemFixedDiscountCode = Optional.present(
+            OrderCreateFixedDiscountCodeAttributesInput(
+                code = code,
+                amountSet = Optional.present(
+                    MoneyBagInput(
+                        shopMoney = MoneyInput(
+                            amount = discountAmount,
+                            currencyCode = currency,
+                        ),
+                    )
+                ),
+            )
+        ),
     )
 }
 
@@ -94,7 +129,9 @@ fun Address.toMailingAddressInput(): MailingAddressInput =
 fun PaymentConfirmation.toTransactionInput(): OrderCreateOrderTransactionInput =
     OrderCreateOrderTransactionInput(
         kind = Optional.present(OrderTransactionKind.SALE),
-        status = Optional.present(OrderTransactionStatus.SUCCESS),
+        status = Optional.present(
+            if (isPaid) OrderTransactionStatus.SUCCESS else OrderTransactionStatus.PENDING
+        ),
         amountSet = MoneyBagInput(
             shopMoney = MoneyInput(
                 amount = amount.amount,
