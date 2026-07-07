@@ -38,6 +38,10 @@ import com.iti.pocketshop.features.productlist.presentation.ProductListRouteInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import com.iti.pocketshop.core.tutorial.TutorialManager
+
 @Composable
 fun HomeRoot(
     openSearch: () -> Unit,
@@ -49,6 +53,13 @@ fun HomeRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val user = LocalUser.current
     val scope: CoroutineScope = rememberCoroutineScope()
+
+    val currentTutorialStep by TutorialManager.currentStep.collectAsState()
+    LaunchedEffect(currentTutorialStep, state.newArrivals) {
+        if (currentTutorialStep == 2 && state.newArrivals.isNotEmpty()) {
+            openProductDetails(state.newArrivals.first().id)
+        }
+    }
 
     HomeScreen(
         openSearch = openSearch,
@@ -176,7 +187,8 @@ private fun HomeScreen(
                             ProductRow(
                                 products = state.newArrivals,
                                 onProductClick = openProductDetails,
-                                onWishlistClick = onWishlistClick
+                                onWishlistClick = onWishlistClick,
+                                targetFirstItem = true
                             )
                         }
                     }

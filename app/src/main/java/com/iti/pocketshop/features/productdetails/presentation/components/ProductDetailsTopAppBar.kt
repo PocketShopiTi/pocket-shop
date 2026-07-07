@@ -27,6 +27,8 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
 
+import com.iti.pocketshop.core.tutorial.tutorialTarget
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun ProductDetailsTopAppBar(
@@ -59,6 +61,7 @@ internal fun ProductDetailsTopAppBar(
             IconButton(
                 onClick = onFavoriteClick,
                 enabled = favoriteEnabled,
+                modifier = Modifier.tutorialTarget(2)
             ) {
                 AnimatedContent(
                     targetState = isFavorite,

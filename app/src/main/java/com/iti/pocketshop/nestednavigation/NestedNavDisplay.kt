@@ -29,6 +29,12 @@ import com.iti.pocketshop.rootnavigation.Route
 import com.iti.pocketshop.rootnavigation.navigateSingleTop
 import kotlinx.coroutines.launch
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import com.iti.pocketshop.core.tutorial.TutorialManager
+import com.iti.pocketshop.core.tutorial.tutorialTarget
+
 @Composable
 fun NestedNavDisplay(
     currentRootRoute: NavKey?,
@@ -49,6 +55,33 @@ fun NestedNavDisplay(
 
     val currentUser = LocalUser.current
     val scope = rememberCoroutineScope()
+
+    val currentTutorialStep by TutorialManager.currentStep.collectAsState()
+    LaunchedEffect(currentTutorialStep) {
+        when (currentTutorialStep) {
+            4 -> {
+                nestedBackStack.apply {
+                    clear()
+                    navigateSingleTop(Route.NestedNav.Home)
+                    navigateSingleTop(Route.NestedNav.Wishlist)
+                }
+            }
+            5 -> {
+                nestedBackStack.apply {
+                    clear()
+                    navigateSingleTop(Route.NestedNav.Home)
+                    navigateSingleTop(Route.NestedNav.Cart)
+                }
+            }
+            6 -> {
+                nestedBackStack.apply {
+                    clear()
+                    navigateSingleTop(Route.NestedNav.Home)
+                    navigateSingleTop(Route.NestedNav.Profile)
+                }
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -79,7 +112,15 @@ fun NestedNavDisplay(
                         },
                         icon = if (isSelected) destination.selectedIcon else destination.icon,
                         modifier = Modifier
-                            .weight(1f),
+                            .weight(1f)
+                            .then(
+                                when (destination.route) {
+                                    Route.NestedNav.Wishlist -> Modifier.tutorialTarget(4)
+                                    Route.NestedNav.Cart -> Modifier.tutorialTarget(5)
+                                    Route.NestedNav.Profile -> Modifier.tutorialTarget(6)
+                                    else -> Modifier
+                                }
+                            ),
                         selected = isSelected,
                         label = destination.title
                     )

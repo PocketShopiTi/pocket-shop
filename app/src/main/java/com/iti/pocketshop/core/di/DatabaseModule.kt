@@ -25,7 +25,9 @@ object DatabaseModule {
             context,
             PocketDatabase::class.java,
             "pocket_database"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides

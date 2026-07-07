@@ -106,6 +106,7 @@ class MainActivity : AppCompatActivity() {
                             onNotificationAdHandled = {
                                 pendingNotificationAdId = null
                             },
+                            onTutorialFinished = { viewModel.markTutorialAsSeen() }
                         )
                         StatusBarBackground(modifier = Modifier.align(Alignment.TopCenter))
                     }

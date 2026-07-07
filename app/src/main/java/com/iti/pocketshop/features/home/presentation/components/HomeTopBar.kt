@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import com.iti.pocketshop.R
 
 
+import com.iti.pocketshop.core.tutorial.tutorialTarget
+
 @Composable
 fun HomeTopBar(
     onSearchClick: () -> Unit
@@ -38,7 +40,10 @@ fun HomeTopBar(
             )
         },
         actions = {
-            IconButton(onClick = onSearchClick) {
+            IconButton(
+                onClick = onSearchClick,
+                modifier = Modifier.tutorialTarget(0)
+            ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                     contentDescription = stringResource(R.string.search),

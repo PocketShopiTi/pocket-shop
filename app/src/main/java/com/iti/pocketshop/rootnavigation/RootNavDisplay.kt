@@ -36,6 +36,7 @@ import com.iti.pocketshop.nestednavigation.NestedNavDisplay
 fun RootNavDisplay(
     pendingNotificationAdId: String? = null,
     onNotificationAdHandled: () -> Unit = {},
+    onTutorialFinished: () -> Unit = {},
 ) {
 
     val rootBackStack = rememberNavBackStack(Route.Splash)
@@ -303,5 +304,12 @@ fun RootNavDisplay(
         onSignIn = {
             rootBackStack.navigateSingleTop(Route.Login)
         }
+    )
+
+    val userSettings = com.iti.pocketshop.LocalSettingsUser.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    com.iti.pocketshop.core.tutorial.TutorialOverlay(
+        isActive = !userSettings.hasSeenTutorial,
+        onFinish = onTutorialFinished
     )
 }

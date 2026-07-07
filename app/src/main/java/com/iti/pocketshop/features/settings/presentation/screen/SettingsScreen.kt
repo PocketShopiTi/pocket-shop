@@ -112,6 +112,17 @@ fun SettingsScreen(
                     }
                 )
             }
+            item {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        onAction(SettingsAction.RestartTutorial)
+                        onBack()
+                    },
+                    modifier = Modifier.padding(top = 24.dp)
+                ) {
+                    Text("Restart Tutorial (Dev)")
+                }
+            }
         }
     }
 

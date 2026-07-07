@@ -10,7 +10,7 @@ import com.iti.pocketshop.features.cart.data.local.ShopifyCartEntity
 
 @Database(
     entities = [FavoriteProductEntity::class, CartLineItemEntity::class, ShopifyCartEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class PocketDatabase : RoomDatabase() {

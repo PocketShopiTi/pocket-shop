@@ -48,6 +48,13 @@ class SettingsViewModel @Inject constructor(
                     it.copy(showThemeDialog = action.open)
                 }
             }
+
+            is SettingsAction.RestartTutorial -> {
+                updateSettings {
+                    it.copy(hasSeenTutorial = false)
+                }
+                com.iti.pocketshop.core.tutorial.TutorialManager.reset()
+            }
         }
     }
 

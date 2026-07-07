@@ -41,6 +41,14 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun markTutorialAsSeen() {
+        viewModelScope.launch {
+            userSettingsRepo.updateUserSettings {
+                it.copy(hasSeenTutorial = true)
+            }
+        }
+    }
 }
 
 val LocalUser = compositionLocalOf<UserSession?> { null }

@@ -13,4 +13,6 @@ sealed interface SettingsAction {
     data class UpdateCurrencyUnit(
         val currencyUnit: CurrencySetting
     ) : SettingsAction
+    
+    data object RestartTutorial : SettingsAction
 }

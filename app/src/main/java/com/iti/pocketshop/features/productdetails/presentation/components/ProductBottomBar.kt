@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.productdetails.domain.entity.Money
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction
+import com.iti.pocketshop.core.tutorial.tutorialTarget
 
 @Composable
 internal fun ProductBottomBar(
@@ -93,7 +94,8 @@ internal fun ProductBottomBar(
                     .graphicsLayer {
                         scaleX = buttonScale
                         scaleY = buttonScale
-                    },
+                    }
+                    .tutorialTarget(3),
                 shape = RoundedCornerShape(22.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = buttonColor,
