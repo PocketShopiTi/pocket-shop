@@ -6,6 +6,10 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -22,6 +26,7 @@ import com.iti.pocketshop.features.auth.register.presentation.RegisterRoot
 import com.iti.pocketshop.features.brands.presentation.BrandsRoot
 import com.iti.pocketshop.features.checkout.data.mappers.Order
 import com.iti.pocketshop.features.checkout.presentation.OrderCheckoutRoot
+import com.iti.pocketshop.features.orders.presentation.OrderDetailsRoot
 import com.iti.pocketshop.features.ordersuccess.OrderSuccessScreen
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.onboardingnotification.presentation.OnboardingNotificationRoot
@@ -39,6 +44,7 @@ fun RootNavDisplay(
 ) {
 
     val rootBackStack = rememberNavBackStack(Route.Splash)
+    var pendingOpenOrders by rememberSaveable { mutableStateOf(false) }
 
     fun openProductDetails(id: String) {
         rootBackStack.navigateSingleTop(Route.ProductDetails(id = id))
@@ -170,6 +176,8 @@ fun RootNavDisplay(
             entry<Route.NestedNav> {
                 NestedNavDisplay(
                     currentRootRoute = rootBackStack.lastOrNull(),
+                    openOrdersOnLaunch = pendingOpenOrders,
+                    onOrdersLaunchHandled = { pendingOpenOrders = false },
                     navigateBack = {
                         rootBackStack.popIfCurrentIs<Route.NestedNav>()
                     },
@@ -206,6 +214,8 @@ fun RootNavDisplay(
                     },
                     openAiChat = {
                         rootBackStack.navigateSingleTop(Route.AiChat)
+                    openOrderDetails = { orderId ->
+                        rootBackStack.navigateSingleTop(Route.OrderDetails(orderId = orderId))
                     }
                 )
             }
@@ -224,7 +234,16 @@ fun RootNavDisplay(
                     productId = it.id,
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.ProductDetails>()
-                    }
+                    },
+                )
+            }
+            entry<Route.OrderDetails> {
+                OrderDetailsRoot(
+                    orderId = it.orderId,
+                    onBack = {
+                        rootBackStack.popIfCurrentIs<Route.OrderDetails>()
+                    },
+                    onProductClick = { id -> openProductDetails(id) }
                 )
             }
             entry<Route.OrderCheckout> {
@@ -259,7 +278,11 @@ fun RootNavDisplay(
                         }
                     },
                     onViewOrders = {
-                        // TODO
+                        pendingOpenOrders = true
+                        rootBackStack.apply {
+                            clear()
+                            navigateSingleTop(Route.NestedNav)
+                        }
                     }
                 )
             }

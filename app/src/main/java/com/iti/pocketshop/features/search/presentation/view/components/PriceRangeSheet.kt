@@ -53,7 +53,7 @@ fun PriceRangeSheet(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Price Range",
+                    text = stringResource(R.string.search_price_range),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                 )

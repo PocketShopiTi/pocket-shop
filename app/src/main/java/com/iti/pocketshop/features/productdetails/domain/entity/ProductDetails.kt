@@ -10,6 +10,9 @@ data class ProductDetails(
     val images: List<ProductImage>,
     val options: List<ProductOption> = emptyList(),
     val variants: List<ProductVariant>,
+    val rating: Double = 0.0,
+    val reviewCount: Int = 0,
+    val reviews: List<ProductReview> = emptyList(),
     val isFavorite: Boolean,
 ) {
     val defaultVariant = variants.firstOrNull { it.availableForSale }

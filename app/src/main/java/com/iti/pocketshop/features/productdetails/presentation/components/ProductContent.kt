@@ -27,6 +27,8 @@ internal fun ProductContent(
     state: ProductDetailsState,
     onAction: (ProductDetailsAction) -> Unit,
     listState: LazyListState,
+    currentUserId: String?,
+    defaultReviewCustomerName: String,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -80,6 +82,19 @@ internal fun ProductContent(
                         onToggle = { onAction(ProductDetailsAction.ToggleDescription) },
                     )
                 }
+
+                SectionDivider()
+                ReviewsSection(
+                    reviews = product.reviews,
+                    reviewCount = product.reviewCount,
+                    onSeeAll = { onAction(ProductDetailsAction.SeeAllReviewsClicked) },
+                    onWriteReview = {
+                        onAction(ProductDetailsAction.WriteReviewClicked(defaultReviewCustomerName))
+                    },
+                    onEditReview = { onAction(ProductDetailsAction.EditReviewClicked(it)) },
+                    onDeleteReview = { onAction(ProductDetailsAction.DeleteReviewClicked(it)) },
+                    currentUserId = currentUserId,
+                )
             }
         }
     }

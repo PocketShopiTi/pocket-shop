@@ -39,6 +39,7 @@ class SearchViewModel @Inject constructor(
     val state: StateFlow<SearchState> = _state.asStateFlow()
 
     private var predictiveJob: Job? = null
+    private var nextPageJob: Job? = null
 
     private val _effect = Channel<SearchEffect>(Channel.BUFFERED)
     val effect: Flow<SearchEffect> = _effect.receiveAsFlow()
@@ -114,16 +115,15 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun selectSortOption(option: SortOption) {
-         _state.update { it.copy(activeSortOption = option) }
+        _state.update { it.copy(activeSortOption = option) }
     }
 
     private fun updatePriceRange(range: ClosedFloatingPointRange<Float>) {
-
         _state.update { it.copy(activePriceRange = range) }
     }
 
     private fun clearPriceRange() {
-         _state.update { it.copy(activePriceRange = null) }
+        _state.update { it.copy(activePriceRange = null) }
     }
 
     private fun clearError() {
@@ -161,7 +161,6 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-
     private fun submitSearch() {
         val currentQuery = _state.value.query
         if (currentQuery.isBlank()) return
@@ -169,6 +168,8 @@ class SearchViewModel @Inject constructor(
 
         predictiveJob?.cancel()
         predictiveJob = null
+        nextPageJob?.cancel()
+        nextPageJob = null
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
@@ -192,7 +193,6 @@ class SearchViewModel @Inject constructor(
                         result.data.products.isNotEmpty() -> SearchPhase.Results(result.data)
 
                         hasActiveFilters -> {
-
                             SearchPhase.Empty
                         }
 
@@ -237,7 +237,6 @@ class SearchViewModel @Inject constructor(
                             phase = newPhase,
                             isLoading = false,
                             priceRangeBounds = newBounds,
-
                         )
                     }
                 }
@@ -253,6 +252,8 @@ class SearchViewModel @Inject constructor(
     private fun clearSearch() {
         predictiveJob?.cancel()
         predictiveJob = null
+        nextPageJob?.cancel()
+        nextPageJob = null
         _state.update {
             it.copy(
                 query = "",
@@ -267,7 +268,7 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun toggleFilter(filter: ProductFilterValue) {
-         _state.update { currentState ->
+        _state.update { currentState ->
             val currentFilters = currentState.activeFilters.toMutableList()
             val existingIndex = currentFilters.indexOfFirst { it.hasSameSelectionAs(filter) }
             if (existingIndex >= 0) currentFilters.removeAt(existingIndex)
@@ -277,22 +278,22 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun quickToggleFilter(filter: ProductFilterValue) {
-         toggleFilter(filter)
+        toggleFilter(filter)
         submitSearch()
     }
 
     private fun quickUpdatePriceRange(range: ClosedFloatingPointRange<Float>) {
-         _state.update { it.copy(activePriceRange = range) }
+        _state.update { it.copy(activePriceRange = range) }
         submitSearch()
     }
 
     private fun quickClearPriceRange() {
-             _state.update { it.copy(activePriceRange = null) }
+        _state.update { it.copy(activePriceRange = null) }
         submitSearch()
     }
 
     private fun clearFilters() {
-         _state.update {
+        _state.update {
             it.copy(
                 activeFilters = emptyList(),
                 activePriceRange = null,
@@ -302,11 +303,15 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun loadNextPage() {
+        if (nextPageJob?.isActive == true) return
+
         val currentPhase = _state.value.phase
         if (currentPhase !is SearchPhase.Results) return
         if (!currentPhase.searchResult.hasNextPage) return
 
-        viewModelScope.launch {
+        nextPageJob = viewModelScope.launch {
+            _state.update { it.copy(isLoadingNextPage = true) }
+
             val finalFilters = buildFilterInputs()
             val (sortKey, reverse) = currentSortParams()
 
@@ -318,13 +323,21 @@ class SearchViewModel @Inject constructor(
                 reverse = reverse
             )) {
                 is PocketResult.Success -> {
-                    val updatedItems = currentPhase.searchResult.items + result.data.items
+                    val existingIds = currentPhase.searchResult.items.map { it.id }.toSet()
+                    val newItems = result.data.items.filterNot { it.id in existingIds }
+                    val updatedItems = currentPhase.searchResult.items + newItems
                     val updatedResult = result.data.copy(items = updatedItems)
-                    _state.update { it.copy(phase = SearchPhase.Results(updatedResult)) }
+                    _state.update {
+                        it.copy(
+                            phase = SearchPhase.Results(updatedResult),
+                            isLoadingNextPage = false,
+                        )
+                    }
                 }
 
                 is PocketResult.Error -> {
                     sendEffect(SearchEffect.ShowError(result.error))
+                    _state.update { it.copy(isLoadingNextPage = false) }
                 }
             }
         }

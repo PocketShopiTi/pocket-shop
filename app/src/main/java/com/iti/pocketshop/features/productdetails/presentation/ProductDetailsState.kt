@@ -4,6 +4,7 @@ import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.features.productdetails.domain.entity.Money
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 
 data class ProductDetailsState(
@@ -16,6 +17,12 @@ data class ProductDetailsState(
     val isDescriptionExpanded: Boolean = false,
     val isFavorite: Boolean = false,
     val isAddedToCart: Boolean = false,
+    val isReviewEditorVisible: Boolean = false,
+    val editingReview: ProductReview? = null,
+    val reviewCustomerName: String = "",
+    val reviewActionInProgress: Boolean = false,
+    val reviewToDelete: ProductReview? = null,
+    val isShowingAllReviews: Boolean = false,
     val isLoading: Boolean = true,
     val error: PocketDataError? = null,
 ) {

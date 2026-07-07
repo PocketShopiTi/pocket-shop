@@ -47,7 +47,10 @@ fun RecentOrdersHeader(openOrders: () -> Unit, showSeeAll: Boolean) {
 }
 
 @Composable
-fun RecentOrders(profile: ProfileData.Authenticated) {
+fun RecentOrders(
+    profile: ProfileData.Authenticated,
+    onOrderClick: (String) -> Unit,
+) {
     if (profile.recentOrders.isEmpty()) {
         Text(
             text = stringResource(R.string.profile_no_orders_yet),
@@ -61,7 +64,10 @@ fun RecentOrders(profile: ProfileData.Authenticated) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             items(profile.recentOrders, key = OrderEntity::id) { order ->
-                RecentOrderCard(order = order)
+                RecentOrderCard(
+                    order = order,
+                    onClick = onOrderClick,
+                )
             }
         }
     }

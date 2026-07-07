@@ -33,6 +33,7 @@ fun LoggedInProfileScreen(
     openAddresses: () -> Unit,
     openWishList: () -> Unit,
     openSettings: () -> Unit,
+    openOrderDetails: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
@@ -66,7 +67,12 @@ fun LoggedInProfileScreen(
         }
 
         item { RecentOrdersHeader(openOrders, showSeeAll = profile.recentOrders.size > 3) }
-        item { RecentOrders(profile) }
+        item {
+            RecentOrders(
+                profile = profile,
+                onOrderClick = openOrderDetails,
+            )
+        }
 
 
         item {

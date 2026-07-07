@@ -71,12 +71,12 @@ fun OnboardingScreen(
     val pagerState = rememberPagerState(pageCount = { state.pages.size })
 
 
-     LaunchedEffect(state.currentPage) {
+    LaunchedEffect(state.currentPage) {
         if (pagerState.currentPage != state.currentPage)
             pagerState.animateScrollToPage(state.currentPage)
     }
 
-     LaunchedEffect(pagerState.settledPage) {
+    LaunchedEffect(pagerState.settledPage) {
         if (pagerState.settledPage != state.currentPage)
             onAction(OnboardingAction.SwipePage(pagerState.settledPage))
     }
@@ -86,7 +86,7 @@ fun OnboardingScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
     ) {
-         if (!state.isLastPage) {
+        if (!state.isLastPage) {
             TextButton(
                 onClick = { onAction(OnboardingAction.Skip) },
                 modifier = Modifier
@@ -128,15 +128,21 @@ fun OnboardingScreen(
                 )
 
                 val item = state.pages[page]
+                val isPageVisible = pagerState.settledPage == page
 
                 var titleVisible by remember(page) { mutableStateOf(false) }
                 var subtitleVisible by remember(page) { mutableStateOf(false) }
 
-                LaunchedEffect(page) {
-                    delay(850.milliseconds)
-                    titleVisible = true
-                    delay(200.milliseconds)
-                    subtitleVisible = true
+                LaunchedEffect(isPageVisible) {
+                    if (isPageVisible) {
+                        delay(850.milliseconds)
+                        titleVisible = true
+                        delay(200.milliseconds)
+                        subtitleVisible = true
+                    } else {
+                        titleVisible = false
+                        subtitleVisible = false
+                    }
                 }
 
                 Column(
@@ -148,7 +154,8 @@ fun OnboardingScreen(
                 ) {
                     OnboardingHeroImage(
                         pageIndex = page,
-                        imageRes = item.imageRes
+                        imageRes = item.imageRes,
+                        visible = isPageVisible,
                     )
 
                     Spacer(modifier = Modifier.height(32.dp))
@@ -205,4 +212,3 @@ fun OnboardingScreen(
         }
     }
 }
-

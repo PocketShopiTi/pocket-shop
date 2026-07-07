@@ -10,6 +10,12 @@ import com.iti.pocketshop.R
 private const val TAG = "PocketDataError"
 
 sealed interface PocketDataError : Error {
+    enum class Validation : PocketDataError {
+        EMPTY_CUSTOMER_NAME,
+        EMPTY_TITLE,
+        EMPTY_BODY,
+        INVALID_RATING,
+    }
     enum class Remote : PocketDataError {
         REQUEST_TIMEOUT,
         TOO_MANY_REQUESTS,
@@ -22,6 +28,8 @@ sealed interface PocketDataError : Error {
         INVALID_COUPON,
         ADDRESS_ERROR,
     }
+
+    data class CustomServerMessage(val message: String) : PocketDataError
 
     enum class Auth : PocketDataError {
         INVALID_CREDENTIALS,
@@ -71,6 +79,7 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Remote.EMPTY_RESULT -> context.getString(R.string.no_results_found)
     PocketDataError.Remote.BAD_REQUEST -> context.getString(R.string.bad_request_error)
     PocketDataError.Remote.ADDRESS_ERROR -> context.getString(R.string.fetch_address_error)
+    is PocketDataError.CustomServerMessage -> this.message
 
     // Auth
     PocketDataError.Auth.INVALID_EMAIL -> context.getString(R.string.auth_invalid_email)
@@ -95,6 +104,12 @@ fun PocketDataError.toUserMessage(context: Context): String = when (this) {
     PocketDataError.Payment.EXPIRED -> context.getString(R.string.payment_expired)
     PocketDataError.Payment.INVALID_CARD -> context.getString(R.string.payment_invalid_card)
     PocketDataError.Payment.FAILED -> context.getString(R.string.payment_failed)
+
+    // Validation
+    PocketDataError.Validation.EMPTY_CUSTOMER_NAME -> context.getString(R.string.review_error_empty_customer_name)
+    PocketDataError.Validation.EMPTY_TITLE -> context.getString(R.string.review_error_empty_title)
+    PocketDataError.Validation.EMPTY_BODY -> context.getString(R.string.review_error_empty_body)
+    PocketDataError.Validation.INVALID_RATING -> context.getString(R.string.review_error_invalid_rating)
 
     // Firestore
     PocketDataError.Firestore.PERMISSION_DENIED -> context.getString(R.string.firestore_permission_denied)

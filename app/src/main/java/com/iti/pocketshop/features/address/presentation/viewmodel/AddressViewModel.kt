@@ -217,7 +217,7 @@ class AddressViewModel @Inject constructor(
                 current.copy(
                     isLoading = true,
                     error = null,
-                    message = null,
+                    messageId = null,
                 )
             }
         }
@@ -256,7 +256,7 @@ class AddressViewModel @Inject constructor(
                 current.copy(
                     editor = editor.withValidationErrors(validationErrors),
                     error = null,
-                    message = null,
+                    messageId = null,
                 )
             }
             return
@@ -267,7 +267,7 @@ class AddressViewModel @Inject constructor(
             current.copy(
                 isSaving = true,
                 error = null,
-                message = null,
+                messageId = null,
                 editor = current.editor.copy(validationErrors = emptyMap()),
             )
         }
@@ -291,10 +291,10 @@ class AddressViewModel @Inject constructor(
                             editor = AddressEditorState(),
                             pendingDeleteAddressId = null,
                             error = null,
-                            message = if (editor.isEditing) {
-                                appContext.getString(R.string.address_message_updated_successfully)
+                            messageId = if (editor.isEditing) {
+                                R.string.address_message_updated_successfully
                             } else {
-                                appContext.getString(R.string.address_message_added_successfully)
+                                R.string.address_message_added_successfully
                             },
                         )
                     }
@@ -313,7 +313,7 @@ class AddressViewModel @Inject constructor(
             current.copy(
                 isSaving = true,
                 error = null,
-                message = null,
+                messageId = null,
             )
         }
         mutationJob = viewModelScope.launch {
@@ -329,7 +329,7 @@ class AddressViewModel @Inject constructor(
                     _state.update { current ->
                         current.copy(
                             isSaving = false,
-                            message = appContext.getString(R.string.address_message_deleted),
+                            messageId = R.string.address_message_deleted,
                             pendingDeleteAddressId = null,
                             error = null,
                         )
@@ -348,7 +348,7 @@ class AddressViewModel @Inject constructor(
             current.copy(
                 isSaving = true,
                 error = null,
-                message = null,
+                messageId = null,
             )
         }
         mutationJob = viewModelScope.launch {
@@ -364,7 +364,7 @@ class AddressViewModel @Inject constructor(
                     _state.update { current ->
                         current.copy(
                             isSaving = false,
-                            message = appContext.getString(R.string.address_message_default_updated),
+                            messageId = R.string.address_message_default_updated,
                             error = null,
                         )
                     }
@@ -407,7 +407,7 @@ class AddressViewModel @Inject constructor(
                     locationSuggestions = emptyList(),
                 ),
                 error = null,
-                message = null,
+                messageId = null,
             )
         }
 
@@ -526,7 +526,7 @@ class AddressViewModel @Inject constructor(
                     locationSuggestions = emptyList(),
                 ),
                 error = null,
-                message = null,
+                messageId = null,
             )
         }
 
@@ -567,7 +567,7 @@ class AddressViewModel @Inject constructor(
                         locationSuggestions = emptyList(),
                     ),
                 error = null,
-                message = null,
+                messageId = null,
             )
         }
 

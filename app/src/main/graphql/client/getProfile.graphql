@@ -23,6 +23,7 @@ query GetProfile(
                 id
                 name
                 orderNumber
+                processedAt
                 fulfillmentStatus
                 currentTotalPrice {
                     amount

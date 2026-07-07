@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -44,9 +45,19 @@ fun NestedNavDisplay(
     openRegister: () -> Unit,
     openOrderCheckout: () -> Unit,
     openAiChat: () -> Unit,
+    openOrderDetails: (String) -> Unit,
+    openOrdersOnLaunch: Boolean = false,
+    onOrdersLaunchHandled: () -> Unit = {},
 ) {
 
     val nestedBackStack = rememberNavBackStack(Route.NestedNav.Home)
+
+    LaunchedEffect(openOrdersOnLaunch) {
+        if (openOrdersOnLaunch) {
+            nestedBackStack.navigateSingleTop(Route.NestedNav.Orders)
+            onOrdersLaunchHandled()
+        }
+    }
 
     val currentUser = LocalUser.current
     val scope = rememberCoroutineScope()
@@ -147,14 +158,14 @@ fun NestedNavDisplay(
                         openOrders = {
                             nestedBackStack.navigateSingleTop(Route.NestedNav.Orders)
                         },
+                        openOrderDetails = openOrderDetails,
                         logout = logout,
                     )
                 }
                 entry<Route.NestedNav.Orders> {
                     OrdersRoot(
                         onBack = { nestedBackStack.removeLastOrNull() },
-                        onTrack = {},
-                        onView = {},
+                        onView = openOrderDetails,
                     )
                 }
             }

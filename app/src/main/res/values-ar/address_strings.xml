@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="address_title_list">العناوين</string>
+    <string name="address_title_add">إضافة عنوان</string>
+    <string name="address_title_edit">تعديل العنوان</string>
+
+    <string name="address_content_description_back">رجوع</string>
+    <string name="address_content_description_refresh">تحديث العناوين</string>
+
+    <string name="address_loading_syncing_addresses">جاري مزامنة العناوين من شوبيفاي…</string>
+    <string name="address_loading_subtitle">هذا يحافظ على تحديث بيانات التوصيل المحفوظة الخاصة بك.</string>
+
+    <string name="address_empty_title">لا توجد عناوين محفوظة</string>
+    <string name="address_empty_title_with_name">لا توجد عناوين محفوظة بعد، %1$s</string>
+    <string name="address_empty_subtitle">أضف عنوان توصيل لتسريع عملية الدفع.</string>
+    <string name="address_add_new_address">إضافة عنوان جديد</string>
+
+    <string name="address_summary_saved_delivery_spots">أماكن التوصيل المحفوظة</string>
+    <string name="address_summary_customer_addresses">عناوين %1$s</string>
+    <string name="address_summary_default_ready">العنوان الافتراضي جاهز</string>
+
+    <string name="address_section_address_details">تفاصيل العنوان</string>
+    <string name="address_section_recipient">تفاصيل المستلم</string>
+    <string name="pick_from_contacts">اختيار من جهات الاتصال</string>
+
+    <string name="address_label_first_name">الاسم الأول</string>
+    <string name="address_label_last_name">اسم العائلة</string>
+    <string name="address_label_phone_country_code">رمز دولة الهاتف</string>
+    <string name="address_phone_country_united_states">الولايات المتحدة</string>
+    <string name="address_phone_country_canada">كندا</string>
+    <string name="address_phone_country_united_kingdom">المملكة المتحدة</string>
+    <string name="address_phone_country_egypt">مصر</string>
+    <string name="address_phone_country_saudi_arabia">المملكة العربية السعودية</string>
+    <string name="address_phone_country_international">دولي</string>
+    <string name="address_phone_country_flag_united_states">🇺🇸</string>
+    <string name="address_phone_country_flag_canada">🇨🇦</string>
+    <string name="address_phone_country_flag_united_kingdom">🇬🇧</string>
+    <string name="address_phone_country_flag_egypt">🇪🇬</string>
+    <string name="address_phone_country_flag_saudi_arabia">🇸🇦</string>
+    <string name="address_phone_country_flag_international">🌐</string>
+    <string name="address_label_phone_number">رقم الهاتف</string>
+    <string name="address_label_country">الدولة</string>
+    <string name="address_label_street_address">عنوان الشارع</string>
+    <string name="address_label_apartment_suite">شقة، جناح، إلخ.</string>
+    <string name="address_label_city">المدينة</string>
+    <string name="address_label_state_province">الولاية / المقاطعة</string>
+    <string name="address_label_postal_code">الرمز البريدي</string>
+    <string name="address_label_company">الشركة</string>
+
+    <string name="address_set_default_title">تعيين كافتراضي</string>
+    <string name="address_set_default_subtitle">استخدم هذا لعمليات التوصيل المستقبلية.</string>
+
+    <string name="address_section_location">تفاصيل الموقع</string>
+    <string name="address_location_search_label">البحث عن موقع</string>
+    <string name="address_location_search_hint">ابحث عن عنوان، مدينة، أو مَعلم</string>
+    <string name="address_location_searching">جاري البحث عن مواقع…</string>
+    <string name="address_location_no_results">لم يتم العثور على مواقع مطابقة.</string>
+    <string name="address_map_expand">توسيع الخريطة</string>
+    <string name="address_map_collapse">طي الخريطة</string>
+    <string name="address_map_open_picker">فتح الخريطة</string>
+
+    <string name="address_map_title">معاينة الموقع</string>
+    <string name="address_map_picker_unavailable_title">معاينة الموقع غير متوفرة</string>
+    <string name="address_map_picker_unavailable_subtitle">لم نتمكن من تحميل معاينة الموقع في الوقت الحالي.</string>
+    <string name="address_map_pick_hint">ابحث أو انقر على الخريطة لاختيار موقع التوصيل.</string>
+    <string name="address_map_picker_no_location">لم يتم تحديد موقع بعد.</string>
+    <string name="address_map_use_location">استخدام هذا الموقع</string>
+    <string name="address_map_coordinates">خط العرض %1$.4f، خط الطول %2$.4f</string>
+    <string name="address_map_default_latitude">30.0444</string>
+    <string name="address_map_default_longitude">31.2357</string>
+    <string name="address_map_default_zoom">15</string>
+
+    <string name="address_save">حفظ العنوان</string>
+    <string name="address_saving">جاري الحفظ…</string>
+
+    <string name="address_line_not_filled">لم يتم إدخال عنوان الشارع بعد.</string>
+    <string name="address_content_description_edit">تعديل العنوان</string>
+    <string name="address_content_description_delete">حذف العنوان</string>
+    <string name="address_make_default">تعيين كافتراضي</string>
+    <string name="address_default_badge">العنوان الافتراضي</string>
+
+    <string name="address_delete_title">حذف العنوان؟</string>
+    <string name="address_delete_confirm">حذف</string>
+    <string name="address_delete_cancel">إلغاء</string>
+    <string name="address_delete_confirm_with_name">هل تريد إزالة %1$s من عناوينك المحفوظة؟</string>
+    <string name="address_delete_confirm_generic">ستتم إزالة هذا العنوان من الحساب.</string>
+
+    <string name="address_message_added_successfully">تم إضافة العنوان بنجاح.</string>
+    <string name="address_message_updated_successfully">تم تحديث العنوان بنجاح.</string>
+    <string name="address_message_deleted">تم حذف العنوان.</string>
+    <string name="address_message_default_updated">تم تحديث العنوان الافتراضي.</string>
+
+    <string name="address_validation_first_name_required">الاسم الأول مطلوب.</string>
+    <string name="address_validation_last_name_required">اسم العائلة مطلوب.</string>
+    <string name="address_validation_street_address_required">عنوان الشارع مطلوب.</string>
+    <string name="address_validation_city_required">المدينة مطلوبة.</string>
+    <string name="address_validation_country_required">الدولة مطلوبة.</string>
+    <string name="address_validation_phone_required">رقم الهاتف مطلوب.</string>
+    <string name="address_validation_phone_invalid_international">أدخل رقم هاتف دولي صالح.</string>
+    <string name="address_validation_phone_invalid_for_country">أدخل رقم هاتف صالح لـ %1$s.</string>
+    <string name="address_validation_postal_code_required">الرمز البريدي مطلوب.</string>
+    <string name="address_validation_postal_code_invalid_for_country">أدخل رمز بريدي صالح لـ %1$s.</string>
+    <string name="address_validation_selected_country_fallback">الدولة المحددة</string>
+
+    <string name="address_error_customer_account_missing_token">رمز حساب العميل غير متوفر بعد.</string>
+    <string name="address_error_customer_account_not_found">لم يتم العثور على حساب العميل لهذا الرمز.</string>
+    <string name="address_error_customer_account_missing_saved_address">لم يُرجع شوبيفاي العنوان المحفوظ.</string>
+    <string name="address_error_customer_account_missing_updated_address">لم يُرجع شوبيفاي العنوان المُحدّث.</string>
+    <string name="address_error_customer_account_missing_deleted_address">لم يؤكد شوبيفاي العنوان المحذوف.</string>
+    <string name="address_error_customer_account_missing_default_update">لم يؤكد شوبيفاي تحديث العنوان الافتراضي.</string>
+
+    <string name="address_error_missing_customer_access_token">رمز حساب العميل غير متوفر بعد.</string>
+    <string name="address_error_missing_maps_api_key">لم يتم تكوين دعم الموقع بعد.</string>
+    <string name="address_error_maps_service">لم نتمكن من تحميل هذا الموقع في الوقت الحالي. يرجى المحاولة مرة أخرى.</string>
+    <string name="address_error_location_not_found">لم نتمكن من تحديد عنوان لهذا الموقع.</string>
+    <string name="address_error_location_permission_denied">تم رفض إذن الموقع. لا يزال بإمكانك اختيار موقع على الخريطة.</string>
+    <string name="address_error_current_location_unavailable">لم نتمكن من الحصول على موقعك الحالي. لا يزال بإمكانك اختيار موقع على الخريطة.</string>
+    <string name="address_error_save_failed">لم نتمكن من حفظ هذا العنوان.</string>
+    <string name="address_map_error_title">خطأ في الموقع</string>
+
+    <string name="address_placeholder_first_name">الاسم الأول</string>
+    <string name="address_placeholder_last_name">اسم العائلة</string>
+    <string name="address_placeholder_phone_number">رقم الهاتف</string>
+    <string name="address_placeholder_country">الدولة</string>
+    <string name="address_placeholder_street_address">عنوان الشارع</string>
+    <string name="address_placeholder_apartment_suite">شقة (اختياري)</string>
+    <string name="address_placeholder_city">المدينة</string>
+    <string name="address_placeholder_state_province">الولاية / المقاطعة</string>
+    <string name="address_placeholder_postal_code">الرمز البريدي</string>
+    <string name="address_placeholder_company">الشركة (اختياري)</string>
+</resources>

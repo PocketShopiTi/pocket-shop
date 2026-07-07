@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 fun OnboardingHeroImage(
     pageIndex: Int,
     imageRes: Int,
+    visible: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -25,9 +26,9 @@ fun OnboardingHeroImage(
         contentAlignment = Alignment.Center
     ) {
         when (pageIndex) {
-            0 -> OnboardingPage1Hero()
-            1 -> OnboardingPage2Hero()
-            2 -> OnboardingPage3Hero()
+            0 -> OnboardingPage1Hero(visible = visible)
+            1 -> OnboardingPage2Hero(visible = visible)
+            2 -> OnboardingPage3Hero(visible = visible)
             else -> {
                 Image(
                     painter = painterResource(id = imageRes),

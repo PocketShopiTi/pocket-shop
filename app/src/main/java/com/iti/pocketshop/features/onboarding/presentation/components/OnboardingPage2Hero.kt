@@ -40,29 +40,37 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun OnboardingPage2Hero(
+    visible: Boolean,
     modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
     val initialOffsetPx = with(density) { 40.dp.toPx() }
+    val initialScale = 0.7f
 
     val springSpec = spring<Float>(
         dampingRatio = Spring.DampingRatioMediumBouncy,
         stiffness = Spring.StiffnessLow
     )
 
-    val scales = remember { List(5) { Animatable(0.7f) } }
+    val scales = remember { List(5) { Animatable(initialScale) } }
     val alphas = remember { List(5) { Animatable(0f) } }
     val offsetYs = remember { List(5) { Animatable(initialOffsetPx) } }
 
-    LaunchedEffect(Unit) {
-        val staggerDelays = listOf(0L, 120L, 240L, 360L, 480L)
-        staggerDelays.indices.forEach { i ->
-            launch {
-                delay(staggerDelays[i].milliseconds)
-                launch { scales[i].animateTo(1f, springSpec) }
-                launch { alphas[i].animateTo(1f, tween(500)) }
-                launch { offsetYs[i].animateTo(0f, springSpec) }
+    LaunchedEffect(visible) {
+        if (visible) {
+            val staggerDelays = listOf(0L, 120L, 240L, 360L, 480L)
+            staggerDelays.indices.forEach { i ->
+                launch {
+                    delay(staggerDelays[i].milliseconds)
+                    launch { scales[i].animateTo(1f, springSpec) }
+                    launch { alphas[i].animateTo(1f, tween(500)) }
+                    launch { offsetYs[i].animateTo(0f, springSpec) }
+                }
             }
+        } else {
+            scales.forEach { it.snapTo(initialScale) }
+            alphas.forEach { it.snapTo(0f) }
+            offsetYs.forEach { it.snapTo(initialOffsetPx) }
         }
     }
 

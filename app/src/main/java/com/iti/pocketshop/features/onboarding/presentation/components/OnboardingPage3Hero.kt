@@ -24,9 +24,10 @@ import com.iti.pocketshop.R
 
 @Composable
 fun OnboardingPage3Hero(
+    visible: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val anim = rememberOnboardingAnimState(itemCount = 3, staggerMs = 180L)
+    val anim = rememberOnboardingAnimState(itemCount = 3, staggerMs = 180L, visible = visible)
 
     fun animModifier(i: Int) = Modifier.graphicsLayer {
         scaleX = anim.scales[i].value
