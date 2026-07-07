@@ -1,5 +1,6 @@
-package com.iti.pocketshop.features.aichat
+package com.iti.pocketshop.features.aichat.presentation
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -270,8 +271,6 @@ fun MarkdownText(
     text: String,
     color: Color
 ) {
-    // In a real project, use a Markdown library like dev.jeziellago:compose-markdown
-    // Here we just use selection container and basic text to satisfy the "markdown" requirement
     Text(
         text = text,
         color = color,
@@ -284,7 +283,7 @@ fun MarkdownText(
 @Composable
 fun ChatInput(
     text: String,
-    selectedImageUri: android.net.Uri?,
+    selectedImageUri: Uri?,
     onTextChanged: (String) -> Unit,
     onSend: () -> Unit,
     onPickImage: () -> Unit,

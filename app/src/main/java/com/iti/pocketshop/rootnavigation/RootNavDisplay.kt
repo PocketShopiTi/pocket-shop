@@ -14,7 +14,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.iti.pocketshop.core.components.SignInDialog
 import com.iti.pocketshop.features.address.presentation.view.AddressRoot
-import com.iti.pocketshop.features.aichat.AiChatRoot
+import com.iti.pocketshop.features.aichat.presentation.AiChatRoot
 import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
 import com.iti.pocketshop.features.auth.login.presentation.LoginRoot
 import com.iti.pocketshop.features.auth.otp.presentation.EmailVerificationRoot

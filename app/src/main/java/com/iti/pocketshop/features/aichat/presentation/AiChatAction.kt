@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.aichat
+package com.iti.pocketshop.features.aichat.presentation
 
 import android.net.Uri
 
