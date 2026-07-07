@@ -9,6 +9,7 @@ import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
+import com.iti.pocketshop.features.search.domain.model.SearchResultItem
 import com.iti.pocketshop.features.search.domain.usecase.GetSearchResultsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,9 +74,8 @@ class AiChatViewModel @Inject constructor(
             is AiChatAction.OnImageSelected -> {
                 _state.update { it.copy(selectedImageUri = action.uri) }
             }
-            AiChatAction.OnSendMessage -> sendMessage()
+            AiChatAction.OnSendMessage,
             AiChatAction.OnRetry -> sendMessage()
-            AiChatAction.OnBack -> { /* Handle in Screen */ }
         }
     }
 
@@ -105,9 +105,18 @@ class AiChatViewModel @Inject constructor(
         viewModelScope.launch {
             val systemPrompt = buildSystemPrompt()
             var isLooping = true
-            
+            var lastToolProducts = emptyList<SearchResultItem.ProductItem>()
+
             while (isLooping) {
-                val aiPlaceholder = ChatMessage(content = "", sender = MessageSender.AI, isTyping = true)
+                val currentProducts = lastToolProducts
+                lastToolProducts = emptyList()
+
+                val aiPlaceholder = ChatMessage(
+                    content = "",
+                    sender = MessageSender.AI,
+                    isTyping = true,
+                    products = currentProducts
+                )
                 _state.update { it.copy(messages = it.messages + aiPlaceholder) }
 
                 var fullResponseText = ""
@@ -141,12 +150,26 @@ class AiChatViewModel @Inject constructor(
 
                 if (toolCall != null) {
                     val result = executeTool(toolCall)
+                    lastToolProducts = result.products
                     val toolMessage = ChatMessage(
-                        content = result,
+                        content = result.summary,
                         sender = MessageSender.TOOL,
                         toolCallName = toolCall.name
                     )
-                    _state.update { it.copy(messages = it.messages + toolMessage) }
+                    
+                    // Clear the status text if there was no real content
+                    if (fullResponseText.isEmpty()) {
+                        _state.update { state ->
+                            val updatedMessages = state.messages.toMutableList()
+                            if (updatedMessages.isNotEmpty()) {
+                                val last = updatedMessages.last()
+                                updatedMessages[updatedMessages.lastIndex] = last.copy(content = "")
+                            }
+                            state.copy(messages = updatedMessages + toolMessage)
+                        }
+                    } else {
+                        _state.update { it.copy(messages = it.messages + toolMessage) }
+                    }
                 } else {
                     isLooping = false
                 }
@@ -164,8 +187,20 @@ class AiChatViewModel @Inject constructor(
                 } else {
                     last.toolCalls
                 }
+
+                // If it's empty but has tool calls, show status
+                val displayContent = if (content.isEmpty() && (newToolCalls.isNotEmpty() || isTyping)) {
+                    if (newToolCalls.isNotEmpty()) {
+                        getToolStatusText(newToolCalls.last().name, newToolCalls.last().args)
+                    } else {
+                        "" // Still typing but no tool call yet
+                    }
+                } else {
+                    content
+                }
+
                 updatedMessages[updatedMessages.lastIndex] = last.copy(
-                    content = content,
+                    content = displayContent,
                     isTyping = isTyping,
                     toolCalls = newToolCalls
                 )
@@ -174,25 +209,47 @@ class AiChatViewModel @Inject constructor(
         }
     }
 
-    private suspend fun executeTool(toolCall: AiResponse.ToolCall): String {
+    private fun getToolStatusText(name: String, args: Map<String, String>): String {
+        return when (name) {
+            "search_products" -> "Searching for '${args["query"] ?: "products"}'..."
+            "get_product_details" -> "Getting details..."
+            "add_to_cart" -> "Adding to cart..."
+            "get_cart" -> "Checking cart..."
+            else -> "Processing..."
+        }
+    }
+
+    private data class ToolExecutionResult(
+        val summary: String,
+        val products: List<SearchResultItem.ProductItem> = emptyList()
+    )
+
+    private suspend fun executeTool(toolCall: AiResponse.ToolCall): ToolExecutionResult {
         return when (toolCall.name) {
             "search_products" -> {
                 val query = toolCall.arguments["query"] as? String ?: ""
                 when (val result = getSearchResultsUseCase(query)) {
-                    is PocketResult.Success -> result.data.products.joinToString("\n") { p -> 
-                        "- ${p.title} (ID: ${p.id}): ${p.price} ${p.currencyCode}" 
+                    is PocketResult.Success -> {
+                        val products = result.data.products
+                        ToolExecutionResult(
+                            summary = products.joinToString("\n") { p: SearchResultItem.ProductItem ->
+                                "- ${p.title} (ID: ${p.id}): ${p.price} ${p.currencyCode}"
+                            },
+                            products = products
+                        )
                     }
-                    is PocketResult.Error -> "Error searching products: ${result.error}"
+                    is PocketResult.Error -> ToolExecutionResult("Error searching products: ${result.error}")
                 }
             }
             "get_product_details" -> {
                 val productId = toolCall.arguments["productId"] as? String ?: ""
                 when (val result = getProductDetailsUseCase(productId)) {
-                    is PocketResult.Error -> "Error getting details: ${result.error}"
+                    is PocketResult.Error -> ToolExecutionResult("Error getting details: ${result.error}")
                     is PocketResult.Success -> {
                         val data = result.data
-                        "Product: ${data.title}\nDescription: ${data.description}\nVariants: ${data.variants.joinToString { v -> "${v.id} - ${v.price.amount} ${v.price.currencyCode}" }}"
-
+                        ToolExecutionResult(
+                            "Product: ${data.title}\nDescription: ${data.description}\nVariants: ${data.variants.joinToString { v -> "${v.id} - ${v.price.amount} ${v.price.currencyCode}" }}"
+                        )
                     }
                 }
             }
@@ -200,16 +257,16 @@ class AiChatViewModel @Inject constructor(
                 val cartId = currentCart?.id ?: ""
                 val variantId = toolCall.arguments["variantId"] as? String ?: ""
                 val quantity = toolCall.arguments["quantity"]?.toString()?.toIntOrNull() ?: 1
-                if (cartId.isEmpty()) return "Error: No active cart found."
-                when (val result = addToCartUseCase(cartId, variantId, quantity)) {
-                    is PocketResult.Success -> "Successfully added to cart!"
-                    is PocketResult.Error -> "Failed to add to cart: ${result.error}"
+                if (cartId.isEmpty()) ToolExecutionResult("Error: No active cart found.")
+                else when (val result = addToCartUseCase(cartId, variantId, quantity)) {
+                    is PocketResult.Success -> ToolExecutionResult("Successfully added to cart!")
+                    is PocketResult.Error -> ToolExecutionResult("Failed to add to cart: ${result.error}")
                 }
             }
             "get_cart" -> {
-                currentCart?.lines?.joinToString("\n") { "- ${it.title} (${it.quantity}x)" } ?: "Cart is empty"
+                ToolExecutionResult(currentCart?.lines?.joinToString("\n") { "- ${it.title} (${it.quantity}x)" } ?: "Cart is empty")
             }
-            else -> "Unknown tool"
+            else -> ToolExecutionResult("Unknown tool")
         }
     }
 

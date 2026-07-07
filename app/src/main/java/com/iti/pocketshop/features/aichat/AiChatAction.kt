@@ -7,5 +7,4 @@ sealed interface AiChatAction {
     data object OnSendMessage : AiChatAction
     data class OnImageSelected(val uri: Uri?) : AiChatAction
     data object OnRetry : AiChatAction
-    data object OnBack : AiChatAction
 }

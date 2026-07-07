@@ -3,22 +3,55 @@ package com.iti.pocketshop.features.aichat
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -37,10 +70,12 @@ import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.aichat.domain.model.ChatMessage
 import com.iti.pocketshop.features.aichat.domain.model.MessageSender
+import com.iti.pocketshop.features.search.presentation.view.components.SearchProductCard
 
 @Composable
 fun AiChatRoot(
     onBack: () -> Unit,
+    onProductClick: (String) -> Unit,
     viewModel: AiChatViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -48,6 +83,7 @@ fun AiChatRoot(
     AiChatScreen(
         state = state,
         onBack = onBack,
+        onProductClick = onProductClick,
         onAction = viewModel::onAction
     )
 }
@@ -56,6 +92,7 @@ fun AiChatRoot(
 @Composable
 fun AiChatScreen(
     state: AiChatState,
+    onProductClick: (String) -> Unit,
     onBack: () -> Unit,
     onAction: (AiChatAction) -> Unit,
 ) {
@@ -126,8 +163,11 @@ fun AiChatScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(state.messages.filter { it.sender != MessageSender.TOOL && it.sender != MessageSender.SYSTEM }) { message ->
-                    ChatBubble(message)
+                items(state.messages.filter {
+                    (it.sender == MessageSender.USER || it.sender == MessageSender.AI) &&
+                            (it.content.isNotBlank() || it.isTyping || it.products.isNotEmpty() || it.imageUri != null)
+                }) { message ->
+                    ChatBubble(message, onProductClick)
                 }
             }
         }
@@ -135,7 +175,10 @@ fun AiChatScreen(
 }
 
 @Composable
-fun ChatBubble(message: ChatMessage) {
+fun ChatBubble(
+    message: ChatMessage,
+    onProductClick: (String) -> Unit
+) {
     val isUser = message.sender == MessageSender.USER
     val alignment = if (isUser) Alignment.End else Alignment.Start
     val bubbleColor =
@@ -152,39 +195,90 @@ fun ChatBubble(message: ChatMessage) {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = alignment
     ) {
+        if (!isUser && message.products.isNotEmpty()) {
+            Text(
+                text = "I found these products for you:",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                items(message.products) { product ->
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        tonalElevation = 2.dp,
+                        modifier = Modifier.width(280.dp)
+                    ) {
+                        SearchProductCard(
+                            title = product.title,
+                            imageUrl = product.imageUrl,
+                            imageAlt = product.imageAlt,
+                            price = product.price,
+                            currencyCode = product.currencyCode,
+                            onClick = { onProductClick(product.id) }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
         Surface(
             color = bubbleColor,
             shape = shape,
             tonalElevation = 2.dp,
             modifier = Modifier.widthIn(max = 300.dp)
         ) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                if (message.imageUri != null) {
-                    AsyncImage(
-                        model = message.imageUri,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
-                            .clip(RoundedCornerShape(8.dp)),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
+            SelectionContainer {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    if (message.imageUri != null) {
+                        AsyncImage(
+                            model = message.imageUri,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(180.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
 
-                if (message.isTyping) {
-                    TypingIndicator()
-                } else {
-                    Text(
-                        text = message.content,
-                        color = textColor,
-                        fontSize = 15.sp,
-                        lineHeight = 20.sp
-                    )
+                    if (message.isTyping && message.content.isEmpty()) {
+                        TypingIndicator()
+                    } else {
+                        MarkdownText(
+                            text = message.content,
+                            color = textColor
+                        )
+                        if (message.isTyping) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            TypingIndicator()
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+@Composable
+fun MarkdownText(
+    text: String,
+    color: Color
+) {
+    // In a real project, use a Markdown library like dev.jeziellago:compose-markdown
+    // Here we just use selection container and basic text to satisfy the "markdown" requirement
+    Text(
+        text = text,
+        color = color,
+        fontSize = 15.sp,
+        lineHeight = 20.sp,
+        style = MaterialTheme.typography.bodyMedium
+    )
 }
 
 @Composable

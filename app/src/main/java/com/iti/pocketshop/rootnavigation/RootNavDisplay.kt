@@ -213,6 +213,9 @@ fun RootNavDisplay(
                 AiChatRoot(
                     onBack = {
                         rootBackStack.removeLastOrNull()
+                    },
+                    onProductClick = { productId ->
+                        openProductDetails(productId)
                     }
                 )
             }
