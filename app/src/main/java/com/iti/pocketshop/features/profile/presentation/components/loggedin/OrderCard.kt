@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.profile.presentation.components.loggedin
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,7 @@ import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus.CANCELLED
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus.FULFILLED
-import com.iti.pocketshop.features.profile.domain.model.OrderStatus.PENDING
+import com.iti.pocketshop.features.profile.domain.model.OrderStatus.ORDERED
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus.PROCESSING
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
 import java.text.NumberFormat
@@ -38,11 +39,15 @@ import java.util.Currency
 
 
 @Composable
-fun RecentOrderCard(order: OrderEntity) {
+fun RecentOrderCard(
+    order: OrderEntity,
+    onClick: (String) -> Unit,
+) {
     Surface(
         modifier = Modifier
             .width(148.dp)
-            .heightIn(min = 188.dp),
+            .heightIn(min = 188.dp)
+            .clickable { onClick(order.id) },
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface,
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
@@ -97,10 +102,10 @@ fun RecentOrderCard(order: OrderEntity) {
 private fun OrderStatusChip(status: OrderStatus, modifier: Modifier = Modifier) {
     val extendedColors = LocalExtendedColors.current
     val (label, color) = when (status) {
-        PENDING -> stringResource(R.string.profile_status_pending) to extendedColors.info
+        ORDERED -> stringResource(R.string.profile_status_ordered) to extendedColors.info
         PROCESSING -> stringResource(R.string.profile_status_processing) to extendedColors.warning
         CANCELLED -> stringResource(R.string.profile_status_cancelled) to extendedColors.error
-        FULFILLED -> stringResource(R.string.profile_status_fulfilled) to extendedColors.success
+        FULFILLED -> stringResource(R.string.profile_status_delivered) to extendedColors.success
     }
     Surface(
         modifier = modifier,

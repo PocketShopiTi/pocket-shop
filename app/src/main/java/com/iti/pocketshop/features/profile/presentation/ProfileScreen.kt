@@ -27,6 +27,7 @@ fun ProfileRoot(
     openSettings: () -> Unit,
     openAddresses: () -> Unit = {},
     openWishList: () -> Unit = {},
+    openOrderDetails: (String) -> Unit = {},
     logout: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel(),
 ) {
@@ -47,6 +48,7 @@ fun ProfileRoot(
         openOrders = openOrders,
         openAddresses = openAddresses,
         openWishList = openWishList,
+        openOrderDetails = openOrderDetails,
     )
 }
 
@@ -60,6 +62,7 @@ fun ProfileScreen(
     openOrders: () -> Unit = {},
     openAddresses: () -> Unit = {},
     openWishList: () -> Unit = {},
+    openOrderDetails: (String) -> Unit = {},
 ) {
     PullToRefreshBox(
         isRefreshing = state.isRefreshing && state.profile != null,
@@ -78,6 +81,7 @@ fun ProfileScreen(
                 openAddresses = openAddresses,
                 openWishList = openWishList,
                 openSettings = openSettings,
+                openOrderDetails = openOrderDetails,
             )
 
             ProfileData.Guest -> GuestProfileScreen(
