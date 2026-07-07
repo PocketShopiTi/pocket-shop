@@ -4,6 +4,7 @@ import com.iti.pocketshop.features.address.domain.model.Address
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.checkout.data.mappers.Order
 import com.iti.pocketshop.features.checkout.data.mappers.PaymentConfirmation
+import com.iti.pocketshop.features.checkout.domain.model.PaymentMethod
 
 data class CheckoutState(
     val isLoading: Boolean = false,
@@ -12,6 +13,7 @@ data class CheckoutState(
     val addresses: List<Address> = emptyList(),
     val selectedAddress: Address? = null,
     val couponCodeInput: String = "",
+    val selectedPaymentMethod: PaymentMethod = PaymentMethod.CARD,
     val paymentConfirmation: PaymentConfirmation? = null,
     val placedOrder: Order? = null,
 )
