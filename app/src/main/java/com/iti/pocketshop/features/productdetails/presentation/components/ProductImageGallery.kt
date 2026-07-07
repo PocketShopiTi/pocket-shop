@@ -38,12 +38,12 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntSize
@@ -229,7 +229,6 @@ private fun ExpandedImageViewer(
             offset = if (nextScale == 1f) {
                 Offset.Zero
             } else {
-                // Keep the zoomed image within view — don't let it pan off-screen.
                 val maxX = containerSize.width * (nextScale - 1f) / 2f
                 val maxY = containerSize.height * (nextScale - 1f) / 2f
                 Offset(
