@@ -1,0 +1,7 @@
+query GetProductReviewIds($productId: ID!) {
+    product(id: $productId) {
+        metafield(namespace: "marketak", key: "items") {
+            value
+        }
+    }
+}

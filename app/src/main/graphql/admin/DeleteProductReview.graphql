@@ -1,0 +1,10 @@
+mutation DeleteProductReview($reviewId: ID!) {
+    metaobjectDelete(id: $reviewId) {
+        deletedId
+        userErrors {
+            field
+            message
+            code
+        }
+    }
+}

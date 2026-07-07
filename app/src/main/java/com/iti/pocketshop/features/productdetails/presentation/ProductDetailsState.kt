@@ -3,6 +3,7 @@ package com.iti.pocketshop.features.productdetails.presentation
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 import com.iti.pocketshop.features.productdetails.domain.entity.Money
+import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 
 data class ProductDetailsState(
     val productId: String = "",
@@ -14,6 +15,12 @@ data class ProductDetailsState(
     val isDescriptionExpanded: Boolean = false,
     val isFavorite: Boolean = false,
     val isAddedToCart: Boolean = false,
+    val isReviewEditorVisible: Boolean = false,
+    val editingReview: ProductReview? = null,
+    val reviewCustomerName: String = "",
+    val reviewActionInProgress: Boolean = false,
+    val reviewToDelete: ProductReview? = null,
+    val isShowingAllReviews: Boolean = false,
     val isLoading: Boolean = true,
     val errorMessage: String? = null,
 ) {

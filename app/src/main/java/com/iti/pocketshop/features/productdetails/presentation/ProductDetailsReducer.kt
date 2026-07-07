@@ -37,5 +37,30 @@ internal fun reduceProductDetails(
         state
     }
     ProductDetailsAction.CartFeedbackFinished -> state.copy(isAddedToCart = false)
+    is ProductDetailsAction.WriteReviewClicked -> state.copy(
+        isReviewEditorVisible = true,
+        editingReview = null,
+        reviewCustomerName = action.defaultCustomerName,
+    )
+    is ProductDetailsAction.EditReviewClicked -> state.copy(
+        isReviewEditorVisible = true,
+        editingReview = action.review,
+        reviewCustomerName = action.review.author,
+    )
+    ProductDetailsAction.ReviewEditorDismissed -> if (state.reviewActionInProgress) {
+        state
+    } else {
+        state.copy(
+            isReviewEditorVisible = false,
+            editingReview = null,
+            reviewCustomerName = "",
+        )
+    }
+    is ProductDetailsAction.DeleteReviewClicked -> state.copy(reviewToDelete = action.review)
+    ProductDetailsAction.DeleteReviewDismissed -> if (state.reviewActionInProgress) {
+        state
+    } else {
+        state.copy(reviewToDelete = null)
+    }
     else -> state
 }

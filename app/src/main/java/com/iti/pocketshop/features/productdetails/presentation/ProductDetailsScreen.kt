@@ -1,17 +1,25 @@
 package com.iti.pocketshop.features.productdetails.presentation
 
+import com.iti.pocketshop.R
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.LocalUser
+import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.SignInDialogController
@@ -20,6 +28,7 @@ import com.iti.pocketshop.features.productdetails.presentation.components.ErrorC
 import com.iti.pocketshop.features.productdetails.presentation.components.LoadingContent
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductBottomBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductContent
+import com.iti.pocketshop.features.productdetails.presentation.components.ReviewEditorSheet
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -43,12 +52,19 @@ fun ProductDetailsRoot(
     ProductDetailsScreen(
         state = state,
         scope = scope,
+        currentUserId = user?.uid,
+        defaultReviewCustomerName = user.defaultReviewCustomerName(),
         onAction = { action ->
-            if (user?.isAnonymous == true && (
+            if ((user == null || user.isAnonymous) && (
                         action == ProductDetailsAction.AddToCartClicked ||
                                 action == ProductDetailsAction.IncreaseQuantity ||
                                 action == ProductDetailsAction.DecreaseQuantity ||
-                                action is ProductDetailsAction.ToggleFavorite
+                                action is ProductDetailsAction.ToggleFavorite ||
+                                action is ProductDetailsAction.WriteReviewClicked ||
+                                action is ProductDetailsAction.EditReviewClicked ||
+                                action is ProductDetailsAction.DeleteReviewClicked ||
+                                action is ProductDetailsAction.ReviewSubmitted ||
+                                action == ProductDetailsAction.DeleteReviewConfirmed
                         )
             ) {
                 scope.launch {
@@ -58,7 +74,19 @@ fun ProductDetailsRoot(
             }
             when (action) {
                 ProductDetailsAction.BackClicked -> onBack()
-                ProductDetailsAction.SeeAllReviewsClicked -> onSeeAllReviews(productId)
+                ProductDetailsAction.SeeAllReviewsClicked -> viewModel.onAction(action)
+                is ProductDetailsAction.EditReviewClicked -> {
+                    if (action.review.customerId == user?.uid) viewModel.onAction(action)
+                }
+                is ProductDetailsAction.DeleteReviewClicked -> {
+                    if (action.review.customerId == user?.uid) viewModel.onAction(action)
+                }
+                is ProductDetailsAction.ReviewSubmitted -> {
+                    val editingReview = state.editingReview
+                    if (editingReview == null || editingReview.customerId == user?.uid) {
+                        viewModel.onAction(action)
+                    }
+                }
                 else -> viewModel.onAction(action)
             }
         },
@@ -69,12 +97,19 @@ fun ProductDetailsRoot(
 fun ProductDetailsScreen(
     state: ProductDetailsState,
     onAction: (ProductDetailsAction) -> Unit,
+    currentUserId: String? = null,
+    defaultReviewCustomerName: String = "",
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {
+    // Intercept system back press when the reviews overlay is visible
+    BackHandler(enabled = state.isShowingAllReviews) {
+        onAction(ProductDetailsAction.HideAllReviewsClicked)
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
-            if (state.product != null) {
+            if (state.product != null && !state.isShowingAllReviews) {
                 ProductBottomBar(
                     quantity = state.quantity,
                     totalPrice = state.totalPrice,
@@ -92,21 +127,40 @@ fun ProductDetailsScreen(
                 onRetry = { onAction(ProductDetailsAction.Retry) },
             )
 
-            else -> ProductContent(
-                product = state.product,
-                state = state,
-                onAction = onAction,
-                onFavoriteClick = {
-                    if (state.isFavorite) {
-                        scope.launch {
-                            DeleteFavoriteDialogController.sendEvent(state.product.toFavoriteProduct())
-                        }
-                    } else {
-                        onAction(ProductDetailsAction.ToggleFavorite(state.product.toFavoriteProduct()))
-                    }
-                } ,
-                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
-            )
+            else -> {
+                if (state.isShowingAllReviews) {
+                    com.iti.pocketshop.features.productdetails.presentation.ProductReviewsScreen(
+                        state = state,
+                        onAction = { action ->
+                            if (action == ProductDetailsAction.BackClicked) {
+                                onAction(ProductDetailsAction.HideAllReviewsClicked)
+                            } else {
+                                onAction(action)
+                            }
+                        },
+                        currentUserId = currentUserId,
+                        defaultReviewCustomerName = defaultReviewCustomerName,
+                    )
+                } else {
+                    ProductContent(
+                        product = state.product,
+                        state = state,
+                        onAction = onAction,
+                        onFavoriteClick = {
+                            if (state.isFavorite) {
+                                scope.launch {
+                                    DeleteFavoriteDialogController.sendEvent(state.product.toFavoriteProduct())
+                                }
+                            } else {
+                                onAction(ProductDetailsAction.ToggleFavorite(state.product.toFavoriteProduct()))
+                            }
+                        } ,
+                        currentUserId = currentUserId,
+                        defaultReviewCustomerName = defaultReviewCustomerName,
+                        modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                    )
+                }
+            }
         }
     }
 
@@ -115,6 +169,49 @@ fun ProductDetailsScreen(
             onAction(ProductDetailsAction.ToggleFavorite(it))
         }
     )
+
+    if (state.isReviewEditorVisible) {
+        ReviewEditorSheet(
+            editingReview = state.editingReview,
+            initialCustomerName = state.reviewCustomerName,
+            customerId = currentUserId.orEmpty(),
+            isSubmitting = state.reviewActionInProgress,
+            onAction = onAction,
+        )
+    }
+
+    state.reviewToDelete?.let { review ->
+        AlertDialog(
+            onDismissRequest = { onAction(ProductDetailsAction.DeleteReviewDismissed) },
+            title = { Text(text = stringResource(R.string.product_details_delete_review_title)) },
+            text = { Text(text = stringResource(R.string.product_details_delete_review_message)) },
+            confirmButton = {
+                Button(
+                    onClick = { onAction(ProductDetailsAction.DeleteReviewConfirmed) },
+                    enabled = !state.reviewActionInProgress,
+                ) {
+                    Text(stringResource(R.string.remove))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { onAction(ProductDetailsAction.DeleteReviewDismissed) },
+                    enabled = !state.reviewActionInProgress,
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
+    }
+}
+
+private fun UserSession?.defaultReviewCustomerName(): String {
+    return this?.displayName
+        ?.takeIf { it.isNotBlank() }
+        ?: this?.email
+            ?.substringBefore("@")
+            ?.takeIf { it.isNotBlank() }
+        ?: ""
 }
 
 

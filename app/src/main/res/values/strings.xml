@@ -415,4 +415,20 @@
     <string name="search_sort_featured">Featured</string>
     <string name="search_sort_price_asc">Price: Low to High</string>
     <string name="search_sort_price_desc">Price: High to Low</string>
+    <string name="review_form_title">Write a review</string>
+    <string name="review_customer_name_label">Your name</string>
+    <string name="review_title_label">Review title</string>
+    <string name="review_body_label">Your review</string>
+    <string name="review_submit_button">Submit review</string>
+    <string name="review_rating_star_content_description">Star %1$d</string>
+    <string name="review_error_empty_customer_name">Please enter your name</string>
+    <string name="review_error_empty_title">Please enter a title</string>
+    <string name="review_error_empty_body">Please write your review</string>
+    <string name="review_error_invalid_rating">Please select a rating from 1 to 5</string>
+    <string name="product_details_rating_count">Rating count</string>
+    <string name="product_details_write_review">Write review</string>
+    <string name="product_details_edit_review">Edit review</string>
+    <string name="product_details_delete_review">Delete review</string>
+    <string name="product_details_delete_review_title">Delete review?</string>
+    <string name="product_details_delete_review_message">This review will be removed from the product.</string>
 </resources>

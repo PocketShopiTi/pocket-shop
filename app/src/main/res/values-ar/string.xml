@@ -414,4 +414,23 @@
     <string name="search_sort_featured">مميز</string>
     <string name="search_sort_price_asc">السعر: من الأقل للأعلى</string>
     <string name="search_sort_price_desc">السعر: من الأعلى للأقل</string>
+    <!-- Product Review Form -->
+    <string name="review_form_title">كتابة تقييم</string>
+    <string name="review_customer_name_label">اسمك</string>
+    <string name="review_title_label">عنوان التقييم</string>
+    <string name="review_body_label">تقييمك</string>
+    <string name="review_submit_button">إرسال التقييم</string>
+    <string name="review_rating_star_content_description">نجمة %1$d</string>
+
+    <!-- Validation Errors -->
+    <string name="review_error_empty_customer_name">من فضلك أدخل اسمك</string>
+    <string name="review_error_empty_title">من فضلك أدخل عنواناً</string>
+    <string name="review_error_empty_body">من فضلك اكتب تقييمك</string>
+    <string name="review_error_invalid_rating">من فضلك اختر تقييماً من 1 إلى 5</string>
+    <string name="product_details_write_review">كتابة تقييم</string>
+    <string name="product_details_edit_review">تعديل التقييم</string>
+    <string name="product_details_delete_review">حذف التقييم</string>
+    <string name="product_details_delete_review_title">حذف التقييم؟</string>
+    <string name="product_details_delete_review_message">سيتم إزالة هذا التقييم من المنتج.</string>
+    <string name="product_details_rating_count">هنا ضع النص الذي تريده</string>
 </resources>

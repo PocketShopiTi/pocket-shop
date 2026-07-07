@@ -50,6 +50,7 @@ sealed interface Route : NavKey {
     @Serializable
     data class ProductDetails(val id: String) : Route
 
+
     @Serializable
     data object AiChat : Route
 

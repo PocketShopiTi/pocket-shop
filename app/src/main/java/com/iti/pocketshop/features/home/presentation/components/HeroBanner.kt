@@ -67,9 +67,6 @@ fun HeroBanner(
 
     var currentIndex by remember(ads) { mutableStateOf(0) }
 
-    // Keyed on currentIndex so the countdown restarts after EVERY change,
-    // whether it came from a manual swipe or from this same auto-scroll —
-    // this is what stops the manual and automatic navigation from colliding.
     LaunchedEffect(currentIndex, ads.size) {
         if (ads.size > 1) {
             delay(BANNER_AUTO_SCROLL_DELAY_MILLIS.milliseconds)

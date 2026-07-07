@@ -214,7 +214,7 @@ fun RootNavDisplay(
                     productId = it.id,
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.ProductDetails>()
-                    }
+                    },
                 )
             }
             entry<Route.OrderCheckout> {

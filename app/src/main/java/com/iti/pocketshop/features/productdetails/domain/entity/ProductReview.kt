@@ -9,4 +9,6 @@ data class ProductReview(
     val rating: Int,
     val date: LocalDate,
     val body: String,
+    val title: String = "",
+    val customerId: String? = null,
 )
