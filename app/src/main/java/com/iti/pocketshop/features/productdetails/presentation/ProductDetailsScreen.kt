@@ -1,25 +1,32 @@
 package com.iti.pocketshop.features.productdetails.presentation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
+import com.iti.pocketshop.core.components.ScreenStateLayout
 import com.iti.pocketshop.core.components.SignInDialogController
 import com.iti.pocketshop.features.productdetails.domain.entity.toFavoriteProduct
-import com.iti.pocketshop.features.productdetails.presentation.components.ErrorContent
+import com.iti.pocketshop.features.productdetails.presentation.components.EmptyProductContent
 import com.iti.pocketshop.features.productdetails.presentation.components.LoadingContent
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductBottomBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductContent
+import com.iti.pocketshop.features.productdetails.presentation.components.ProductDetailsTopAppBar
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -28,16 +35,23 @@ import kotlinx.coroutines.launch
 fun ProductDetailsRoot(
     productId: String,
     onBack: () -> Unit,
-    onSeeAllReviews: (productId: String) -> Unit = {},
-    viewModel: ProductDetailsViewModel = hiltViewModel(),
+    viewModel: ProductDetailsViewModel = hiltViewModel(
+        key = productId,
+        creationCallback = { factory: ProductDetailsViewModel.Factory ->
+            factory.create(productId)
+        },
+    ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
     val user = LocalUser.current
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(productId) {
-        viewModel.onAction(ProductDetailsAction.ProductChanged(productId))
+    LaunchedEffect(viewModel) {
+        viewModel.events.collect { event ->
+            when (event) {
+                is ProductDetailsEvent.ShowError -> ErrorDialogController.sendEvent(event.error)
+            }
+        }
     }
 
     ProductDetailsScreen(
@@ -48,17 +62,14 @@ fun ProductDetailsRoot(
                         action == ProductDetailsAction.AddToCartClicked ||
                                 action == ProductDetailsAction.IncreaseQuantity ||
                                 action == ProductDetailsAction.DecreaseQuantity ||
-                                action is ProductDetailsAction.ToggleFavorite
+                                action == ProductDetailsAction.ToggleFavorite
                         )
             ) {
-                scope.launch {
-                    SignInDialogController.sendEvent(true)
-                }
+                scope.launch { SignInDialogController.sendEvent(true) }
                 return@ProductDetailsScreen
             }
             when (action) {
                 ProductDetailsAction.BackClicked -> onBack()
-                ProductDetailsAction.SeeAllReviewsClicked -> onSeeAllReviews(productId)
                 else -> viewModel.onAction(action)
             }
         },
@@ -71,6 +82,20 @@ fun ProductDetailsScreen(
     onAction: (ProductDetailsAction) -> Unit,
     scope: CoroutineScope = rememberCoroutineScope(),
 ) {
+    val listState = rememberLazyListState()
+
+    val onFavoriteClick: () -> Unit = {
+        state.product?.let { product ->
+            if (state.isFavorite) {
+                scope.launch {
+                    DeleteFavoriteDialogController.sendEvent(product.toFavoriteProduct())
+                }
+            } else {
+                onAction(ProductDetailsAction.ToggleFavorite)
+            }
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
@@ -85,38 +110,42 @@ fun ProductDetailsScreen(
             }
         },
     ) { innerPadding ->
-        when {
-            state.isLoading -> LoadingContent(Modifier.padding(innerPadding))
-            state.errorMessage != null || state.product == null -> ErrorContent(
-                modifier = Modifier.padding(innerPadding),
+        Box(modifier = Modifier.fillMaxSize()) {
+            ScreenStateLayout(
+                isLoading = state.isLoading,
+                error = state.error,
+                isEmpty = state.product == null,
                 onRetry = { onAction(ProductDetailsAction.Retry) },
-            )
-
-            else -> ProductContent(
-                product = state.product,
-                state = state,
-                onAction = onAction,
-                onFavoriteClick = {
-                    if (state.isFavorite) {
-                        scope.launch {
-                            DeleteFavoriteDialogController.sendEvent(state.product.toFavoriteProduct())
-                        }
-                    } else {
-                        onAction(ProductDetailsAction.ToggleFavorite(state.product.toFavoriteProduct()))
-                    }
-                } ,
                 modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                loadingContent = { LoadingContent() },
+                emptyContent = {
+                    EmptyProductContent(onRetry = { onAction(ProductDetailsAction.Retry) })
+                },
+                content = {
+                    state.product?.let { product ->
+                        ProductContent(
+                            product = product,
+                            state = state,
+                            onAction = onAction,
+                            listState = listState,
+                        )
+                    }
+                },
+            )
+            ProductDetailsTopAppBar(
+                isFavorite = state.isFavorite,
+                favoriteEnabled = state.product != null,
+                onBack = { onAction(ProductDetailsAction.BackClicked) },
+                onFavoriteClick = onFavoriteClick,
+                modifier = Modifier.align(Alignment.TopCenter),
             )
         }
     }
 
     RemoveFavoriteDialog(
-        onConfirm = {
-            onAction(ProductDetailsAction.ToggleFavorite(it))
-        }
+        onConfirm = { onAction(ProductDetailsAction.ToggleFavorite) },
     )
 }
-
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 1180)
 @Composable
@@ -127,7 +156,7 @@ private fun ProductDetailsPreview() {
             state = ProductDetailsState(
                 productId = product.id,
                 product = product,
-                selectedOptionValueIds = mapOf("colour" to "ecru", "size" to "m"),
+                selectedOptionValueIds = product.defaultVariant?.selectedOptionValueIds.orEmpty(),
                 isLoading = false,
             ),
             onAction = {},

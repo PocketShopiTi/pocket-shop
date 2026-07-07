@@ -10,14 +10,14 @@ class ProductDetailsMapperTest {
 
     @Test
     fun `exact default title option is synthetic`() {
-        assertTrue(isSyntheticDefaultOption("Title", listOf("Default Title")))
-        assertTrue(isSyntheticDefaultOption(" title ", listOf(" default title ")))
+        assertTrue(isDefaultOption("Title", listOf("Default Title")))
+        assertTrue(isDefaultOption(" title ", listOf(" default title ")))
     }
 
     @Test
     fun `real title options are preserved`() {
-        assertFalse(isSyntheticDefaultOption("Title", listOf("Mr", "Ms")))
-        assertFalse(isSyntheticDefaultOption("Style", listOf("Default Title")))
+        assertFalse(isDefaultOption("Title", listOf("Mr", "Ms")))
+        assertFalse(isDefaultOption("Style", listOf("Default Title")))
     }
 
     @Test
@@ -35,6 +35,19 @@ class ProductDetailsMapperTest {
             optionIdsByName = mapOf("color" to "color-option"),
         )
 
-        assertEquals(setOf("color-option:blue"), result)
+        assertEquals(mapOf("color-option" to "color-option:blue"), result)
+    }
+
+    @Test
+    fun `multi word colour names resolve to their base hue`() {
+        assertEquals(colourArgb("White"), colourArgb("Cloud White"))
+        assertEquals(colourArgb("Black"), colourArgb("Core Black"))
+        assertEquals(colourArgb("Red"), colourArgb("Solar Red"))
+        assertEquals(colourArgb("black"), colourArgb(" CORE BLACK "))
+    }
+
+    @Test
+    fun `unknown colour names share a single fallback`() {
+        assertEquals(colourArgb("Zebra"), colourArgb("Mystery"))
     }
 }

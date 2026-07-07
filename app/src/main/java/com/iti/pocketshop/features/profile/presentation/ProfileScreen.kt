@@ -62,7 +62,7 @@ fun ProfileScreen(
     openWishList: () -> Unit = {},
 ) {
     PullToRefreshBox(
-        isRefreshing = state.isRefreshing,
+        isRefreshing = state.isRefreshing && state.profile != null,
         onRefresh = { onAction(ProfileAction.Refresh) },
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -99,6 +99,20 @@ fun ProfileScreen(
     }
 }
 
+
+@Preview(showBackground = true, widthDp = 390, heightDp = 844)
+@Composable
+private fun LoadingProfilePreview() {
+    PocketShopTheme {
+        ProfileScreen(
+            state = ProfileState(isRefreshing = true),
+            onAction = {},
+            openLogin = {},
+            openRegister = {},
+            openSettings = {},
+        )
+    }
+}
 
 @Preview(showBackground = true, widthDp = 390, heightDp = 844)
 @Composable

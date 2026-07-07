@@ -1,5 +1,7 @@
 package com.iti.pocketshop.features.productdetails.presentation.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,6 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -30,14 +34,27 @@ fun ColourSwatch(
     onClick: () -> Unit,
 ) {
     val unavailable = stringResource(R.string.product_details_option_unavailable, label)
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary
+        else MaterialTheme.colorScheme.surface.copy(alpha = 0f),
+        label = "swatchBorderColor",
+    )
+    val scale by animateFloatAsState(
+        targetValue = if (selected) 1.12f else 1f,
+        label = "swatchScale",
+    )
     Box(
         modifier = Modifier
             .size(36.dp)
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .semantics { if (!enabled) contentDescription = unavailable }
             .clip(CircleShape)
             .border(
                 width = if (selected) 2.dp else 0.dp,
-                color = if (selected) MaterialTheme.colorScheme.primary else Color.Transparent,
+                color = borderColor,
                 shape = CircleShape,
             )
             .padding(3.dp)

@@ -13,11 +13,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 internal fun ArrowBackIcon() {
@@ -44,25 +41,6 @@ internal fun HeartIcon(filled: Boolean, color: Color) {
             close()
         }
         if (filled) drawPath(path, color) else drawPath(path, color, style = Stroke(1.7.dp.toPx()))
-    }
-}
-
-@Composable
-internal fun StarIcon(filled: Boolean, iconSize: Dp = 12.dp) {
-    val color = MaterialTheme.colorScheme.primary
-    Canvas(Modifier.size(iconSize)) {
-        val path = Path()
-        repeat(10) { point ->
-            val radius = if (point % 2 == 0) size.minDimension / 2 else size.minDimension * 0.22f
-            val angle = Math.toRadians((-90 + point * 36).toDouble())
-            val offset = Offset(
-                x = size.width / 2 + (cos(angle) * radius).toFloat(),
-                y = size.height / 2 + (sin(angle) * radius).toFloat(),
-            )
-            if (point == 0) path.moveTo(offset.x, offset.y) else path.lineTo(offset.x, offset.y)
-        }
-        path.close()
-        if (filled) drawPath(path, color) else drawPath(path, color, style = Stroke(1.dp.toPx()))
     }
 }
 

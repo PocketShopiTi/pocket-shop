@@ -52,9 +52,6 @@
     <string name="product_details_description">Description</string>
     <string name="product_details_read_more">Read more</string>
     <string name="product_details_read_less">Read less</string>
-    <string name="product_details_reviews">Reviews</string>
-    <string name="product_details_see_all_reviews">See all reviews</string>
-    <string name="product_details_no_reviews">No reviews yet</string>
     <string name="product_details_decrease_quantity">Decrease quantity</string>
     <string name="product_details_increase_quantity">Increase quantity</string>
     <string name="product_details_quantity">Quantity: %1$d</string>
@@ -64,7 +61,8 @@
     <string name="product_details_error">We couldn’t load this product.</string>
     <string name="product_details_retry">Retry</string>
     <string name="product_details_image">Product image %1$d of %2$d</string>
-    <string name="product_details_rating">Rated %1$.1f out of 5 from %2$d reviews</string>
+    <string name="product_details_image_unavailable">Image unavailable</string>
+    <string name="product_details_empty">This product is no longer available.</string>
     <string name="product_details_option_unavailable">%1$s is unavailable</string>
     <string name="request_timed_out">Request timed out, Please try again</string>
     <string name="too_many_requests">Too many requests, Please try again later</string>
