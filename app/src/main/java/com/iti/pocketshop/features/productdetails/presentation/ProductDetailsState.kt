@@ -24,7 +24,7 @@ data class ProductDetailsState(
         }
 
     val galleryImages: List<ProductImage>
-        get() = product?.imagesFor(selectedVariant).orEmpty()
+        get() = product?.images.orEmpty()
 
     val totalPrice: Money?
         get() = selectedVariant?.price?.let { price ->

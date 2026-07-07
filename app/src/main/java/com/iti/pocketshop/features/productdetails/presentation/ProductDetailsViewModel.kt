@@ -93,7 +93,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
 
     private fun showProduct(product: ProductDetails) {
         val defaultVariant = product.defaultVariant
-        val selectedImageIndex = product.imagesFor(defaultVariant).indexOfFirst { image ->
+        val selectedImageIndex = product.images.indexOfFirst { image ->
             image.url == defaultVariant?.imageUrl
         }.coerceAtLeast(0)
 
@@ -128,14 +128,17 @@ class ProductDetailsViewModel @AssistedInject constructor(
                 valueId = valueId,
                 currentSelections = state.selectedOptionValueIds,
             ) ?: return@update state
-            val variantImageIndex = product.imagesFor(variant).indexOfFirst { image ->
+            val variantImageIndex = product.images.indexOfFirst { image ->
                 image.url == variant.imageUrl
             }
             state.copy(
                 selectedOptionValueIds = variant.selectedOptionValueIds,
-                // The gallery list changes with the variant, so an old index is
-                // meaningless — fall back to the featured image.
-                selectedImageIndex = variantImageIndex.coerceAtLeast(0),
+                // Animate the pager to the variant's own image when it has one.
+                selectedImageIndex = if (variantImageIndex >= 0) {
+                    variantImageIndex
+                } else {
+                    state.selectedImageIndex
+                },
                 isAddedToCart = false,
             )
         }
