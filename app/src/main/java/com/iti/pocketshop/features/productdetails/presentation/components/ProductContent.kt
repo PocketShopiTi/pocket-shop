@@ -52,6 +52,7 @@ internal fun ProductContent(
                     onAction(ProductDetailsAction.ImageSelected(index))
                 },
             )
+            AiCompareButton(onCompareClicked = { onAction(ProductDetailsAction.CompareSimilarProductsClicked) })
         }
         item {
             Column(

@@ -36,6 +36,7 @@ import com.iti.pocketshop.features.productdetails.presentation.components.Produc
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductDetailsTopAppBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ReviewEditorSheet
 import com.iti.pocketshop.R
+import com.iti.pocketshop.features.productdetails.presentation.components.AiCompareScreen
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -44,6 +45,7 @@ import kotlinx.coroutines.launch
 fun ProductDetailsRoot(
     productId: String,
     onBack: () -> Unit,
+    onProductClick: (String) -> Unit = {},
     viewModel: ProductDetailsViewModel = hiltViewModel(
         key = productId,
         creationCallback = { factory: ProductDetailsViewModel.Factory ->
@@ -97,6 +99,9 @@ fun ProductDetailsRoot(
                     if (editingReview == null || editingReview.customerId == user?.uid) {
                         viewModel.onAction(action)
                     }
+                }
+                is ProductDetailsAction.SuggestedProductClicked -> {
+                    onProductClick(action.productId)
                 }
                 else -> viewModel.onAction(action)
             }
@@ -205,6 +210,13 @@ fun ProductDetailsScreen(
             customerId = currentUserId.orEmpty(),
             isSubmitting = state.reviewActionInProgress,
             onAction = onAction,
+        )
+    }
+
+    if (state.isCompareSectionVisible) {
+        AiCompareScreen(
+            state = state,
+            onAction = onAction
         )
     }
 

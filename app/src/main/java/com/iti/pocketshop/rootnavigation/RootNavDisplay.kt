@@ -236,6 +236,9 @@ fun RootNavDisplay(
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.ProductDetails>()
                     },
+                    onProductClick = { productId ->
+                        openProductDetails(productId)
+                    }
                 )
             }
             entry<Route.OrderDetails> {

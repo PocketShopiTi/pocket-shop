@@ -5,6 +5,8 @@ import com.iti.pocketshop.features.productdetails.domain.entity.Money
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductImage
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
+import com.iti.pocketshop.features.home.domain.models.Product
+import com.iti.pocketshop.features.productdetails.domain.entity.AiComparisonResult
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductVariant
 
 data class ProductDetailsState(
@@ -23,6 +25,13 @@ data class ProductDetailsState(
     val reviewActionInProgress: Boolean = false,
     val reviewToDelete: ProductReview? = null,
     val isShowingAllReviews: Boolean = false,
+    val isCompareSectionVisible: Boolean = false,
+    val isSearchingSimilar: Boolean = false,
+    val similarProducts: List<Product> = emptyList(),
+    val selectedProductsToCompare: List<Product> = emptyList(),
+    val isComparingWithAi: Boolean = false,
+    val aiComparisonResult: AiComparisonResult? = null,
+    val addedToCartProductIds: Set<String> = emptySet(),
     val isLoading: Boolean = true,
     val error: PocketDataError? = null,
 ) {
