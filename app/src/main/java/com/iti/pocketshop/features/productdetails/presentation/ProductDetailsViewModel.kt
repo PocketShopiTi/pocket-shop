@@ -132,6 +132,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
             }
             ProductDetailsAction.DeleteReviewConfirmed -> deleteSelectedReview()
             ProductDetailsAction.BackClicked -> Unit
+            ProductDetailsAction.GenerateOutfitClicked -> Unit
         }
     }
 

@@ -439,6 +439,9 @@
     <string name="please_wait_a_moment">Please wait a moment while we finalize your order.</string>
     <string name="shopping_assistant">Shopping Assistant</string>
     <string name="scroll_to_latest">Scroll to latest</string>
+    <string name="ai_outfit_prompt">Build an outfit around \"%1$s\"[[ctx]]The user is viewing the product with id %2$s. Call get_product_details on it first, then build the outfit around it.[[/ctx]]</string>
+    <string name="product_details_generate_outfit">Generate outfit</string>
+    <string name="ai_chat_error_message">Sorry, something went wrong. Please try again.</string>
     <string name="empty_chat_title">How can I help?</string>
     <string name="empty_chat_subtitle">Find products, search by image, or get recommendations.</string>
     <string name="found_products_for">Found products for you</string>

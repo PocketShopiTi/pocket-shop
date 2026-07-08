@@ -38,66 +38,80 @@ class GeminiAiRepository @Inject constructor(
                             "boolean" -> Schema.boolean(param.description)
                             else -> Schema.string(param.description)
                         }
-                    }
+                    },
+                    optionalParameters = tool.parameters.filterNot { it.isRequired }.map { it.name }
                 )
             }))
         } else null
 
-        val model = Firebase.ai.generativeModel(
+        val model = Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
             modelName = "gemini-2.5-flash-lite",
             systemInstruction = content { text(systemPrompt) },
             tools = geminiTools
         )
 
-        val history = messages.map { msg ->
+        if (messages.isEmpty()) return@flow
+
+        // Consecutive TOOL messages are merged into ONE "function" content: when the model
+        // makes N function calls in a turn, Gemini requires all N responses in a single turn.
+        val history = mutableListOf<Content>()
+        var pendingToolParts = listOf<FunctionResponsePart>()
+        fun flushToolParts() {
+            if (pendingToolParts.isNotEmpty()) {
+                val parts = pendingToolParts
+                history += content("function") { parts.forEach { part(it) } }
+                pendingToolParts = emptyList()
+            }
+        }
+        messages.forEach { msg ->
             when (msg.sender) {
-                MessageSender.USER -> content("user") {
-                    text(msg.content)
-                    msg.imageUri?.let { uri ->
-                        val bitmap = uriToBitmap(uri)
-                        bitmap?.let { image(it) }
-                    }
-                }
-                MessageSender.AI -> content("model") {
-                    if (msg.toolCalls.isNotEmpty()) {
-                        msg.toolCalls.forEach { call ->
-                            part(FunctionCallPart(call.name, call.args.mapValues { JsonPrimitive(it.value) }))
+                MessageSender.TOOL -> pendingToolParts = pendingToolParts + FunctionResponsePart(
+                    name = msg.toolCallName ?: "",
+                    response = JsonObject(mapOf("result" to JsonPrimitive(msg.content)))
+                )
+                MessageSender.USER -> {
+                    flushToolParts()
+                    history += content("user") {
+                        // hiddenContext is sent to the model but never shown in the chat bubble
+                        val userText = buildString {
+                            append(msg.content)
+                            msg.hiddenContext?.let { ctx ->
+                                if (msg.content.isNotBlank()) append("\n\n")
+                                append(ctx)
+                            }
+                        }
+                        text(userText)
+                        msg.imageUri?.let { uri ->
+                            val bitmap = uriToBitmap(uri)
+                            bitmap?.let { image(it) }
                         }
                     }
-                    if (msg.content.isNotEmpty()) {
-                        text(msg.content)
+                }
+                MessageSender.AI -> {
+                    flushToolParts()
+                    history += content("model") {
+                        if (msg.toolCalls.isNotEmpty()) {
+                            msg.toolCalls.forEach { call ->
+                                part(FunctionCallPart(call.name, call.args.mapValues { JsonPrimitive(it.value) }))
+                            }
+                        }
+                        if (msg.content.isNotEmpty()) {
+                            text(msg.content)
+                        }
                     }
                 }
-                MessageSender.TOOL -> content("function") {
-                    part(FunctionResponsePart(
-                        name = msg.toolCallName ?: "",
-                        response = JsonObject(mapOf("result" to JsonPrimitive(msg.content)))
-                    ))
+                else -> {
+                    flushToolParts()
+                    history += content("user") { text(msg.content) }
                 }
-                else -> content("user") { text(msg.content) }
             }
         }
+        flushToolParts()
 
-        val lastMessage = messages.lastOrNull() ?: return@flow
-        
+        // The last history element is the turn to send (a user message, or the merged
+        // function-response block); everything before it seeds the chat.
         val chat = model.startChat(history.dropLast(1))
-        
-        val responseFlow = if (lastMessage.sender == MessageSender.TOOL) {
-            val responsePart = FunctionResponsePart(
-                name = lastMessage.toolCallName ?: "",
-                response = JsonObject(mapOf("result" to JsonPrimitive(lastMessage.content)))
-            )
-            chat.sendMessageStream(content("function") { part(responsePart) })
-        } else {
-            val lastContent = content("user") {
-                text(lastMessage.content)
-                lastMessage.imageUri?.let { uri ->
-                    val bitmap = uriToBitmap(uri)
-                    bitmap?.let { image(it) }
-                }
-            }
-            chat.sendMessageStream(lastContent)
-        }
+        val responseFlow = chat.sendMessageStream(history.last())
 
         responseFlow.collect { chunk ->
             chunk.text?.let { emit(AiResponse.TextChunk(it)) }

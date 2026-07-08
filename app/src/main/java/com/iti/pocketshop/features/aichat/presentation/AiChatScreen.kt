@@ -62,7 +62,12 @@ import kotlinx.coroutines.launch
 fun AiChatRoot(
     onBack: () -> Unit,
     onProductClick: (String) -> Unit,
-    viewModel: AiChatViewModel = hiltViewModel(),
+    initialPrompt: String? = null,
+    viewModel: AiChatViewModel = hiltViewModel(
+        creationCallback = { factory: AiChatViewModel.Factory ->
+            factory.create(initialPrompt)
+        },
+    ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -164,7 +169,7 @@ fun AiChatScreen(
                 ) { errorMessage ->
                     errorMessage?.let {
                         ErrorBanner(
-                            message = it,
+                            message = stringResource(R.string.ai_chat_error_message),
                             onRetry = { onAction(AiChatAction.OnRetry) },
                             onDismiss = { onAction(AiChatAction.OnDismissError) },
                             modifier = Modifier

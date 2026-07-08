@@ -11,22 +11,31 @@ import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import com.iti.pocketshop.features.search.domain.model.SearchResultItem
 import com.iti.pocketshop.features.search.domain.usecase.GetSearchResultsUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.json.JSONObject
 
-@HiltViewModel
-class AiChatViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = AiChatViewModel.Factory::class)
+class AiChatViewModel @AssistedInject constructor(
     private val aiRepository: AiRepository,
     private val addToCartUseCase: AddToCartUseCase,
     private val getSearchResultsUseCase: GetSearchResultsUseCase,
     private val getProductDetailsUseCase: GetProductDetailsUseCase,
     private val getLocalCartUseCase: GetLocalCartUseCase,
+    @Assisted private val initialPrompt: String?,
 ) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(initialPrompt: String?): AiChatViewModel
+    }
 
     private val _state = MutableStateFlow(AiChatState())
     val state = _state.asStateFlow()
@@ -55,6 +64,23 @@ class AiChatViewModel @Inject constructor(
             name = "get_cart",
             description = "Get the current contents of the user's shopping cart.",
             parameters = emptyList()
+        ),
+        AiTool(
+            name = "search_outfit_item",
+            description = "Search for ONE outfit slot (top, bottom, shoes, accessory). " +
+                    "Returns up to 4 real purchasable products filtered by product type and an optional style tag.",
+            parameters = listOf(
+                AiParameter("query", "string", "Short search keywords, e.g. 'white sneakers'"),
+                AiParameter(
+                    "category", "string",
+                    "Exact store product type, e.g. T-Shirts, Shirts, Hoodies, Jackets, Pants, Jeans, Shorts, Dresses, Shoes, Bags, Accessories"
+                ),
+                AiParameter(
+                    "tag", "string",
+                    "Optional single tag like style:casual, occasion:work, season:summer, gender:men, color:black",
+                    isRequired = false
+                ),
+            )
         )
     )
 
@@ -62,6 +88,21 @@ class AiChatViewModel @Inject constructor(
         viewModelScope.launch {
             getLocalCartUseCase().collect { cart ->
                 currentCart = cart
+            }
+        }
+        initialPrompt?.takeIf { it.isNotBlank() }?.let { prompt ->
+            if (_state.value.messages.isEmpty()) {
+                val parsed = parseHiddenContext(prompt)
+                _state.update {
+                    it.copy(
+                        messages = it.messages + ChatMessage(
+                            content = parsed.visibleText,
+                            hiddenContext = parsed.hiddenContext,
+                            sender = MessageSender.USER,
+                        )
+                    )
+                }
+                runAgentLoop()
             }
         }
     }
@@ -74,8 +115,8 @@ class AiChatViewModel @Inject constructor(
             is AiChatAction.OnImageSelected -> {
                 _state.update { it.copy(selectedImageUri = action.uri) }
             }
-            AiChatAction.OnSendMessage,
-            AiChatAction.OnRetry -> sendMessage()
+            AiChatAction.OnSendMessage -> sendMessage()
+            AiChatAction.OnRetry -> retry()
             AiChatAction.OnDismissError -> {
                 _state.update { it.copy(error = null) }
             }
@@ -83,12 +124,14 @@ class AiChatViewModel @Inject constructor(
     }
 
     private fun sendMessage() {
-        val userText = _state.value.inputText.trim()
+        val rawText = _state.value.inputText.trim()
         val imageUri = _state.value.selectedImageUri
-        if (userText.isEmpty() && imageUri == null) return
+        if (rawText.isEmpty() && imageUri == null) return
 
+        val parsed = parseHiddenContext(rawText)
         val userMessage = ChatMessage(
-            content = userText,
+            content = parsed.visibleText,
+            hiddenContext = parsed.hiddenContext,
             sender = MessageSender.USER,
             imageUri = imageUri
         )
@@ -101,6 +144,15 @@ class AiChatViewModel @Inject constructor(
             )
         }
 
+        runAgentLoop()
+    }
+
+    private fun retry() {
+        // A failed turn drops only the AI placeholder in runAgentLoop's catch block, so the
+        // last user (or tool) message is still present. Clear the error and re-run the turn
+        // instead of appending a new message (the input field is already empty here).
+        if (_state.value.messages.isEmpty()) return
+        _state.update { it.copy(error = null) }
         runAgentLoop()
     }
 
@@ -123,7 +175,7 @@ class AiChatViewModel @Inject constructor(
                 _state.update { it.copy(messages = it.messages + aiPlaceholder) }
 
                 var fullResponseText = ""
-                var toolCall: AiResponse.ToolCall? = null
+                val toolCalls = mutableListOf<AiResponse.ToolCall>()
 
                 aiRepository.streamChat(_state.value.messages.dropLast(1), systemPrompt, tools)
                     .catch { e ->
@@ -142,7 +194,7 @@ class AiChatViewModel @Inject constructor(
                                 updateLastMessage(fullResponseText, isTyping = true)
                             }
                             is AiResponse.ToolCall -> {
-                                toolCall = response
+                                toolCalls += response
                                 updateLastMessage(fullResponseText, isTyping = false, toolCall = response)
                             }
                             AiResponse.Finished -> {
@@ -151,15 +203,19 @@ class AiChatViewModel @Inject constructor(
                         }
                     }
 
-                if (toolCall != null) {
-                    val result = executeTool(toolCall)
-                    lastToolProducts = result.products
-                    val toolMessage = ChatMessage(
-                        content = result.summary,
-                        sender = MessageSender.TOOL,
-                        toolCallName = toolCall.name
-                    )
-                    
+                if (toolCalls.isNotEmpty()) {
+                    val collectedProducts = mutableListOf<SearchResultItem.ProductItem>()
+                    val toolMessages = toolCalls.map { call ->
+                        val result = executeTool(call)
+                        collectedProducts += result.products
+                        ChatMessage(
+                            content = result.summary,
+                            sender = MessageSender.TOOL,
+                            toolCallName = call.name
+                        )
+                    }
+                    lastToolProducts = collectedProducts
+
                     // Clear the status text if there was no real content
                     if (fullResponseText.isEmpty()) {
                         _state.update { state ->
@@ -168,10 +224,10 @@ class AiChatViewModel @Inject constructor(
                                 val last = updatedMessages.last()
                                 updatedMessages[updatedMessages.lastIndex] = last.copy(content = "")
                             }
-                            state.copy(messages = updatedMessages + toolMessage)
+                            state.copy(messages = updatedMessages + toolMessages)
                         }
                     } else {
-                        _state.update { it.copy(messages = it.messages + toolMessage) }
+                        _state.update { it.copy(messages = it.messages + toolMessages) }
                     }
                 } else {
                     isLooping = false
@@ -215,6 +271,7 @@ class AiChatViewModel @Inject constructor(
     private fun getToolStatusText(name: String, args: Map<String, String>): String {
         return when (name) {
             "search_products" -> "Searching for '${args["query"] ?: "products"}'..."
+            "search_outfit_item" -> "Finding ${args["category"] ?: "items"}..."
             "get_product_details" -> "Getting details..."
             "add_to_cart" -> "Adding to cart..."
             "get_cart" -> "Checking cart..."
@@ -269,6 +326,31 @@ class AiChatViewModel @Inject constructor(
             "get_cart" -> {
                 ToolExecutionResult(currentCart?.lines?.joinToString("\n") { "- ${it.title} (${it.quantity}x)" } ?: "Cart is empty")
             }
+            "search_outfit_item" -> {
+                val category = toolCall.arguments["category"] as? String ?: ""
+                val tag = (toolCall.arguments["tag"] as? String)?.takeIf { it.isNotBlank() }
+                val query = (toolCall.arguments["query"] as? String).orEmpty().ifBlank { category }
+                val filters = buildList {
+                    if (category.isNotBlank()) add(JSONObject().put("productType", category).toString())
+                    tag?.let { add(JSONObject().put("tag", it).toString()) }
+                }
+                when (val result = getSearchResultsUseCase(query, first = 4, filters = filters)) {
+                    is PocketResult.Success -> {
+                        val products = result.data.products.take(4)
+                        ToolExecutionResult(
+                            summary = if (products.isEmpty()) {
+                                "No products found for category '$category'${tag?.let { " with tag $it" } ?: ""}. Try again without the tag."
+                            } else {
+                                products.joinToString("\n") { p: SearchResultItem.ProductItem ->
+                                    "- ${p.title} (ID: ${p.id}): ${p.price} ${p.currencyCode}"
+                                }
+                            },
+                            products = products
+                        )
+                    }
+                    is PocketResult.Error -> ToolExecutionResult("Error searching: ${result.error}")
+                }
+            }
             else -> ToolExecutionResult("Unknown tool")
         }
     }
@@ -288,6 +370,14 @@ class AiChatViewModel @Inject constructor(
             - Answer politely and professionally.
             - Use Markdown formatting.
             - ONLY answer shopping-related questions.
+
+            OUTFIT BUILDING:
+            - When the user asks for an outfit, or to build an outfit around a product, plan 3-4 slots: top, bottom, shoes, accessory.
+            - If a product id is given, call get_product_details first and skip the slot that product already fills.
+            - Call search_outfit_item exactly once per slot, ONE call at a time.
+            - Use the tag parameter when style, occasion, season, gender, or color is known (e.g. style:casual, gender:men).
+            - If a slot returns no products, retry once without the tag; if still empty, skip the slot and say so.
+            - Finally present the outfit: for each slot pick ONE product with title, price, and a one-line reason. NEVER invent products.
         """.trimIndent()
     }
 }
