@@ -56,7 +56,7 @@ internal fun AddressTopBar(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.address_content_description_back),
-                        tint = extendedColors.textPrimary,
+                        tint = extendedColors.primary,
                         modifier = Modifier.size(18.dp),
                     )
                 }

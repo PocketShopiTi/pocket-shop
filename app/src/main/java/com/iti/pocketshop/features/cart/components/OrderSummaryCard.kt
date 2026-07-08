@@ -20,16 +20,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
-import java.util.Locale
+import com.iti.pocketshop.core.pricing.PriceFormatter
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @Composable
 fun OrderSummaryCard(
     subTotal: Double,
     shipping: Double,
     total: Double,
+    currencyCode: String,
     modifier: Modifier = Modifier
 ) {
+    val userSettings = LocalSettingsUser.current
+    val extendedColors = LocalExtendedColors.current
+    val sourceCurrencyCode = currencyCode.ifBlank { "USD" }
+
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -54,18 +61,18 @@ fun OrderSummaryCard(
 
             SummaryRow(
                 title = stringResource(id = R.string.subtotal),
-                value = String.format(Locale.US, "$%.2f", subTotal)
+                value = PriceFormatter.format(subTotal, sourceCurrencyCode, userSettings)
             )
             Spacer(modifier = Modifier.height(12.dp))
 
             SummaryRow(
                 title = stringResource(id = R.string.shipping),
-                value = if (shipping == 0.0) stringResource(id = R.string.free) else String.format(
-                    Locale.US,
-                    "$%.2f",
-                    shipping
-                ),
-                valueColor = if (shipping == 0.0) Color(0xFF4CAF50) else MaterialTheme.colorScheme.onBackground
+                value = if (shipping == 0.0) {
+                    stringResource(id = R.string.free)
+                } else {
+                    PriceFormatter.format(shipping, sourceCurrencyCode, userSettings)
+                },
+                valueColor = if (shipping == 0.0) extendedColors.success else MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -83,7 +90,7 @@ fun OrderSummaryCard(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = String.format(Locale.US, "$%.2f", total),
+                    text = PriceFormatter.format(total, sourceCurrencyCode, userSettings),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.ExtraBold,
                     color = MaterialTheme.colorScheme.primary

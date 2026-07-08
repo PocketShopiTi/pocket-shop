@@ -80,7 +80,7 @@ internal fun ProductDetailsTopAppBar(
                         tint = if (favorite) {
                             MaterialTheme.colorScheme.error
                         } else {
-                            MaterialTheme.colorScheme.onSurface
+                            MaterialTheme.colorScheme.primary
                         },
                         modifier = Modifier
                             .size(24.dp)
@@ -92,9 +92,9 @@ internal fun ProductDetailsTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = containerColor,
             scrolledContainerColor = containerColor,
-            navigationIconContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
             titleContentColor = MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            actionIconContentColor = MaterialTheme.colorScheme.primary,
         ),
     )
 }

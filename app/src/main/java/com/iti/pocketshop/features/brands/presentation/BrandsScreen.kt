@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -85,7 +86,11 @@ fun BrandsScreen(
                             contentDescription = stringResource(R.string.search),
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                    actionIconContentColor = MaterialTheme.colorScheme.primary,
+                )
             )
         }
     ) { innerPadding ->
@@ -105,12 +110,20 @@ fun BrandsScreen(
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     leadingIcon = {
-                        Icon(ImageVector.vectorResource(R.drawable.ic_search), contentDescription = null)
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.ic_search),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
                     },
                     trailingIcon = {
                         if (state.searchQuery.isNotEmpty()) {
                             IconButton(onClick = { onAction(BrandsAction.SearchBrands("")) }) {
-                                Icon(ImageVector.vectorResource(R.drawable.ic_close), contentDescription = "Clear")
+                                Icon(
+                                    ImageVector.vectorResource(R.drawable.ic_close),
+                                    contentDescription = "Clear",
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
                             }
                         }
                     }

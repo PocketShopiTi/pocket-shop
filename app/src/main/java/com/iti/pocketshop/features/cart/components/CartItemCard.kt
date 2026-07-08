@@ -40,9 +40,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
-import java.util.Locale
 
 @Composable
 fun CartItemCard(
@@ -51,6 +52,7 @@ fun CartItemCard(
     onUpdateQuantity: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val userSettings = LocalSettingsUser.current
     var localQuantity by remember(item.quantity) { mutableIntStateOf(item.quantity) }
 
     Card(
@@ -135,7 +137,7 @@ fun CartItemCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = String.format(Locale.US, "$%.2f", item.price),
+                        text = PriceFormatter.format(item.price, item.currencyCode, userSettings),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary

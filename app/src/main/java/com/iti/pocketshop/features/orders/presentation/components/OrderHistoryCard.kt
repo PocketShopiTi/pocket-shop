@@ -21,7 +21,6 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,13 +30,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.core.utils.toFormattedDate
 import com.iti.pocketshop.features.orders.domain.model.OrderItem
 import com.iti.pocketshop.features.orders.domain.model.OrderStatus
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
-import java.text.NumberFormat
-import java.util.Currency
 
 @Composable
 fun OrderHistoryCard(
@@ -45,6 +44,8 @@ fun OrderHistoryCard(
     onView: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val userSettings = LocalSettingsUser.current
+
     OutlinedCard(
         modifier = modifier
             .fillMaxWidth()
@@ -84,11 +85,7 @@ fun OrderHistoryCard(
                 }
 
                 Text(
-                    text = remember(order.total, order.currencyCode) {
-                        NumberFormat.getCurrencyInstance().apply {
-                            currency = Currency.getInstance(order.currencyCode)
-                        }.format(order.total)
-                    },
+                    text = PriceFormatter.format(order.total, order.currencyCode, userSettings),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 1,

@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.home.presentation.models
 
 import androidx.compose.runtime.Immutable
 import com.iti.pocketshop.features.home.domain.models.Product
+import com.iti.pocketshop.features.home.domain.models.Money
 
 @Immutable
 data class UIProduct(
@@ -10,8 +11,8 @@ data class UIProduct(
     val vendor: String,
     val imageUrl: String?,
     val imageAlt: String?,
-    val price: String,
-    val compareAtPrice: String?,
+    val price: Money,
+    val compareAtPrice: Money?,
     val discountPercentage: Int?,
     val isFavorite: Boolean,
     val availableForSale: Boolean,

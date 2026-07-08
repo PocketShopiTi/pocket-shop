@@ -24,7 +24,7 @@ import kotlin.math.sin
 @Composable
 internal fun ArrowBackIcon() {
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val color = MaterialTheme.colorScheme.onSurface
+    val color = MaterialTheme.colorScheme.primary
     Canvas(Modifier.size(24.dp)) {
         val startX = if (isRtl) size.width * 0.72f else size.width * 0.28f
         val endX = if (isRtl) size.width * 0.28f else size.width * 0.72f
