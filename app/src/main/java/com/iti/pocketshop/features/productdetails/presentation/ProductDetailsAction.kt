@@ -30,9 +30,8 @@ sealed interface ProductDetailsAction {
     data object DeleteReviewDismissed : ProductDetailsAction
     data object DeleteReviewConfirmed : ProductDetailsAction
     
-     data object CompareSimilarProductsClicked : ProductDetailsAction
+    data object CompareSimilarProductsClicked : ProductDetailsAction
     data class ToggleSimilarProductSelection(val product: Product) : ProductDetailsAction
     data object CompareSelectedProductsClicked : ProductDetailsAction
     data class SuggestedProductClicked(val productId: String) : ProductDetailsAction
-    data object AiCompareDismissed : ProductDetailsAction
 }

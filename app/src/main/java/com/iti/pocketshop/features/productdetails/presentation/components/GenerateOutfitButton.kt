@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.ButtonDefaults
@@ -29,7 +29,7 @@ internal fun GenerateOutfitButton(
         modifier = modifier
             .fillMaxWidth()
             .height(44.dp),
-        shape = RoundedCornerShape(22.dp),
+        shape = CircleShape,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.primary,
         ),

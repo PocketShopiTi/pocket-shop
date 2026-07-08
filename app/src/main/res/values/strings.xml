@@ -488,7 +488,7 @@
     <string name="product_details_reviews">Reviews</string>
     <string name="product_details_see_all_reviews">See all reviews</string>
     <string name="product_details_no_reviews">No reviews yet</string>
-    <string name="ai_compare_title">Compare with Similar Products (AI)</string>
+    <string name="ai_compare_title">Compare with AI</string>
     <string name="ai_compare_button">Compare Similar Products</string>
     <string name="ai_select_product_to_compare">Select a product to compare with:</string>
     <string name="ai_comparison_summary">AI Comparison Summary</string>
@@ -508,4 +508,5 @@
     <string name="ai_add_to_cart">Add to Cart</string>
     <string name="ai_pros_label">Pros</string>
     <string name="ai_cons_label">Cons</string>
+    <string name="current">Current</string>
 </resources>

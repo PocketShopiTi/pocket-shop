@@ -7,7 +7,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -17,13 +16,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
+import com.iti.pocketshop.features.aicompare.presentation.ProductDetailsState
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOption
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionType
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction
-import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsState
-import java.util.Locale
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun ProductOptionSelector(
     option: ProductOption,
@@ -49,7 +46,7 @@ internal fun ProductOptionSelector(
             label = "optionSectionTitle",
         ) { currentTitle ->
             Text(
-                text = currentTitle.uppercase(Locale.getDefault()),
+                text = currentTitle,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = sectionLabelStyle(),
             )

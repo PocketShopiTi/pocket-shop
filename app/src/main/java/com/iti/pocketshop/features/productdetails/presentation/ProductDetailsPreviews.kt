@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.productdetails.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import com.iti.pocketshop.features.aicompare.presentation.ProductDetailsState
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 
