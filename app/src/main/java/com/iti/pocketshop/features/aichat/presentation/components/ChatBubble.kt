@@ -10,11 +10,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
+import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +44,8 @@ fun ChatBubble(
     message: ChatMessage,
     onProductClick: (String) -> Unit,
     modifier: Modifier = Modifier,
+    isLastMessage: Boolean = false,
+    onQuickReply: (String) -> Unit = {},
 ) {
     if (message.sender == MessageSender.USER) {
         UserChatBubble(
@@ -51,6 +57,8 @@ fun ChatBubble(
         AssistantChatBubble(
             message = message,
             onProductClick = onProductClick,
+            showQuickReplies = isLastMessage,
+            onQuickReply = onQuickReply,
             modifier = modifier
         )
     }
@@ -81,10 +89,13 @@ private fun UserChatBubble(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AssistantChatBubble(
     message: ChatMessage,
     onProductClick: (String) -> Unit,
+    showQuickReplies: Boolean,
+    onQuickReply: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -113,6 +124,25 @@ private fun AssistantChatBubble(
                 .padding(horizontal = 16.dp)
                 .padding(end = 40.dp)
         )
+
+        if (showQuickReplies && message.quickReplies.isNotEmpty()) {
+            FlowRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                message.quickReplies.forEach { option ->
+                    SuggestionChip(
+                        onClick = { onQuickReply(option) },
+                        label = { Text(option) },
+                        colors = SuggestionChipDefaults.suggestionChipColors(
+                            labelColor = MaterialTheme.colorScheme.primary
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 

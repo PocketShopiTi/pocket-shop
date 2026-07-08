@@ -4,20 +4,39 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log.e
 import com.google.firebase.Firebase
 import com.google.firebase.ai.ai
-import com.google.firebase.ai.type.*
-import com.iti.pocketshop.features.aichat.domain.model.*
+import com.google.firebase.ai.type.Content
+import com.google.firebase.ai.type.FunctionCallPart
+import com.google.firebase.ai.type.FunctionDeclaration
+import com.google.firebase.ai.type.FunctionResponsePart
+import com.google.firebase.ai.type.GenerativeBackend
+import com.google.firebase.ai.type.QuotaExceededException
+import com.google.firebase.ai.type.Schema
+import com.google.firebase.ai.type.Tool
+import com.google.firebase.ai.type.content
+import com.iti.pocketshop.features.aichat.domain.model.AiErrorType
+import com.iti.pocketshop.features.aichat.domain.model.AiResponse
+import com.iti.pocketshop.features.aichat.domain.model.AiTool
+import com.iti.pocketshop.features.aichat.domain.model.ChatMessage
+import com.iti.pocketshop.features.aichat.domain.model.MessageSender
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import javax.inject.Inject
-import kotlinx.serialization.json.*
 
 class GeminiAiRepository @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : AiRepository {
+
+    private companion object {
+        const val TAG = "GeminiAiRepository"
+    }
 
     override fun streamChat(
         messages: List<ChatMessage>,
@@ -45,7 +64,7 @@ class GeminiAiRepository @Inject constructor(
         } else null
 
         val model = Firebase.ai(backend = GenerativeBackend.googleAI()).generativeModel(
-            modelName = "gemini-2.5-flash-lite",
+            modelName = "gemini-2.5-flash",
             systemInstruction = content { text(systemPrompt) },
             tools = geminiTools
         )
@@ -69,6 +88,7 @@ class GeminiAiRepository @Inject constructor(
                     name = msg.toolCallName ?: "",
                     response = JsonObject(mapOf("result" to JsonPrimitive(msg.content)))
                 )
+
                 MessageSender.USER -> {
                     flushToolParts()
                     history += content("user") {
@@ -87,12 +107,17 @@ class GeminiAiRepository @Inject constructor(
                         }
                     }
                 }
+
                 MessageSender.AI -> {
                     flushToolParts()
                     history += content("model") {
                         if (msg.toolCalls.isNotEmpty()) {
                             msg.toolCalls.forEach { call ->
-                                part(FunctionCallPart(call.name, call.args.mapValues { JsonPrimitive(it.value) }))
+                                part(
+                                    FunctionCallPart(
+                                        call.name,
+                                        call.args.mapValues { JsonPrimitive(it.value) })
+                                )
                             }
                         }
                         if (msg.content.isNotEmpty()) {
@@ -100,6 +125,7 @@ class GeminiAiRepository @Inject constructor(
                         }
                     }
                 }
+
                 else -> {
                     flushToolParts()
                     history += content("user") { text(msg.content) }
@@ -108,24 +134,35 @@ class GeminiAiRepository @Inject constructor(
         }
         flushToolParts()
 
-        // The last history element is the turn to send (a user message, or the merged
-        // function-response block); everything before it seeds the chat.
-        val chat = model.startChat(history.dropLast(1))
-        val responseFlow = chat.sendMessageStream(history.last())
+        try {
+            // The last history element is the turn to send (a user message, or the merged
+            // function-response block); everything before it seeds the chat.
+            val chat = model.startChat(history.dropLast(1))
+            val responseFlow = chat.sendMessageStream(history.last())
 
-        responseFlow.collect { chunk ->
-            chunk.text?.let { emit(AiResponse.TextChunk(it)) }
-            chunk.functionCalls.forEach { call ->
-                val args = call.args.mapValues { (_, value) -> 
-                    when (value) {
-                        is JsonPrimitive -> value.content
-                        else -> value.toString()
+            responseFlow.collect { chunk ->
+                chunk.text?.let { emit(AiResponse.TextChunk(it)) }
+                chunk.functionCalls.forEach { call ->
+                    val args = call.args.mapValues { (_, value) ->
+                        when (value) {
+                            is JsonPrimitive -> value.content
+                            else -> value.toString()
+                        }
                     }
+                    emit(AiResponse.ToolCall(call.name, args))
                 }
-                emit(AiResponse.ToolCall(call.name, args))
             }
+            emit(AiResponse.Finished)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            e(TAG, "AI stream failed", e)
+            val type = when (e) {
+                is QuotaExceededException -> AiErrorType.QUOTA_EXCEEDED
+                else -> AiErrorType.GENERIC
+            }
+            emit(AiResponse.Error(type))
         }
-        emit(AiResponse.Finished)
     }
 
     private fun uriToBitmap(uri: Uri): Bitmap? {

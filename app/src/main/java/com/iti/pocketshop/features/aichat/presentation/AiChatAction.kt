@@ -8,4 +8,6 @@ sealed interface AiChatAction {
     data class OnImageSelected(val uri: Uri?) : AiChatAction
     data object OnRetry : AiChatAction
     data object OnDismissError : AiChatAction
+    data object OnNewChat : AiChatAction
+    data class OnQuickReplySelected(val text: String) : AiChatAction
 }

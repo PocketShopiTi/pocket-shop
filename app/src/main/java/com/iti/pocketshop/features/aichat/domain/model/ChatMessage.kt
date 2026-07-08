@@ -22,5 +22,7 @@ data class ChatMessage(
     val products: List<SearchResultItem.ProductItem> = emptyList(),
     // Extra text sent to the AI with this turn but NOT rendered in the chat bubble
     // (e.g. the product id for outfit generation). See parseHiddenContext.
-    val hiddenContext: String? = null
+    val hiddenContext: String? = null,
+    // Tappable choices offered by the assistant, rendered as chips. See parseQuickReplies.
+    val quickReplies: List<String> = emptyList()
 )
