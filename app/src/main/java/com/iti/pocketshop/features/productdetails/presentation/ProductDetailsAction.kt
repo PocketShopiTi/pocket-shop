@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.productdetails.presentation
 
+import com.iti.pocketshop.features.home.domain.models.Product
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 
 sealed interface ProductDetailsAction {
@@ -28,4 +29,9 @@ sealed interface ProductDetailsAction {
     data class DeleteReviewClicked(val review: ProductReview) : ProductDetailsAction
     data object DeleteReviewDismissed : ProductDetailsAction
     data object DeleteReviewConfirmed : ProductDetailsAction
+    
+    data object CompareSimilarProductsClicked : ProductDetailsAction
+    data class ToggleSimilarProductSelection(val product: Product) : ProductDetailsAction
+    data object CompareSelectedProductsClicked : ProductDetailsAction
+    data class SuggestedProductClicked(val productId: String) : ProductDetailsAction
 }
