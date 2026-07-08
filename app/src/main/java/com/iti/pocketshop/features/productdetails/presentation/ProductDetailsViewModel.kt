@@ -147,6 +147,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
             ProductDetailsAction.CompareSelectedProductsClicked -> compareSelectedProducts()
             is ProductDetailsAction.SuggestedProductClicked -> Unit // Handled in UI
             ProductDetailsAction.AiCompareDismissed -> dismissAiCompare()
+            ProductDetailsAction.GenerateOutfitClicked -> Unit
         }
     }
 
@@ -242,7 +243,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
 
         addToCartJob?.cancel()
         addToCartJob = viewModelScope.launch {
-            delay(ADD_TO_CART_DEBOUNCE_MILLIS)
+            delay(ADD_TO_CART_DEBOUNCE_MILLIS.milliseconds)
             addToCartUseCase(
                 cartId = cartId,
                 variantId = variant.id,
@@ -253,7 +254,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
         _state.update { current -> current.copy(isAddedToCart = true) }
         cartFeedbackJob?.cancel()
         cartFeedbackJob = viewModelScope.launch {
-            delay(CART_FEEDBACK_DURATION_MILLIS)
+            delay(CART_FEEDBACK_DURATION_MILLIS.milliseconds)
             _state.update { current -> current.copy(isAddedToCart = false) }
         }
     }
@@ -420,7 +421,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
                 }
         }
     }
-    
+
     private fun toggleSimilarProductSelection(product: Product) {
         _state.update { state ->
             val currentSelected = state.selectedProductsToCompare.toMutableList()
@@ -439,7 +440,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
         val currentProduct = _state.value.product ?: return
         val selectedProducts = _state.value.selectedProductsToCompare
         if (selectedProducts.isEmpty()) return
-        
+
         aiCompareJob?.cancel()
         aiCompareJob = viewModelScope.launch {
             _state.update {

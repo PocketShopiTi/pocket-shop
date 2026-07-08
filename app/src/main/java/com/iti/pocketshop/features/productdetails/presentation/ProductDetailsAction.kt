@@ -13,6 +13,7 @@ sealed interface ProductDetailsAction {
     data object Retry : ProductDetailsAction
     data object BackClicked : ProductDetailsAction
     data object AddToCartClicked : ProductDetailsAction
+    data object GenerateOutfitClicked : ProductDetailsAction
     data object SeeAllReviewsClicked : ProductDetailsAction
     data object HideAllReviewsClicked : ProductDetailsAction
     data class WriteReviewClicked(val defaultCustomerName: String) : ProductDetailsAction

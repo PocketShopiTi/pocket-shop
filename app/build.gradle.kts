@@ -57,6 +57,21 @@ apollo {
 
 android {
     namespace = "com.iti.pocketshop"
+
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("prod") {
+            dimension = "env"
+            applicationId = "com.iti.pocketshop"
+        }
+
+        create("demo") {
+            dimension = "env"
+            applicationId = "com.iti.pocketshop.demo"
+        }
+    }
+
     compileSdk {
         version = release(37)
     }
@@ -179,7 +194,8 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.ai)
-    implementation(libs.firebase.appcheck.debug)
+    debugImplementation(libs.firebase.appcheck.debug)
+    releaseImplementation(libs.firebase.appcheck.playintegrity)
 
     // Credential Manager for Google Sign-In
     //noinspection LoginCredentials

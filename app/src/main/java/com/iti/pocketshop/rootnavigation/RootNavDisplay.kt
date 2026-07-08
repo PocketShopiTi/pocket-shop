@@ -11,11 +11,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.iti.pocketshop.R
 import com.iti.pocketshop.core.components.SignInDialog
 import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.aichat.presentation.AiChatRoot
@@ -213,7 +215,7 @@ fun RootNavDisplay(
                         rootBackStack.navigateSingleTop(Route.OrderCheckout)
                     },
                     openAiChat = {
-                        rootBackStack.navigateSingleTop(Route.AiChat)
+                        rootBackStack.navigateSingleTop(Route.AiChat())
                     },
                     openOrderDetails = { orderId ->
                         rootBackStack.navigateSingleTop(Route.OrderDetails(orderId = orderId))
@@ -222,6 +224,7 @@ fun RootNavDisplay(
             }
             entry<Route.AiChat> {
                 AiChatRoot(
+                    initialPrompt = it.initialPrompt,
                     onBack = {
                         rootBackStack.removeLastOrNull()
                     },
@@ -231,10 +234,18 @@ fun RootNavDisplay(
                 )
             }
             entry<Route.ProductDetails> {
+                val context = LocalContext.current
                 ProductDetailsRoot(
                     productId = it.id,
                     onBack = {
                         rootBackStack.popIfCurrentIs<Route.ProductDetails>()
+                    },
+                    onGenerateOutfit = { title, productId ->
+                        rootBackStack.navigateSingleTop(
+                            Route.AiChat(
+                                initialPrompt = context.getString(R.string.ai_outfit_prompt, title, productId)
+                            )
+                        )
                     },
                     onProductClick = { productId ->
                         openProductDetails(productId)

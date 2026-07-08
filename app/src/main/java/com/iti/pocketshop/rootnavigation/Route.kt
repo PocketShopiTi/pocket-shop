@@ -55,7 +55,7 @@ sealed interface Route : NavKey {
     data class OrderDetails(val orderId: String) : Route
 
     @Serializable
-    data object AiChat : Route
+    data class AiChat(val initialPrompt: String? = null) : Route
 
     @Serializable
     data object OrderCheckout : Route

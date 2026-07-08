@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.aichat.presentation
 
 import android.net.Uri
+import com.iti.pocketshop.features.aichat.domain.model.AiErrorType
 import com.iti.pocketshop.features.aichat.domain.model.ChatMessage
 
 data class AiChatState(
@@ -8,5 +9,5 @@ data class AiChatState(
     val inputText: String = "",
     val selectedImageUri: Uri? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: AiErrorType? = null
 )
