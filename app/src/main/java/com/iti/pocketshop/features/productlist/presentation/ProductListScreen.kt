@@ -27,6 +27,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -156,7 +157,11 @@ private fun ProductListScreen(
                             contentDescription = stringResource(R.string.search),
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                    actionIconContentColor = MaterialTheme.colorScheme.primary,
+                )
             )
         }
     ) { innerPadding ->
@@ -180,7 +185,8 @@ private fun ProductListScreen(
                     leadingIcon = {
                         Icon(
                             ImageVector.vectorResource(R.drawable.ic_search),
-                            contentDescription = null
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
                     trailingIcon = {
@@ -188,7 +194,8 @@ private fun ProductListScreen(
                             IconButton(onClick = { onAction(ProductListAction.SearchProducts("")) }) {
                                 Icon(
                                     imageVector = ImageVector.vectorResource(R.drawable.ic_close),
-                                    contentDescription = stringResource(R.string.clear_search)
+                                    contentDescription = stringResource(R.string.clear_search),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }

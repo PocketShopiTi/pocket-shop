@@ -78,6 +78,9 @@ fun FiltersScreen(
                         )
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                ),
             )
         },
         bottomBar = {
