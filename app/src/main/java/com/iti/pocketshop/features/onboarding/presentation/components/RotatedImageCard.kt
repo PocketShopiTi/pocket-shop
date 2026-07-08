@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -22,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
+
 
 @Composable
 fun RotatedImageCard(
@@ -33,10 +34,9 @@ fun RotatedImageCard(
     rotation: Float,
     zIndex: Float = 0f,
     cornerRadius: Int = 16,
-    elevation: Int = 8,
     scale: Float = 1f,
     alpha: Float = 1f,
-    translationY: Float = 0f
+    translationY: Float = 0f,
 ) {
     Card(
         modifier = Modifier
@@ -45,39 +45,36 @@ fun RotatedImageCard(
             .rotate(rotation)
             .zIndex(zIndex)
             .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
+                scaleX = scale; scaleY = scale
                 this.alpha = alpha
                 this.translationY = translationY
             },
         shape = RoundedCornerShape(cornerRadius.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = elevation.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Image(
             painter = painterResource(id = imageRes),
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
     }
 }
 
 @Composable
 fun FloatingTag(text: String, modifier: Modifier = Modifier) {
+    val colors = LocalExtendedColors.current
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(50),
-        color = Color.White,
-        shadowElevation = 4.dp
+        color = colors.surface,
+        shadowElevation = 4.dp,
     ) {
         Text(
             text = text,
-            style = MaterialTheme.typography.labelSmall.copy(
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            color = Color.Black,
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp, fontWeight = FontWeight.Medium),
+            color = colors.textPrimary,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
         )
     }
 }

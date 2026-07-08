@@ -79,7 +79,8 @@ fun AiChatFab(
                 .blur(18.dp)
                 .background(
                     brush = Brush.radialGradient(
-                        colors = listOf(FabGradientColors[1], Color.Transparent)
+                        0.6f to FabGradientColors[1],
+                        0.7f to Color.Transparent
                     ),
                     shape = CircleShape
                 )

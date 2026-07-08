@@ -1,6 +1,5 @@
 package com.iti.pocketshop.features.search.presentation.view.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -15,6 +14,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -26,13 +26,14 @@ import com.iti.pocketshop.features.search.presentation.action.SearchAction
 @Composable
 fun SearchBar(
     query: String,
+    focusManager: FocusManager,
     onAction: (SearchAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     OutlinedTextField(
         value = query,
         onValueChange = { onAction(SearchAction.UpdateQuery(it)) },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier,
         textStyle = MaterialTheme.typography.bodyMedium,
         placeholder = {
             Text(
@@ -67,7 +68,12 @@ fun SearchBar(
         ),
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(
-            onSearch = { onAction(SearchAction.SubmitSearch) },
+            onSearch = {
+                onAction(SearchAction.SubmitSearch)
+                if (query.isNotBlank()) {
+                    focusManager.clearFocus()
+                }
+            },
         ),
     )
 }

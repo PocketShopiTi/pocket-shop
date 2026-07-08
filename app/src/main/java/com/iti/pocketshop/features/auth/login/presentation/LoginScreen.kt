@@ -1,18 +1,15 @@
 package com.iti.pocketshop.features.auth.login.presentation
 
 import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -27,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -115,29 +113,25 @@ fun LoginScreen(
             }
         }
     ) { paddingValues ->
-        Box(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 24.dp)
-                .imePadding()
+                .padding(paddingValues),
+            contentPadding = PaddingValues(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+            item {
                 LoginHeader()
+            }
 
+            item {
                 AuthTextField(
                     label = stringResource(R.string.login_label_email),
                     value = state.email,
                     onValueChange = { onAction(LoginAction.EmailChanged(it)) },
                     placeholder = stringResource(R.string.login_placeholder_email),
-                    modifier = Modifier.padding(top = 24.dp),
-                    isError = state.emailError || state.generalError != null,
+                    modifier = Modifier.padding(top = 20.dp),
+                    isError = state.emailError,
                     errorMessage = if (state.emailError) {
                         stringResource(R.string.error_invalid_email)
                     } else null,
@@ -146,38 +140,48 @@ fun LoginScreen(
                             painter = painterResource(id = R.drawable.ic_email),
                             contentDescription = null
                         )
-                    }
+                    },
+                    keyboardType = KeyboardType.Email,
                 )
+            }
 
+            item {
                 PasswordField(
                     value = state.password,
                     onValueChange = { onAction(LoginAction.PasswordChanged(it)) },
                     modifier = Modifier.padding(top = 16.dp),
-                    isError = state.passwordError || state.generalError != null,
+                    isError = state.passwordError,
                     errorMessage = when {
-                        state.passwordError -> stringResource(R.string.error_password_too_short)
+                        state.passwordError -> stringResource(R.string.error_wrong_password)
                         state.generalError != null -> state.generalError.toUserMessage(context)
                         else -> null
-                    }
+                    },
                 )
+            }
 
+            item {
                 ForgotPasswordLink(
                     onClick = openForgotPassword,
                     modifier = Modifier.padding(top = 8.dp)
                 )
+            }
 
+            item {
                 LoginActionButton(
                     text = stringResource(R.string.login_button_login),
                     onClick = { onAction(LoginAction.LoginClicked) },
                     enabled = !state.isLoading,
                     modifier = Modifier.padding(top = 24.dp)
                 )
+            }
 
+            item {
                 DividerWithText(
                     text = stringResource(R.string.login_divider_or_continue),
                     modifier = Modifier.padding(vertical = 24.dp)
                 )
-
+            }
+            item {
                 SocialSignInButton(
                     text = stringResource(R.string.login_button_google),
                     onClick = onGoogleSignInClick,
@@ -189,7 +193,9 @@ fun LoginScreen(
                         )
                     }
                 )
+            }
 
+            item {
                 LoginFooter(
                     onCreateAccountClick = openRegister,
                     modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)

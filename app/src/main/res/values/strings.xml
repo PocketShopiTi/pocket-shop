@@ -17,7 +17,7 @@
     <string name="onboarding_page3_title">Wishlist, cart,\ncheckout — made simple</string>
     <string name="onboarding_page3_subtitle">Save favorites, track orders, and check out in seconds.</string>
     <string name="onboarding_next">Next</string>
-    <string name="onboarding_get_started">Get started</string>
+    <string name="onboarding_get_started">Get started!</string>
     <string name="onboarding_have_account">I already have an account</string>
     <string name="onboarding_guest">Continue as guest</string>
     <string name="onboarding_skip">Skip</string>
@@ -94,7 +94,7 @@
     <string name="home_coupon_clip_label">Pocket Shop coupon</string>
     <string name="home_coupon_close">Close offer</string>
     <string name="search">Search</string>
-    <string name="search_placeholder">Search products, brands, and more</string>
+    <string name="search_placeholder">Search Pocket Shop</string>
     <string name="search_clear_query">Clear search</string>
     <string name="search_products">Products</string>
     <string name="search_load_more">Load more</string>
@@ -120,7 +120,7 @@
     <string name="login_footer_create_account"> Create account</string>
     <string name="login_forgot_password">Forgot password?</string>
 
-    <string name="error_invalid_email">Invalid email format</string>
+    <string name="error_invalid_email">Invalid email</string>
     <string name="error_password_too_short">Password must be at least 6 characters</string>
     <string name="error_google_sign_in_failed">Google Sign-In failed. Please try again.</string>
     <string name="error_google_sign_in_cancelled">Sign-In was cancelled</string>
@@ -148,8 +148,6 @@
     <string name="filters_label">Filters</string>
     <string-array name="suggested_keywords">
         <item>Shoes</item>
-        <item>Laptops</item>
-        <item>Watches</item>
         <item>Accessories</item>
         <item>T-Shirts</item>
     </string-array>
@@ -257,7 +255,7 @@
     <string name="wishlist_empty_subtitle">Save items you love and find them here whenever you\'re ready to shop.</string>
     <string name="wishlist_remove_from_wishlist">Remove from wishlist</string>
     <string name="remove_favorite_dialog_title">Remove from wishlist?</string>
-    <string name="remove_favorite_dialog_body">Remove "%1$s" from your wishlist? You can always add it back later.</string>
+    <string name="remove_favorite_dialog_body">Remove \"%1$s\" from your wishlist? You can always add it back later.</string>
     <string name="remove_favorite_dialog_cancel">Keep it</string>
     <string name="remove_favorite_dialog_confirm">Remove</string>
     <string name="sign_in_to_continue">Sign in to continue</string>
@@ -491,6 +489,7 @@
     <string name="product_details_reviews">Reviews</string>
     <string name="product_details_see_all_reviews">See all reviews</string>
     <string name="product_details_no_reviews">No reviews yet</string>
+    <string name="home_coupon_copied">Coupon Copied!</string>
     <string name="ai_compare_title">Compare with AI</string>
     <string name="ai_compare_button">Compare Similar Products</string>
     <string name="ai_select_product_to_compare">Select a product to compare with:</string>

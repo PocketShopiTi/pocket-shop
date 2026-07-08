@@ -16,22 +16,15 @@ fun FiltersRoot(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect { effect ->
-            if (effect is SearchEffect.NavigateBack) onBack()
-        }
-    }
-
     val filterGroups = (state.phase as? SearchPhase.Results)?.searchResult?.filters ?: emptyList()
-    val resultsCount = (state.phase as? SearchPhase.Results)?.searchResult?.totalCount ?: 0
 
     FiltersScreen(
         filterGroups = filterGroups,
+        onBack = onBack,
         activeFilters = state.activeFilters,
         activeSortOption = state.activeSortOption,
         priceRangeBounds = state.priceRangeBounds,
         activePriceRange = state.activePriceRange,
-        resultsCount = resultsCount,
         onAction = viewModel::processIntent,
     )
 }

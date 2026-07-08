@@ -11,20 +11,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @Composable
 fun ProductSuggestionCard(
@@ -34,55 +31,40 @@ fun ProductSuggestionCard(
     scale: Float,
     alpha: Float,
     translationY: Float,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    Card(
-        modifier = modifier
-            .graphicsLayer {
-                scaleX = scale
-                scaleY = scale
-                this.alpha = alpha
-                this.translationY = translationY
-            },
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    val colors = LocalExtendedColors.current
+    OutlinedCard (
+        modifier = modifier.graphicsLayer {
+            scaleX = scale; scaleY = scale
+            this.alpha = alpha
+            this.translationY = translationY
+        },
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .background(Color(0xFFF0EBE4))
+                    .background(colors.surfaceVariant),
             ) {
                 if (imageRes != null) {
                     Image(
                         painter = painterResource(id = imageRes),
                         contentDescription = title,
                         contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxSize(),
                     )
                 }
             }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 16.dp)
+                    .padding(start = 12.dp, top = 12.dp, end = 12.dp, bottom = 16.dp),
             ) {
-                Text(
-                    text = title,
-                    fontSize = 13.sp,
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF1A1A1A)
-                )
+                Text(text = title, style = OnboardingTypography.cardTitle.copy(fontSize = 13.sp, color = colors.textPrimary))
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = price,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color(0xFF666666)
-                )
+                Text(text = price, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = colors.textSecondary)
             }
         }
     }

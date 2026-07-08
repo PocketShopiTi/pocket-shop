@@ -25,22 +25,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-sealed class OnboardingCardTrailing {
-    data class FavouriteIcon(
-        @param:DrawableRes val iconRes: Int,
-        val tint: Color,
-    ) : OnboardingCardTrailing()
-
-    data class QuantityStepper(val quantity: Int) : OnboardingCardTrailing()
-
-    object None : OnboardingCardTrailing()
-}
-
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @Composable
 fun OnboardingItemCard(
@@ -49,16 +39,17 @@ fun OnboardingItemCard(
     modifier: Modifier = Modifier,
     @DrawableRes imageRes: Int? = null,
     @DrawableRes iconRes: Int? = null,
-    iconTint: Color = Color.Unspecified,
-    iconBgColor: Color = Color(0xFFF0EBE4),
+    iconTint: Color = LocalExtendedColors.current.primary,
+    iconBgColor: Color = LocalExtendedColors.current.surfaceVariant,
     iconBgShape: Shape = RoundedCornerShape(12.dp),
-    subtitleColor: Color = Color(0xFF888888),
+    subtitleColor: Color = LocalExtendedColors.current.textSecondary,
     trailing: OnboardingCardTrailing = OnboardingCardTrailing.None,
 ) {
+    val colors = LocalExtendedColors.current
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(18.dp))
+            .background(colors.surface, RoundedCornerShape(18.dp))
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(14.dp),
@@ -77,7 +68,6 @@ fun OnboardingItemCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
                 )
-
                 iconRes != null -> Icon(
                     painter = painterResource(id = iconRes),
                     contentDescription = null,
@@ -90,10 +80,7 @@ fun OnboardingItemCard(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                fontFamily = FontFamily.Serif,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF1A1A1A),
+                style = OnboardingTypography.cardTitle.copy(color = colors.textPrimary),
             )
             Spacer(modifier = Modifier.height(3.dp))
             Text(
@@ -111,24 +98,42 @@ fun OnboardingItemCard(
                 tint = t.tint,
                 modifier = Modifier.size(20.dp),
             )
-
-            is OnboardingCardTrailing.QuantityStepper -> QuantityControl(qty = t.quantity)
+            is OnboardingCardTrailing.QuantityStepper -> QuantityControl(
+                qty = t.quantity
+            )
             OnboardingCardTrailing.None -> Unit
         }
     }
 }
 
+
+sealed class OnboardingCardTrailing {
+    data class FavouriteIcon(@param:DrawableRes val iconRes: Int, val tint: Color) : OnboardingCardTrailing()
+    data class QuantityStepper(val quantity: Int) : OnboardingCardTrailing()
+    object None : OnboardingCardTrailing()
+}
+
+
+object OnboardingTypography {
+    val cardTitle = TextStyle(
+        fontFamily = FontFamily.Serif,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.SemiBold,
+    )
+}
+
 @Composable
-private fun QuantityControl(qty: Int) {
+fun QuantityControl(qty: Int) {
+    val colors = LocalExtendedColors.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier
-            .border(1.dp, Color(0xFFE0DAD5), RoundedCornerShape(20.dp))
+            .border(1.dp, colors.outline, RoundedCornerShape(20.dp))
             .padding(horizontal = 10.dp, vertical = 4.dp),
     ) {
-        Text("−", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFF555555))
-        Text("$qty", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1A1A1A))
-        Text("+", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFFB5673A))
+        Text("−", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = colors.textSecondary)
+        Text("$qty", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = colors.textPrimary)
+        Text("+", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = colors.primary)
     }
 }

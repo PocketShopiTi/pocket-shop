@@ -1,16 +1,30 @@
 package com.iti.pocketshop
 
 import android.app.Application
-import com.google.firebase.Firebase
-import com.google.firebase.initialize
+import android.content.Context
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.disk.DiskCache
+import coil3.disk.directory
+import coil3.memory.MemoryCache
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class PocketApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
+class PocketApp : Application(), SingletonImageLoader.Factory {
 
-        Firebase.initialize(context = this)
-        AppCheckInstaller.install()
+    override fun newImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
+            .memoryCache {
+                MemoryCache.Builder()
+                    .maxSizePercent(context, 0.25)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(context.cacheDir.resolve("image_cache"))
+                    .maxSizePercent(0.02)
+                    .build()
+            }
+            .build()
     }
 }

@@ -122,7 +122,7 @@
     <string name="login_footer_create_account"> إنشاء حساب</string>
     <string name="login_forgot_password">هل نسيت كلمة المرور؟</string>
 
-    <string name="error_invalid_email">تنسيق البريد الإلكتروني غير صالح</string>
+    <string name="error_invalid_email">البريد الإلكتروني غير صالح</string>
     <string name="error_password_too_short">يجب أن تتكون كلمة المرور من 6 أحرف على الأقل</string>
     <string name="error_google_sign_in_failed">فشل تسجيل الدخول باستخدام جوجل. يرجى المحاولة مرة أخرى.</string>
     <string name="error_google_sign_in_cancelled">تم إلغاء تسجيل الدخول</string>
@@ -149,8 +149,6 @@
     <string name="filters_label">الفلاتر</string>
     <string-array name="suggested_keywords">
         <item>أحذية</item>
-        <item>أجهزة لابتوب</item>
-        <item>ساعات</item>
         <item>إكسسوارات</item>
         <item>قمصان</item>
     </string-array>

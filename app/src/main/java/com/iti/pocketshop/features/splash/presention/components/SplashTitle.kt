@@ -8,18 +8,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.iti.pocketshop.R
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @Composable
-fun SplashTitle(
-    modifier: Modifier = Modifier,
-) {
+fun SplashTitle(modifier: Modifier = Modifier) {
+    val colors = LocalExtendedColors.current
     Text(
         modifier = modifier,
         text = stringResource(R.string.splash_title),
         style = MaterialTheme.typography.headlineMedium.copy(
             fontWeight = FontWeight.Bold,
             fontSize = 28.sp,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = colors.textPrimary,
         ),
     )
 }

@@ -17,11 +17,14 @@ class SplashViewModel @Inject constructor(
     private val _events = Channel<SplashEvent>()
     val events = _events.receiveAsFlow()
 
-    fun resolveSession() {
+    fun resolveSession(
+        hasSeenOnboarding: Boolean,
+    ) {
         val user = getCurrentUserSession()
         viewModelScope.launch {
             _events.send(
                 when {
+                    user == null && hasSeenOnboarding -> SplashEvent.OpenLogin
                     user == null -> SplashEvent.OpenOnboarding
                     user.isAnonymous || user.isEmailVerified -> SplashEvent.OpenHome
                     else -> SplashEvent.OpenVerification
@@ -32,6 +35,7 @@ class SplashViewModel @Inject constructor(
 }
 
 sealed interface SplashEvent {
+    data object OpenLogin : SplashEvent
     data object OpenOnboarding : SplashEvent
     data object OpenHome : SplashEvent
     data object OpenVerification : SplashEvent

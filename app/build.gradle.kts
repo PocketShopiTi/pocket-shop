@@ -58,20 +58,6 @@ apollo {
 android {
     namespace = "com.iti.pocketshop"
 
-    flavorDimensions += "env"
-
-    productFlavors {
-        create("prod") {
-            dimension = "env"
-            applicationId = "com.iti.pocketshop"
-        }
-
-        create("demo") {
-            dimension = "env"
-            applicationId = "com.iti.pocketshop.demo"
-        }
-    }
-
     compileSdk {
         version = release(37)
     }
@@ -152,7 +138,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.network.ktor3)
 
-    // google maps
+    // Google Maps
     implementation(libs.play.services.maps)
     implementation(libs.maps.compose)
     implementation(libs.play.services.location)
@@ -194,8 +180,6 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.messaging)
     implementation(libs.firebase.ai)
-    debugImplementation(libs.firebase.appcheck.debug)
-    releaseImplementation(libs.firebase.appcheck.playintegrity)
 
     // Credential Manager for Google Sign-In
     //noinspection LoginCredentials

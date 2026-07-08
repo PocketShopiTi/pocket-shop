@@ -181,28 +181,6 @@ private fun HomeScreen(
                         }
                     }
 
-                    // Featured products
-                    if (state.featuredProducts.isNotEmpty()) {
-                        item(key = "featured_spacer") { Spacer(Modifier.height(20.dp)) }
-                        item(key = "featured_header") {
-                            SectionHeader(
-                                title = stringResource(R.string.featured),
-                                onSeeAllClick = {
-                                    openProductList(ProductListRouteInfo.Featured)
-                                },
-                                modifier = Modifier.padding(horizontal = 20.dp)
-                            )
-                        }
-                        item(key = "featured_spacer_2") { Spacer(Modifier.height(12.dp)) }
-                        item(key = "featured_row") {
-                            ProductRow(
-                                products = state.featuredProducts,
-                                onProductClick = openProductDetails,
-                                onWishlistClick = onWishlistClick
-                            )
-                        }
-                    }
-
                     // Best sellers
                     if (state.bestSellers.isNotEmpty()) {
                         item(key = "trending_spacer") { Spacer(Modifier.height(20.dp)) }
@@ -220,6 +198,28 @@ private fun HomeScreen(
                         item(key = "trending_row") {
                             ProductRow(
                                 products = state.bestSellers,
+                                onProductClick = openProductDetails,
+                                onWishlistClick = onWishlistClick
+                            )
+                        }
+                    }
+
+                    // Featured products
+                    if (state.featuredProducts.isNotEmpty()) {
+                        item(key = "featured_spacer") { Spacer(Modifier.height(20.dp)) }
+                        item(key = "featured_header") {
+                            SectionHeader(
+                                title = stringResource(R.string.featured),
+                                onSeeAllClick = {
+                                    openProductList(ProductListRouteInfo.Featured)
+                                },
+                                modifier = Modifier.padding(horizontal = 20.dp)
+                            )
+                        }
+                        item(key = "featured_spacer_2") { Spacer(Modifier.height(12.dp)) }
+                        item(key = "featured_row") {
+                            ProductRow(
+                                products = state.featuredProducts,
                                 onProductClick = openProductDetails,
                                 onWishlistClick = onWishlistClick
                             )

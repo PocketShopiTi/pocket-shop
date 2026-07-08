@@ -7,4 +7,5 @@ data class UserSettings(
     val language: LanguageSetting = LanguageSetting.ENGLISH,
     val theme: ThemeSetting = ThemeSetting.FOLLOW_SYSTEM,
     val currency: CurrencySetting = CurrencySetting.EGP,
+    val hasSeenOnboarding: Boolean = false,
 )

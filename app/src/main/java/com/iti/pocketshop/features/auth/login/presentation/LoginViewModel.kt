@@ -4,6 +4,7 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.SyncFavoritesUseCase
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.PocketResult
 import com.iti.pocketshop.features.auth.login.domain.model.LoginOutcome
@@ -45,8 +46,13 @@ class LoginViewModel @Inject constructor(
         when (action) {
             LoginAction.LoginClicked -> login()
             is LoginAction.GoogleLoginSubmitted -> googleLogin(action.idToken)
-            LoginAction.GoogleSignInFailed -> _state.update {
-                it.copy(isLoading = false, generalError = PocketDataError.Auth.UNKNOWN)
+            LoginAction.GoogleSignInFailed -> {
+                viewModelScope.launch {
+                    ErrorDialogController.sendEvent(PocketDataError.Auth.UNKNOWN)
+                }
+                _state.update {
+                    it.copy(isLoading = false)
+                }
             }
 
             LoginAction.ContinueAsGuestClicked -> continueAsGuest()

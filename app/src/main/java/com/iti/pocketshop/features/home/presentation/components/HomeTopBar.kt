@@ -44,7 +44,6 @@ fun HomeTopBar(
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_search),
                     contentDescription = stringResource(R.string.search),
-                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             Spacer(Modifier.width(4.dp))

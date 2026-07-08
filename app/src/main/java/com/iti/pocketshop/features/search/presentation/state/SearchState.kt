@@ -18,6 +18,7 @@ data class SearchState(
     val priceRangeBounds: ClosedFloatingPointRange<Float>? = null,
     val activePriceRange: ClosedFloatingPointRange<Float>? = null,
     val lastPredictiveResult: PredictiveSearchResult? = null,
+    val favoriteIds: Set<String> = emptySet(),
 )
 
 sealed class SearchPhase {
