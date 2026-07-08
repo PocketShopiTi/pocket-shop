@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.aicompare.presentation.ProductDetailsState
+import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsState
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOption
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductOptionType
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction

@@ -8,7 +8,6 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
-import com.iti.pocketshop.features.aicompare.presentation.ProductDetailsState
 import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
 import com.iti.pocketshop.features.evaluate.domain.usecase.DeleteProductReviewUseCase

@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.features.aicompare.presentation.AiCompareButton
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction
-import com.iti.pocketshop.features.aicompare.presentation.ProductDetailsState
+import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsState
 
 @Composable
 internal fun ProductContent(

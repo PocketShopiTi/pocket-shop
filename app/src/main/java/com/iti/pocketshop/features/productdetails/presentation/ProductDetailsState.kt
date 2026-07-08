@@ -1,4 +1,4 @@
-package com.iti.pocketshop.features.aicompare.presentation
+package com.iti.pocketshop.features.productdetails.presentation
 
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.features.productdetails.domain.entity.Money

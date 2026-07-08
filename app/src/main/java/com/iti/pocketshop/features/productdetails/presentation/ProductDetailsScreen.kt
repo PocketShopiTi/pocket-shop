@@ -27,7 +27,6 @@ import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.ScreenStateLayout
 import com.iti.pocketshop.core.components.SignInDialogController
-import com.iti.pocketshop.features.aicompare.presentation.ProductDetailsState
 import com.iti.pocketshop.features.productdetails.domain.entity.toFavoriteProduct
 import com.iti.pocketshop.features.productdetails.presentation.components.EmptyProductContent
 import com.iti.pocketshop.features.productdetails.presentation.components.LoadingContent
