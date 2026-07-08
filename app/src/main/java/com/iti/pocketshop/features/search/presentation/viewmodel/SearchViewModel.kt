@@ -98,11 +98,7 @@ class SearchViewModel @Inject constructor(
             is SearchAction.ClearPriceRange -> clearPriceRange()
             SearchAction.ClearError -> clearError()
             is SearchAction.ClickProduct -> onClickProduct(intent)
-            is SearchAction.ClickCollection -> onClickCollection(intent)
-            is SearchAction.ClickArticle -> onClickArticle(intent)
-            is SearchAction.ClickPage -> onClickPage(intent)
             SearchAction.OpenFiltersScreen -> onOpenFilterScreen()
-            SearchAction.BackClicked -> onBackClicked()
             is SearchAction.ToggleFavorite -> toggleFavorite(intent.product)
         }
     }
@@ -116,24 +112,8 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun onBackClicked() {
-        sendEffect(SearchEffect.NavigateBack)
-    }
-
     private fun onOpenFilterScreen() {
         sendEffect(SearchEffect.NavigateToFilters)
-    }
-
-    private fun onClickPage(intent: SearchAction.ClickPage) {
-        sendEffect(SearchEffect.NavigateToPage(intent.id))
-    }
-
-    private fun onClickArticle(intent: SearchAction.ClickArticle) {
-        sendEffect(SearchEffect.NavigateToArticle(intent.id))
-    }
-
-    private fun onClickCollection(intent: SearchAction.ClickCollection) {
-        sendEffect(SearchEffect.NavigateToCollection(intent.id))
     }
 
     private fun onClickProduct(intent: SearchAction.ClickProduct) {

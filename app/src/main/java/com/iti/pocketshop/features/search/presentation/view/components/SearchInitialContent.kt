@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,13 +28,14 @@ import com.iti.pocketshop.features.search.presentation.action.SearchAction
 fun SearchInitialContent(
     products: List<SearchResultItem.ProductItem>,
     onAction: (SearchAction) -> Unit,
+    focusManager: FocusManager,
     modifier: Modifier = Modifier,
 ) {
     val suggestedKeywords = stringArrayResource(R.array.suggested_keywords)
 
     LazyColumn(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
+        contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp),
     ) {
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -42,7 +44,7 @@ fun SearchInitialContent(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(vertical = 12.dp)
+                    modifier = Modifier.padding(bottom = 12.dp)
                 )
 
                 FlowRow(
@@ -54,6 +56,7 @@ fun SearchInitialContent(
                             onClick = {
                                 onAction(SearchAction.UpdateQuery(keyword))
                                 onAction(SearchAction.SubmitSearch)
+                                focusManager.clearFocus()
                             },
                             shape = RoundedCornerShape(24.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
