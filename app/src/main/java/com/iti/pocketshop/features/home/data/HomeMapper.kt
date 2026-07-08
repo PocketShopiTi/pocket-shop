@@ -1,7 +1,13 @@
 package com.iti.pocketshop.features.home.data
 
 import com.google.firebase.firestore.DocumentSnapshot
-import com.iti.pocketshop.features.home.domain.models.*
+import com.iti.pocketshop.features.home.domain.models.Brand
+import com.iti.pocketshop.features.home.domain.models.Category
+import com.iti.pocketshop.features.home.domain.models.CategoryName
+import com.iti.pocketshop.features.home.domain.models.HomeData
+import com.iti.pocketshop.features.home.domain.models.Money
+import com.iti.pocketshop.features.home.domain.models.Product
+import com.iti.pocketshop.features.home.domain.models.PromotionAd
 import com.iti.pocketshop.shopify.HomeQuery
 import com.iti.pocketshop.shopify.fragment.ProductFields
 
@@ -19,20 +25,21 @@ fun HomeQuery.Data.toDomain(): HomeData {
                 it.toDomain()
             },
 
+        // Collection fields are null when the handle is missing/unpublished -> empty section
         featuredProducts =
-            featuredProducts.nodes.map {
+            featured?.products?.nodes?.map {
                 it.productFields.toDomain()
-            },
+            }.orEmpty(),
 
         bestSellers =
-            bestSellers.nodes.map {
+            bestSellers?.products?.nodes?.map {
                 it.productFields.toDomain()
-            },
+            }.orEmpty(),
 
         newArrivals =
-            newArrivals.nodes.map {
+            newArrivals?.products?.nodes?.map {
                 it.productFields.toDomain()
-            },
+            }.orEmpty(),
     )
 }
 
