@@ -1,4 +1,5 @@
 package com.iti.pocketshop.features.search.presentation.view.components
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -10,25 +11,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
 import coil3.compose.AsyncImage
 import com.iti.pocketshop.R
 import com.iti.pocketshop.features.search.utils.formatSearchPrice
@@ -40,6 +39,8 @@ fun SearchProductGridCard(
     imageAlt: String?,
     price: Double,
     currencyCode: String,
+    isFavorite: Boolean,
+    onWishlistClick: () -> Unit,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -64,26 +65,26 @@ fun SearchProductGridCard(
                     modifier = Modifier.fillMaxSize(),
                 )
             }
-             IconButton(
-                onClick = { },
+            IconButton(
+                onClick = onWishlistClick,
                 modifier = Modifier
-                    .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .size(32.dp)
-                    .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                    .align(Alignment.TopEnd),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+                    contentColor = if (isFavorite) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                )
             ) {
                 Icon(
-                    imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = stringResource(R.string.search_favorite),
-                    modifier = Modifier.size(18.dp),
-                    tint = Color.Gray
+                    imageVector = ImageVector.vectorResource(if (isFavorite) R.drawable.ic_favorites_filled else R.drawable.ic_favorites),
+                    contentDescription = stringResource(R.string.wishlist),
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-         Text(
+        Text(
             text = title,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
@@ -93,7 +94,7 @@ fun SearchProductGridCard(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-         Text(
+        Text(
             text = formatSearchPrice(price, currencyCode),
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.Bold,

@@ -3,6 +3,11 @@
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
+import com.iti.pocketshop.common.favorites.domain.usecase.GetLocalFavoritesUseCase
+import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
+import com.iti.pocketshop.core.components.ErrorDialogController
+import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.features.search.domain.model.ProductFilterValue
 import com.iti.pocketshop.features.search.domain.model.SearchResult
 import com.iti.pocketshop.features.search.domain.model.SearchResultItem
@@ -21,22 +26,33 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class)
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val getPredictiveSearchUseCase: GetPredictiveSearchUseCase,
-    private val getSearchResultsUseCase: GetSearchResultsUseCase
+    private val getSearchResultsUseCase: GetSearchResultsUseCase,
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    getLocalFavoritesUseCase: GetLocalFavoritesUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SearchState())
-    val state: StateFlow<SearchState> = _state.asStateFlow()
+    val state: StateFlow<SearchState> = _state
+        .combine(getLocalFavoritesUseCase()) { state, favorites ->
+            state.copy(favoriteIds = favorites.map { it.id }.toSet())
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000L),
+            initialValue = SearchState()
+        )
 
     private var predictiveJob: Job? = null
     private var nextPageJob: Job? = null
@@ -87,6 +103,16 @@ class SearchViewModel @Inject constructor(
             is SearchAction.ClickPage -> onClickPage(intent)
             SearchAction.OpenFiltersScreen -> onOpenFilterScreen()
             SearchAction.BackClicked -> onBackClicked()
+            is SearchAction.ToggleFavorite -> toggleFavorite(intent.product)
+        }
+    }
+
+    private fun toggleFavorite(product: FavoriteProduct) {
+        viewModelScope.launch {
+            toggleFavoriteUseCase(product)
+                .onError {
+                    ErrorDialogController.sendEvent(it)
+                }
         }
     }
 

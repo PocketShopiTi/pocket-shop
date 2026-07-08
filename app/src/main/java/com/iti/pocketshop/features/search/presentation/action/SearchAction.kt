@@ -1,5 +1,6 @@
 package com.iti.pocketshop.features.search.presentation.action
 
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
 import com.iti.pocketshop.features.search.domain.model.ProductFilterValue
 import com.iti.pocketshop.features.search.domain.model.SortOption
 
@@ -36,4 +37,6 @@ sealed class SearchAction {
 
     object BackClicked : SearchAction()
     object ClearError : SearchAction()
+
+    data class ToggleFavorite(val product: FavoriteProduct) : SearchAction()
 }

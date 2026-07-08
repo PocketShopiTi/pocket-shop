@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.components.RemoveFavoriteDialog
+import com.iti.pocketshop.features.productlist.presentation.ProductListAction
 import com.iti.pocketshop.features.search.presentation.action.SearchAction
 import com.iti.pocketshop.features.search.presentation.action.SearchEffect
 import com.iti.pocketshop.features.search.presentation.state.SearchPhase
@@ -65,6 +67,12 @@ fun SearchRoot(
         state = state,
         snackbarHostState = snackbarHostState,
         onAction = viewModel::processIntent,
+    )
+
+    RemoveFavoriteDialog(
+        onConfirm = {
+            viewModel.processIntent(SearchAction.ToggleFavorite(it))
+        }
     )
 }
 
@@ -129,6 +137,7 @@ fun SearchScreen(
                                 SearchResultsContent(
                                     query = state.query,
                                     searchResult = phase.searchResult,
+                                    favoriteIds = state.favoriteIds,
                                     isLoadingNextPage = state.isLoadingNextPage,
                                     onAction = onAction,
                                 )

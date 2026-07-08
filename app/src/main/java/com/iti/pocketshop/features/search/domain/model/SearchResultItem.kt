@@ -1,5 +1,7 @@
 package com.iti.pocketshop.features.search.domain.model
 
+import com.iti.pocketshop.common.favorites.domain.model.FavoriteProduct
+
 sealed class SearchResultItem {
     abstract val id: String
 
@@ -31,6 +33,14 @@ sealed class SearchResultItem {
         val title: String,
         val handle: String
     ) : SearchResultItem()
+}
+
+fun SearchResultItem.ProductItem.toFavoriteProduct(): FavoriteProduct {
+    return FavoriteProduct(
+        id = id,
+        title = title,
+        imageUrl = imageUrl
+    )
 }
 
 data class ProductSearchOption(
