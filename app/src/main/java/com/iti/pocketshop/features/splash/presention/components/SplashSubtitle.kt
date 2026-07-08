@@ -7,17 +7,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import com.iti.pocketshop.R
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
 
 @Composable
-fun SplashSubtitle(
-    modifier: Modifier = Modifier,
-) {
+fun SplashSubtitle(modifier: Modifier = Modifier) {
+    val colors = LocalExtendedColors.current
     Text(
         modifier = modifier,
         text = stringResource(R.string.splash_subtitle),
         style = MaterialTheme.typography.bodyMedium.copy(
             fontSize = 14.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = colors.textSecondary,
         ),
     )
 }
