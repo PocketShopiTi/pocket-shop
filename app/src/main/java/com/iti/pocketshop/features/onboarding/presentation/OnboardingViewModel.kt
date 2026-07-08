@@ -51,15 +51,11 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun navigate() {
-        saveOnboardingShown()
-        viewModelScope.launch { _events.send(OnboardingEvent.NavigateToLogin) }
-    }
-
-    private fun saveOnboardingShown() {
         viewModelScope.launch {
             userSettingsRepo.updateUserSettings {
                 it.copy(hasSeenOnboarding = true)
             }
+            _events.send(OnboardingEvent.NavigateToLogin)
         }
     }
 }
