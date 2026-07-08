@@ -1,0 +1,13 @@
+query GetCollectionProducts($handle: String!, $first: Int!, $after: String) {
+    collection(handle: $handle) {
+        products(first: $first, after: $after) {
+            nodes {
+                ...ProductFields
+            }
+            pageInfo {
+                hasNextPage
+                endCursor
+            }
+        }
+    }
+}

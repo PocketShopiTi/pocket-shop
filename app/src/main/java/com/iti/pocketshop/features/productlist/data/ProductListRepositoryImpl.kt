@@ -26,4 +26,16 @@ class ProductListRepositoryImpl @Inject constructor(
             query = query,
         )
     }
+
+    override suspend fun getCollectionProducts(
+        handle: String,
+        first: Int,
+        after: String?,
+    ): PocketResult<ProductListPage, PocketDataError.Remote> {
+        return remoteSource.getCollectionProducts(
+            handle = handle,
+            first = first,
+            after = after,
+        )
+    }
 }
