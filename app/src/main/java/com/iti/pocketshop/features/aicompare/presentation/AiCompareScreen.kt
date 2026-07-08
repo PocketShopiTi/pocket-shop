@@ -74,9 +74,10 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
 import com.iti.pocketshop.core.components.ScreenStateLayout
-import com.iti.pocketshop.features.home.presentation.formatPrice
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.productdetails.domain.entity.ComparisonTableRow
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction
 import com.iti.pocketshop.features.productdetails.presentation.components.EmptyProductContent
@@ -116,6 +117,7 @@ fun AiCompareScreen(
     onAction: (ProductDetailsAction) -> Unit,
     onBack: () -> Unit,
 ) {
+    val userSettings = LocalSettingsUser.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -359,8 +361,10 @@ fun AiCompareScreen(
                                     imageUrl = product.imageUrl,
                                     pros = pros,
                                     cons = cons,
-                                    price = formatPrice(
-                                        product.price
+                                    price = PriceFormatter.format(
+                                        amount = product.price.amount,
+                                        sourceCurrencyCode = product.price.currencyCode,
+                                        userSettings = userSettings,
                                     ),
                                     onViewDetails = {
                                         onAction(
@@ -509,11 +513,23 @@ fun ProductAnalysisCard(
 
             if (pros.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.ai_pros_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = Color(0xFF2E7D32))
+                    Text(
+                        stringResource(R.string.ai_pros_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2E7D32)
+                    )
                     pros.forEach { pro ->
-                        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             Text("✓", color = Color(0xFF2E7D32), fontWeight = FontWeight.Bold)
-                            Text(text = pro, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Text(
+                                text = pro,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }
@@ -521,11 +537,27 @@ fun ProductAnalysisCard(
 
             if (cons.isNotEmpty()) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.ai_cons_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.error)
+                    Text(
+                        stringResource(R.string.ai_cons_label),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.error
+                    )
                     cons.forEach { con ->
-                        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            Text("✗", color = MaterialTheme.colorScheme.error, fontWeight = FontWeight.Bold)
-                            Text(text = con, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Row(
+                            verticalAlignment = Alignment.Top,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                "✗",
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = con,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         }
                     }
                 }
@@ -570,7 +602,7 @@ private fun ProductCardShimmer(modifier: Modifier = Modifier) {
         ),
         label = "shimmer_alpha"
     )
-    
+
     val shimmerColor = Color.Gray.copy(alpha = alpha)
 
     Column(
@@ -584,9 +616,9 @@ private fun ProductCardShimmer(modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(12.dp))
                 .background(shimmerColor)
         )
-        
+
         Spacer(modifier = Modifier.height(10.dp))
-        
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -594,9 +626,9 @@ private fun ProductCardShimmer(modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(4.dp))
                 .background(shimmerColor)
         )
-        
+
         Spacer(modifier = Modifier.height(4.dp))
-        
+
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.6f)
@@ -604,9 +636,9 @@ private fun ProductCardShimmer(modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(4.dp))
                 .background(shimmerColor)
         )
-        
+
         Spacer(modifier = Modifier.height(8.dp))
-        
+
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.4f)
@@ -673,7 +705,7 @@ fun AiCompareProductCard(
                     modifier = Modifier.fillMaxSize(),
                 )
             }
-            
+
             if (isSelected) {
                 Box(
                     modifier = Modifier
@@ -773,7 +805,7 @@ fun ComparisonSummaryTable(
                         } else {
                             Color.Transparent
                         }
-                        
+
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()

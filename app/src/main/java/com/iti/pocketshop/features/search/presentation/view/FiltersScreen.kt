@@ -1,4 +1,5 @@
 package com.iti.pocketshop.features.search.presentation.view
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +48,7 @@ sealed class SidebarItem {
     data class FilterGroup(val group: ProductFilterGroup) : SidebarItem()
 }
 
- private val SidebarItem.stableKey: String
+private val SidebarItem.stableKey: String
     get() = when (this) {
         is SidebarItem.Sort -> SORT_KEY
         is SidebarItem.FilterGroup -> group.id
