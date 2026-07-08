@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Pocket Shop</string>
     <string name="home">Home</string>
@@ -27,7 +28,7 @@
     <string name="onboarding_category_bags">Bags</string>
     <string name="onboarding_category_beauty">Beauty</string>
 
-    <string name="onboarding_ai_prompt">\"Find me a dress for a wedding\"</string>
+    <string name="onboarding_ai_prompt">"Find me a dress for a wedding"</string>
     <string name="onboarding_ai_response">Here are 3 picks made for you ✨</string>
 
     <string name="onboarding_product1_title">Structured tote, sand</string>
@@ -58,9 +59,10 @@
     <string name="product_details_add_to_cart">Add to cart · %1$s</string>
     <string name="product_details_added_to_cart">Added · %1$s</string>
     <string name="product_details_loading">Loading product details</string>
-    <string name="product_details_error">We couldn’t load this product.</string>
+    <string name="product_details_error">We couldn\'t load this product.</string>
     <string name="product_details_retry">Retry</string>
     <string name="product_details_image">Product image %1$d of %2$d</string>
+    <string name="product_details_rating">Rated %1$.1f out of 5 based on %2$d reviews</string>
     <string name="product_details_image_unavailable">Image unavailable</string>
     <string name="product_details_empty">This product is no longer available.</string>
     <string name="product_details_option_unavailable">%1$s is unavailable</string>
@@ -132,6 +134,7 @@
     <string name="search_explore_title">Explore</string>
     <string name="search_results_count">%1$d results for \'%2$s\'</string>
     <string name="search_no_results_subtitle">We couldn\'t find anything matching that. Try different keywords or browse categories.</string>
+    <string name="search_coming_soon">Products will be added soon</string>
     <string name="search_browse_categories">Browse categories</string>
     <string name="search_toggle_wishlist">Toggle wishlist</string>
     <string name="trending_searches">Trending Searches</string>
@@ -152,7 +155,7 @@
     </string-array>
 
 
-    <string name="profile_error">We couldn’t load user info.</string>
+    <string name="profile_error">We couldn\'t load user info.</string>
 
     <string name="error_user_disabled">This account has been disabled.</string>
     <string name="error_invalid_credentials">The supplied credentials are invalid.</string>
@@ -171,11 +174,11 @@
     <string name="verify_email_description">We sent a verification link to %1$s.</string>
     <string name="verify_email_sent">A new verification email was sent.</string>
     <string name="not_verified_yet">Your email is not verified yet.</string>
-    <string name="check_verification">I’ve verified my email</string>
+    <string name="check_verification">I\'ve verified my email</string>
     <string name="resend_verification">Resend verification email</string>
     <string name="resend_in_seconds">Resend in %1$d seconds</string>
     <string name="forgot_password_title">Reset your password</string>
-    <string name="forgot_password_description">Enter your email and we’ll send reset instructions.</string>
+    <string name="forgot_password_description">Enter your email and we\'ll send reset instructions.</string>
     <string name="forgot_password_submit">Send reset link</string>
     <string name="reset_link_sent">reset link was sent check your inbox and spams.</string>
     <string name="back_to_login">Back to login</string>
@@ -252,7 +255,7 @@
     <string name="wishlist_empty_subtitle">Save items you love and find them here whenever you\'re ready to shop.</string>
     <string name="wishlist_remove_from_wishlist">Remove from wishlist</string>
     <string name="remove_favorite_dialog_title">Remove from wishlist?</string>
-    <string name="remove_favorite_dialog_body">Remove \"%1$s\" from your wishlist? You can always add it back later.</string>
+    <string name="remove_favorite_dialog_body">Remove "%1$s" from your wishlist? You can always add it back later.</string>
     <string name="remove_favorite_dialog_cancel">Keep it</string>
     <string name="remove_favorite_dialog_confirm">Remove</string>
     <string name="sign_in_to_continue">Sign in to continue</string>
@@ -291,7 +294,7 @@
     <string name="select_theme">Select Theme</string>
     <string name="done">Done</string>
     <string name="currency_unit">Currency:</string>
- 
+
     <!-- Notification onboarding -->
     <string name="notification_channel_promotions">Promotions</string>
     <string name="notification_ad_title">New offer from Pocket Shop</string>
@@ -311,8 +314,9 @@
     <string name="notification_onboarding_error_title">We could not load this offer</string>
     <string name="notification_onboarding_unavailable_title">Offer unavailable</string>
     <string name="notification_onboarding_unavailable_body">This promotion has ended or is no longer active.</string>
-     <string name="orders_title">My orders</string>
+    <string name="orders_title">My orders</string>
     <string name="orders_back">Back</string>
+    <string name="orders_track">Track</string>
     <string name="orders_view">View</string>
     <string name="orders_loading">Loading orders</string>
     <string name="orders_empty_title">No orders yet</string>
@@ -398,7 +402,7 @@
     <string name="accessories">Accessories</string>
     <string name="pets">Pets</string>
     <string name="try_searching_for_something_else">Try searching for something else.</string>
- 
+
     <string name="cart_coupon_test_title">Cart coupon test</string>
     <string name="cart_mock_applied_coupons">Mock applied coupons: AMR, SUMMER20</string>
     <string name="cart_id_label">Cart ID</string>
@@ -484,4 +488,25 @@
     <string name="product_details_reviews">Reviews</string>
     <string name="product_details_see_all_reviews">See all reviews</string>
     <string name="product_details_no_reviews">No reviews yet</string>
+    <string name="ai_compare_title">Compare with AI</string>
+    <string name="ai_compare_button">Compare Similar Products</string>
+    <string name="ai_select_product_to_compare">Select a product to compare with:</string>
+    <string name="ai_comparison_summary">AI Comparison Summary</string>
+    <string name="ai_current_product">Current Product</string>
+    <string name="ai_selected_product">Selected Product</string>
+    <string name="ai_recommendation">Recommendation</string>
+    <string name="ai_you_might_also_like">You might also like:</string>
+    <string name="ai_find_best_deal">Find the best deal for you</string>
+    <string name="ai_select_up_to_4">Select up to 4 products to compare:</string>
+    <string name="ai_analyzing_products">Analyzing products…</string>
+    <string name="ai_compare_selected">Compare Selected (%1$d/4)</string>
+    <string name="ai_our_verdict">Our Verdict</string>
+    <string name="ai_summary_comparison">Summary Comparison</string>
+    <string name="ai_table_feature">Feature</string>
+    <string name="ai_table_current_product">Current Product</string>
+    <string name="ai_current_product_label">Current Product: %1$s</string>
+    <string name="ai_add_to_cart">Add to Cart</string>
+    <string name="ai_pros_label">Pros</string>
+    <string name="ai_cons_label">Cons</string>
+    <string name="current">Current</string>
 </resources>

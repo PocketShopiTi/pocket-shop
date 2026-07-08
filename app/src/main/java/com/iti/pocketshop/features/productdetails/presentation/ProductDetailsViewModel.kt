@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.IsFavoriteUseCase
 import com.iti.pocketshop.common.favorites.domain.usecase.ToggleFavoriteUseCase
+import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
@@ -22,17 +23,16 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.math.round
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel(assistedFactory = ProductDetailsViewModel.Factory::class)
 class ProductDetailsViewModel @AssistedInject constructor(
@@ -72,9 +72,6 @@ class ProductDetailsViewModel @AssistedInject constructor(
         started = SharingStarted.WhileSubscribed(5_000L),
         initialValue = ProductDetailsState(productId = productId),
     )
-
-    private val _events = Channel<ProductDetailsEvent>()
-    val events = _events.receiveAsFlow()
 
     fun onAction(action: ProductDetailsAction) {
         when (action) {
@@ -133,6 +130,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
             ProductDetailsAction.DeleteReviewConfirmed -> deleteSelectedReview()
             ProductDetailsAction.BackClicked -> Unit
             ProductDetailsAction.GenerateOutfitClicked -> Unit
+            else -> Unit
         }
     }
 
@@ -206,7 +204,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
         val product = _state.value.product ?: return
         viewModelScope.launch {
             toggleFavoriteUseCase(product.toFavoriteProduct())
-                .onError { error -> _events.send(ProductDetailsEvent.ShowError(error)) }
+                .onError { error -> ErrorDialogController.sendEvent(error) }
         }
     }
 
@@ -217,7 +215,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
 
         val cartId = state.cartId ?: run {
             viewModelScope.launch {
-                _events.send(ProductDetailsEvent.ShowError(PocketDataError.Remote.UNKNOWN))
+                ErrorDialogController.sendEvent(PocketDataError.Remote.UNKNOWN)
                 restoreOrCreateCartUseCase()
                     .onSuccess { cart ->
                         _state.update { current -> current.copy(cartId = cart.id) }
@@ -228,7 +226,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
 
         addToCartJob?.cancel()
         addToCartJob = viewModelScope.launch {
-            delay(ADD_TO_CART_DEBOUNCE_MILLIS)
+            delay(ADD_TO_CART_DEBOUNCE_MILLIS.milliseconds)
             addToCartUseCase(
                 cartId = cartId,
                 variantId = variant.id,
@@ -239,7 +237,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
         _state.update { current -> current.copy(isAddedToCart = true) }
         cartFeedbackJob?.cancel()
         cartFeedbackJob = viewModelScope.launch {
-            delay(CART_FEEDBACK_DURATION_MILLIS)
+            delay(CART_FEEDBACK_DURATION_MILLIS.milliseconds)
             _state.update { current -> current.copy(isAddedToCart = false) }
         }
     }
@@ -285,7 +283,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
                         upsertReview(productReview)
                         succeeded = true
                     }
-                    .onError { _events.send(ProductDetailsEvent.ShowError(it)) }
+                    .onError { error -> ErrorDialogController.sendEvent(error) }
             } else {
                 updateProductReviewUseCase(
                     reviewId = editingReview.id,
@@ -305,7 +303,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
                         )
                         succeeded = true
                     }
-                    .onError { _events.send(ProductDetailsEvent.ShowError(it)) }
+                    .onError { error -> ErrorDialogController.sendEvent(error) }
             }
             _state.update {
                 if (succeeded) {
@@ -335,7 +333,7 @@ class ProductDetailsViewModel @AssistedInject constructor(
                     removeReview(review.id)
                     succeeded = true
                 }
-                .onError { _events.send(ProductDetailsEvent.ShowError(it)) }
+                .onError { error -> ErrorDialogController.sendEvent(error) }
             _state.update {
                 if (succeeded) {
                     it.copy(

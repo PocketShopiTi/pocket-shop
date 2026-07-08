@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.features.aicompare.presentation.AiCompareButton
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductDetails
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsAction
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsState
@@ -70,6 +72,13 @@ internal fun ProductContent(
                 GenerateOutfitButton(
                     onClick = { onAction(ProductDetailsAction.GenerateOutfitClicked) },
                     modifier = Modifier.padding(top = 16.dp),
+                )
+
+                AiCompareButton(
+                    onCompareClicked = { onAction(ProductDetailsAction.CompareSimilarProductsClicked) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp)
                 )
 
                 if (product.options.isNotEmpty()) {

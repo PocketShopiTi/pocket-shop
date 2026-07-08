@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.iti.pocketshop.R
-import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.features.productdetails.domain.entity.ProductReview
 import com.iti.pocketshop.features.productdetails.presentation.components.ArrowBackIcon
 import com.iti.pocketshop.features.productdetails.presentation.components.EmptyProductContent
@@ -216,21 +215,4 @@ private fun ReviewsSummary(
             }
         }
     }
-}
-
-private fun ProductDetailsAction.requiresSignedInUser(): Boolean {
-    return this is ProductDetailsAction.WriteReviewClicked ||
-        this is ProductDetailsAction.EditReviewClicked ||
-        this is ProductDetailsAction.DeleteReviewClicked ||
-        this is ProductDetailsAction.ReviewSubmitted ||
-        this == ProductDetailsAction.DeleteReviewConfirmed
-}
-
-private fun UserSession?.defaultReviewCustomerName(): String {
-    return this?.displayName
-        ?.takeIf { it.isNotBlank() }
-        ?: this?.email
-            ?.substringBefore("@")
-            ?.takeIf { it.isNotBlank() }
-        ?: ""
 }
