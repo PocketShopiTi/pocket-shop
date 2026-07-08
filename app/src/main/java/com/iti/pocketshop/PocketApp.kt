@@ -6,11 +6,4 @@ import com.google.firebase.initialize
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class PocketApp : Application() {
-    override fun onCreate() {
-        super.onCreate()
-
-        Firebase.initialize(context = this)
-        AppCheckInstaller.install()
-    }
-}
+class PocketApp : Application()
