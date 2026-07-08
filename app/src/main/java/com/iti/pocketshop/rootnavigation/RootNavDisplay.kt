@@ -33,6 +33,7 @@ import com.iti.pocketshop.features.ordersuccess.OrderSuccessScreen
 import com.iti.pocketshop.features.onboarding.presentation.OnboardingRoot
 import com.iti.pocketshop.features.onboardingnotification.presentation.OnboardingNotificationRoot
 import com.iti.pocketshop.features.productdetails.presentation.ProductDetailsRoot
+import com.iti.pocketshop.features.aicompare.presentation.AiCompareRoot
 import com.iti.pocketshop.features.productlist.presentation.ProductListRoot
 import com.iti.pocketshop.features.search.presentation.navigation.SearchNavDisplay
 import com.iti.pocketshop.features.settings.presentation.screen.SettingsRoot
@@ -234,7 +235,7 @@ fun RootNavDisplay(
                 )
             }
             entry<Route.ProductDetails> {
-                val context = LocalContext.current
+                val context = LocalContext.current.applicationContext
                 ProductDetailsRoot(
                     productId = it.id,
                     onBack = {
@@ -247,6 +248,23 @@ fun RootNavDisplay(
                             )
                         )
                     },
+                    onAiCompare = { productId ->
+                        rootBackStack.navigateSingleTop(Route.AiCompare(productId = productId))
+                    },
+                    onSuggestProductClick = { productId ->
+                        openProductDetails(productId)
+                    }
+                )
+            }
+            entry<Route.AiCompare> {
+                AiCompareRoot(
+                    productId = it.productId,
+                    onBack = {
+                        rootBackStack.popIfCurrentIs<Route.AiCompare>()
+                    },
+                    onProductClick = { productId ->
+                        openProductDetails(productId)
+                    }
                 )
             }
             entry<Route.OrderDetails> {

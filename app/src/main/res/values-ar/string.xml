@@ -28,7 +28,7 @@
     <string name="onboarding_category_bags">حقائب</string>
     <string name="onboarding_category_beauty">تجميل</string>
 
-    <string name="onboarding_ai_prompt">\"ابحث لي عن فستان لحفل زفاف\"</string>
+    <string name="onboarding_ai_prompt">"ابحث لي عن فستان لحفل زفاف"</string>
     <string name="onboarding_ai_response">إليك 3 اختيارات مصممة لك ✨</string>
 
     <string name="onboarding_product1_title">حقيبة توت مهيكلة، رملية</string>
@@ -67,7 +67,7 @@
     <string name="product_details_image">صورة المنتج %1$d من %2$d</string>
     <string name="product_details_rating">التقييم %1$.1f من 5 بناءً على %2$d تقييمات</string>
     <string name="product_details_image_unavailable">الصورة غير متوفرة</string>
-    <string name="product_details_empty">هذا المنتج لم يعد متاحًا.</string>
+    <string name="product_details_empty">هذا المنتج لم يعد متوفرًا.</string>
     <string name="product_details_option_unavailable">%1$s غير متوفر</string>
     <string name="request_timed_out">انتهت مهلة الطلب، يرجى المحاولة مرة أخرى</string>
     <string name="too_many_requests">طلبات كثيرة جدًا، يرجى المحاولة لاحقًا</string>
@@ -257,7 +257,7 @@
     <string name="wishlist_empty_subtitle">احفظ العناصر التي تحبها واعثر عليها هنا متى كنت مستعدًا للتسوق.</string>
     <string name="wishlist_remove_from_wishlist">إزالة من قائمة الأمنيات</string>
     <string name="remove_favorite_dialog_title">إزالة من قائمة الأمنيات؟</string>
-    <string name="remove_favorite_dialog_body">هل تريد إزالة \"%1$s\" من قائمة أمنياتك؟ يمكنك دائمًا إضافته لاحقًا.</string>
+    <string name="remove_favorite_dialog_body">هل تريد إزالة "%1$s" من قائمة أمنياتك؟ يمكنك دائمًا إضافته لاحقًا.</string>
     <string name="remove_favorite_dialog_cancel">احتفظ به</string>
     <string name="remove_favorite_dialog_confirm">إزالة</string>
     <string name="sign_in_to_continue">سجّل الدخول للمتابعة</string>
@@ -490,5 +490,26 @@
     <string name="product_details_delete_review">حذف التقييم</string>
     <string name="product_details_delete_review_title">حذف التقييم؟</string>
     <string name="product_details_delete_review_message">سيتم إزالة هذا التقييم من المنتج.</string>
-    <string name="product_details_rating_count">هنا ضع النص الذي تريده</string>
+    <string name="product_details_rating_count">عدد التقييمات</string>
+    <string name="ai_compare_title">مقارنة مع الذكاء الاصطناعي</string>
+    <string name="ai_compare_button">مقارنة المنتجات المشابهة</string>
+    <string name="ai_select_product_to_compare">اختر منتجًا لمقارنته بـ:</string>
+    <string name="ai_comparison_summary">ملخص المقارنة</string>
+    <string name="ai_current_product">المنتج الحالي</string>
+    <string name="ai_selected_product">المنتج المختار</string>
+    <string name="ai_recommendation">التوصية</string>
+    <string name="ai_you_might_also_like">قد يعجبك أيضًا:</string>
+    <string name="ai_find_best_deal">ابحث عن أفضل صفقة لك</string>
+    <string name="ai_select_up_to_4">اختر حتى 4 منتجات للمقارنة:</string>
+    <string name="ai_analyzing_products">جاري تحليل المنتجات…</string>
+    <string name="ai_compare_selected">مقارنة المحددة (%1$d/4)</string>
+    <string name="ai_our_verdict">رأينا</string>
+    <string name="ai_summary_comparison">ملخص المقارنة</string>
+    <string name="ai_table_feature">الميزة</string>
+    <string name="ai_table_current_product">المنتج الحالي</string>
+    <string name="ai_current_product_label">المنتج الحالي: %1$s</string>
+    <string name="ai_add_to_cart">أضف للسلة</string>
+    <string name="ai_pros_label">المميزات</string>
+    <string name="ai_cons_label">العيوب</string>
+    <string name="search_coming_soon">قريبا سوف يضاف منتجات</string>
 </resources>

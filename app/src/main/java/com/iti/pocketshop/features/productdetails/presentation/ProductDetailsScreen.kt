@@ -12,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -22,9 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.LocalUser
+import com.iti.pocketshop.R
 import com.iti.pocketshop.common.sessionmanager.domain.model.UserSession
 import com.iti.pocketshop.core.components.DeleteFavoriteDialogController
-import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.components.RemoveFavoriteDialog
 import com.iti.pocketshop.core.components.ScreenStateLayout
 import com.iti.pocketshop.core.components.SignInDialogController
@@ -35,7 +34,6 @@ import com.iti.pocketshop.features.productdetails.presentation.components.Produc
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductContent
 import com.iti.pocketshop.features.productdetails.presentation.components.ProductDetailsTopAppBar
 import com.iti.pocketshop.features.productdetails.presentation.components.ReviewEditorSheet
-import com.iti.pocketshop.R
 import com.iti.pocketshop.ui.theme.PocketShopTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -45,6 +43,8 @@ fun ProductDetailsRoot(
     productId: String,
     onBack: () -> Unit,
     onGenerateOutfit: (title: String, productId: String) -> Unit = { _, _ -> },
+    onAiCompare: (productId: String) -> Unit = {},
+    onSuggestProductClick: (String) -> Unit = {},
     viewModel: ProductDetailsViewModel = hiltViewModel(
         key = productId,
         creationCallback = { factory: ProductDetailsViewModel.Factory ->
@@ -55,14 +55,6 @@ fun ProductDetailsRoot(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val user = LocalUser.current
     val scope = rememberCoroutineScope()
-
-    LaunchedEffect(viewModel) {
-        viewModel.events.collect { event ->
-            when (event) {
-                is ProductDetailsEvent.ShowError -> ErrorDialogController.sendEvent(event.error)
-            }
-        }
-    }
 
     ProductDetailsScreen(
         state = state,
@@ -90,6 +82,9 @@ fun ProductDetailsRoot(
                 ProductDetailsAction.GenerateOutfitClicked -> {
                     state.product?.let { product -> onGenerateOutfit(product.title, product.id) }
                 }
+                ProductDetailsAction.CompareSimilarProductsClicked -> {
+                    onAiCompare(productId)
+                }
                 is ProductDetailsAction.EditReviewClicked -> {
                     if (action.review.customerId == user?.uid) viewModel.onAction(action)
                 }
@@ -101,6 +96,9 @@ fun ProductDetailsRoot(
                     if (editingReview == null || editingReview.customerId == user?.uid) {
                         viewModel.onAction(action)
                     }
+                }
+                is ProductDetailsAction.SuggestedProductClicked -> {
+                    onSuggestProductClick(action.productId)
                 }
                 else -> viewModel.onAction(action)
             }
@@ -212,7 +210,7 @@ fun ProductDetailsScreen(
         )
     }
 
-    state.reviewToDelete?.let { review ->
+    state.reviewToDelete?.let { _ ->
         AlertDialog(
             onDismissRequest = { onAction(ProductDetailsAction.DeleteReviewDismissed) },
             title = { Text(text = stringResource(R.string.product_details_delete_review_title)) },
