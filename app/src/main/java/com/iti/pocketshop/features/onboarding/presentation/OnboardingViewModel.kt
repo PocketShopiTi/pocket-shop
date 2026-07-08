@@ -2,6 +2,7 @@ package com.iti.pocketshop.features.onboarding.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.settings.domain.UserSettingsRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,9 @@ sealed interface OnboardingEvent {
 }
 
 @HiltViewModel
-class OnboardingViewModel @Inject constructor() : ViewModel() {
+class OnboardingViewModel @Inject constructor(
+    private val userSettingsRepo: UserSettingsRepo,
+) : ViewModel() {
 
     private val _state = MutableStateFlow(OnboardingState())
     val state = _state.stateIn(
@@ -32,9 +35,7 @@ class OnboardingViewModel @Inject constructor() : ViewModel() {
     fun onAction(action: OnboardingAction) {
         when (action) {
             OnboardingAction.Next -> onboardingAction()
-            OnboardingAction.Skip,
-            OnboardingAction.Login,
-            OnboardingAction.Guest -> navigate()
+            OnboardingAction.Login -> navigate()
             is OnboardingAction.SwipePage -> onboardingActionSwipe(action)
         }
     }
@@ -50,6 +51,15 @@ class OnboardingViewModel @Inject constructor() : ViewModel() {
     }
 
     private fun navigate() {
+        saveOnboardingShown()
         viewModelScope.launch { _events.send(OnboardingEvent.NavigateToLogin) }
+    }
+
+    private fun saveOnboardingShown() {
+        viewModelScope.launch {
+            userSettingsRepo.updateUserSettings {
+                it.copy(hasSeenOnboarding = true)
+            }
+        }
     }
 }

@@ -1,88 +1,67 @@
 package com.iti.pocketshop.features.onboarding.presentation.components
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.iti.pocketshop.R
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
+
 
 @Composable
 fun OnboardingActionButtons(
     isLastPage: Boolean,
     onNext: () -> Unit,
-    onLogin: () -> Unit,
-    onGuest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-         Button(
-            onClick = onNext,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp),
-            shape = MaterialTheme.shapes.extraLarge,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor   = MaterialTheme.colorScheme.onPrimary,
-            ),
-        ) {
-            Text(
-                text = stringResource(
-                    if (isLastPage) R.string.onboarding_get_started
-                    else R.string.onboarding_next
-                ),
-                style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+    val colors = LocalExtendedColors.current
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    val buttonScale by animateFloatAsState(
+        targetValue = if (isPressed) 0.97f else 1f,
+        animationSpec = tween(120),
+        label = "buttonScale",
+    )
+
+    Button(
+        onClick = onNext,
+        interactionSource = interactionSource,
+        modifier = modifier
+            .border(
+                width = 2.dp,
+                color = if (isLastPage) Color.Transparent else colors.primary,
+                shape = CircleShape,
             )
-        }
-
-        if (isLastPage) {
-            Spacer(modifier = Modifier.height(12.dp))
-
-             OutlinedButton(
-                onClick = onLogin,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(52.dp),
-                shape = MaterialTheme.shapes.extraLarge,
-                border = BorderStroke(
-                    width = 1.5.dp,
-                    color = MaterialTheme.colorScheme.outline,
-                ),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onBackground,
-                ),
-            ) {
-                Text(
-                    text = stringResource(R.string.onboarding_have_account),
-                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-             TextButton(onClick = onGuest) {
-                Text(
-                    text = stringResource(R.string.onboarding_guest),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
+            .graphicsLayer { scaleX = buttonScale; scaleY = buttonScale },
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isLastPage) colors.primary else Color.Transparent,
+            contentColor = if (isLastPage) colors.onPrimary else colors.primary,
+        ),
+    ) {
+        Text(
+            text = stringResource(
+                if (isLastPage) R.string.onboarding_get_started
+                else R.string.onboarding_next
+            ),
+            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold),
+            fontSize = 20.sp
+        )
     }
 }

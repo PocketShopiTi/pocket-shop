@@ -8,6 +8,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.GraphicsLayerScope
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -15,11 +16,19 @@ import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
 
+
 data class OnboardingAnimValues(
     val scales: List<Animatable<Float, *>>,
     val alphas: List<Animatable<Float, *>>,
     val offsetYs: List<Animatable<Float, *>>,
 )
+
+fun OnboardingAnimValues.layerAt(index: Int): GraphicsLayerScope.() -> Unit = {
+    scaleX = scales[index].value
+    scaleY = scales[index].value
+    alpha = alphas[index].value
+    translationY = offsetYs[index].value
+}
 
 @Composable
 fun rememberOnboardingAnimState(
@@ -33,11 +42,11 @@ fun rememberOnboardingAnimState(
 
     val springSpec: AnimationSpec<Float> = spring(
         dampingRatio = Spring.DampingRatioMediumBouncy,
-        stiffness    = Spring.StiffnessLow,
+        stiffness = Spring.StiffnessLow,
     )
 
-    val scales   = remember { List(itemCount) { Animatable(initialScale) } }
-    val alphas   = remember { List(itemCount) { Animatable(0f) } }
+    val scales = remember { List(itemCount) { Animatable(initialScale) } }
+    val alphas = remember { List(itemCount) { Animatable(0f) } }
     val offsetYs = remember { List(itemCount) { Animatable(initialOffsetPx) } }
 
     LaunchedEffect(visible) {
@@ -59,3 +68,4 @@ fun rememberOnboardingAnimState(
 
     return OnboardingAnimValues(scales, alphas, offsetYs)
 }
+

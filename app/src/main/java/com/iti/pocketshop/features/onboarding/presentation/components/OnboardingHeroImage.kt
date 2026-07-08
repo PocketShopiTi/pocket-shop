@@ -12,6 +12,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 
+
 @Composable
 fun OnboardingHeroImage(
     pageIndex: Int,
@@ -23,20 +24,18 @@ fun OnboardingHeroImage(
         modifier = modifier
             .fillMaxWidth()
             .height(360.dp),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         when (pageIndex) {
             0 -> OnboardingPage1Hero(visible = visible)
             1 -> OnboardingPage2Hero(visible = visible)
             2 -> OnboardingPage3Hero(visible = visible)
-            else -> {
-                Image(
-                    painter = painterResource(id = imageRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
+            else -> Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
     }
 }

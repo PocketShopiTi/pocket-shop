@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,20 +20,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.iti.pocketshop.R
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
+
 
 @Composable
 fun OnboardingPage3Hero(
     visible: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val colors = LocalExtendedColors.current
     val anim = rememberOnboardingAnimState(itemCount = 3, staggerMs = 180L, visible = visible)
-
-    fun animModifier(i: Int) = Modifier.graphicsLayer {
-        scaleX = anim.scales[i].value
-        scaleY = anim.scales[i].value
-        alpha = anim.alphas[i].value
-        translationY = anim.offsetYs[i].value
-    }
 
     Box(
         modifier = modifier
@@ -44,26 +39,24 @@ fun OnboardingPage3Hero(
             .clipToBounds(),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             OnboardingItemCard(
-                modifier = animModifier(0),
+                modifier = Modifier.graphicsLayer(anim.layerAt(0)),
                 imageRes = R.drawable.image4,
                 title = stringResource(R.string.onboarding_product1_title),
                 subtitle = stringResource(R.string.onboarding_product1_price),
-                subtitleColor = Color(0xFFB5673A),
+                subtitleColor = colors.primary,
                 trailing = OnboardingCardTrailing.FavouriteIcon(
                     iconRes = R.drawable.ic_favorites_filled,
-                    tint = Color(0xFFB5673A),
+                    tint = colors.primary,
                 ),
             )
 
             OnboardingItemCard(
-                modifier = animModifier(1),
+                modifier = Modifier.graphicsLayer(anim.layerAt(1)),
                 imageRes = R.drawable.image6,
                 title = stringResource(R.string.onboarding_product2_title),
                 subtitle = stringResource(R.string.onboarding_product2_price),
@@ -71,10 +64,10 @@ fun OnboardingPage3Hero(
             )
 
             OnboardingItemCard(
-                modifier = animModifier(2),
+                modifier = Modifier.graphicsLayer(anim.layerAt(2)),
                 iconRes = R.drawable.onboarding_checkout,
-                iconTint = Color(0xFF2E9E6B),
-                iconBgColor = Color(0xFFE8F5F0),
+                iconTint = colors.success,
+                iconBgColor = colors.success.copy(alpha = 0.12f),
                 iconBgShape = CircleShape,
                 title = stringResource(R.string.onboarding_order_confirmed),
                 subtitle = stringResource(R.string.onboarding_order_id),
@@ -87,11 +80,11 @@ fun OnboardingPage3Hero(
                 .zIndex(3f)
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, MaterialTheme.colorScheme.background),
+                        colors = listOf(Color.Transparent, colors.background),
                         startY = 500f,
                         endY = 900f,
                     )
-                )
+                ),
         )
     }
 }

@@ -1,9 +1,5 @@
 package com.iti.pocketshop.features.onboarding.presentation.components
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,141 +16,93 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.iti.pocketshop.R
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
+import com.iti.pocketshop.ui.theme.LocalExtendedColors
+
 
 @Composable
 fun OnboardingPage2Hero(
     visible: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    val density = LocalDensity.current
-    val initialOffsetPx = with(density) { 40.dp.toPx() }
-    val initialScale = 0.7f
-
-    val springSpec = spring<Float>(
-        dampingRatio = Spring.DampingRatioMediumBouncy,
-        stiffness = Spring.StiffnessLow
-    )
-
-    val scales = remember { List(5) { Animatable(initialScale) } }
-    val alphas = remember { List(5) { Animatable(0f) } }
-    val offsetYs = remember { List(5) { Animatable(initialOffsetPx) } }
-
-    LaunchedEffect(visible) {
-        if (visible) {
-            val staggerDelays = listOf(0L, 120L, 240L, 360L, 480L)
-            staggerDelays.indices.forEach { i ->
-                launch {
-                    delay(staggerDelays[i].milliseconds)
-                    launch { scales[i].animateTo(1f, springSpec) }
-                    launch { alphas[i].animateTo(1f, tween(500)) }
-                    launch { offsetYs[i].animateTo(0f, springSpec) }
-                }
-            }
-        } else {
-            scales.forEach { it.snapTo(initialScale) }
-            alphas.forEach { it.snapTo(0f) }
-            offsetYs.forEach { it.snapTo(initialOffsetPx) }
-        }
-    }
+    val colors = LocalExtendedColors.current
+    val anim = rememberOnboardingAnimState(itemCount = 5, staggerMs = 120L, visible = visible)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp)
-            .clipToBounds()
+            .clipToBounds(),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+            verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-
             Box(
                 modifier = Modifier
                     .align(Alignment.End)
-                    .graphicsLayer {
-                        scaleX = scales[0].value
-                        scaleY = scales[0].value
-                        alpha = alphas[0].value
-                        translationY = offsetYs[0].value
-                    }
+                    .graphicsLayer(anim.layerAt(0))
                     .background(
-                        color = Color(0xFFB5673A),
+                        color = colors.primary,
                         shape = RoundedCornerShape(
-                            topStart = 18.dp,
-                            topEnd = 18.dp,
-                            bottomStart = 18.dp,
-                            bottomEnd = 4.dp
-                        )
+                            topStart = 18.dp, topEnd = 18.dp,
+                            bottomStart = 18.dp, bottomEnd = 4.dp,
+                        ),
                     )
-                    .padding(horizontal = 18.dp, vertical = 11.dp)
+                    .padding(horizontal = 18.dp, vertical = 11.dp),
             ) {
                 Text(
                     text = stringResource(R.string.onboarding_ai_prompt),
-                    color = Color.White,
+                    color = colors.onPrimary,
                     fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.SemiBold,
                 )
             }
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.graphicsLayer {
-                    scaleX = scales[1].value
-                    scaleY = scales[1].value
-                    alpha = alphas[1].value
-                    translationY = offsetYs[1].value
-                }
+                modifier = Modifier.graphicsLayer(anim.layerAt(1)),
             ) {
                 Box(
                     modifier = Modifier
                         .size(32.dp)
-                        .background(Color(0xFFF2E4D8), CircleShape),
-                    contentAlignment = Alignment.Center
+                        .background(colors.surfaceVariant, CircleShape),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.image10),
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(18.dp),
                     )
                 }
                 Box(
                     modifier = Modifier
                         .background(
-                            color = Color.White,
+                            color = colors.surface,
                             shape = RoundedCornerShape(
-                                topStart = 18.dp,
-                                topEnd = 18.dp,
-                                bottomStart = 4.dp,
-                                bottomEnd = 18.dp
-                            )
+                                topStart = 18.dp, topEnd = 18.dp,
+                                bottomStart = 4.dp, bottomEnd = 18.dp,
+                            ),
                         )
-                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
                 ) {
                     Text(
                         text = stringResource(R.string.onboarding_ai_response),
-                        color = Color(0xFF1A1A1A),
+                        color = colors.textPrimary,
                         fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
                     )
                 }
             }
@@ -162,40 +110,44 @@ fun OnboardingPage2Hero(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(vertical = 4.dp)
                     .height(IntrinsicSize.Min),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
                 ProductSuggestionCard(
                     imageRes = R.drawable.image8,
                     title = stringResource(R.string.onboarding_product3_title),
                     price = stringResource(R.string.onboarding_product3_price),
-                    scale = scales[2].value,
-                    alpha = alphas[2].value,
-                    translationY = offsetYs[2].value,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    scale = anim.scales[2].value,
+                    alpha = anim.alphas[2].value,
+                    translationY = anim.offsetYs[2].value,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
-
                 ProductSuggestionCard(
                     imageRes = R.drawable.image1,
                     title = stringResource(R.string.onboarding_product4_title),
                     price = stringResource(R.string.onboarding_product4_price),
-                    scale = scales[3].value,
-                    alpha = alphas[3].value,
-                    translationY = offsetYs[3].value,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    scale = anim.scales[3].value,
+                    alpha = anim.alphas[3].value,
+                    translationY = anim.offsetYs[3].value,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
-
                 ProductSuggestionCard(
                     imageRes = R.drawable.image3,
                     title = stringResource(R.string.onboarding_product5_title),
                     price = stringResource(R.string.onboarding_product5_price),
-                    scale = scales[4].value,
-                    alpha = alphas[4].value,
-                    translationY = offsetYs[4].value,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    scale = anim.scales[4].value,
+                    alpha = anim.alphas[4].value,
+                    translationY = anim.offsetYs[4].value,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
             }
         }
-
     }
 }
