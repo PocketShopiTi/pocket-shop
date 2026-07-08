@@ -67,6 +67,11 @@ internal fun ProductContent(
                     compareAtPrice = state.selectedVariant?.compareAtPrice,
                 )
 
+                GenerateOutfitButton(
+                    onClick = { onAction(ProductDetailsAction.GenerateOutfitClicked) },
+                    modifier = Modifier.padding(top = 16.dp),
+                )
+
                 if (product.options.isNotEmpty()) {
                     SectionDivider()
                     product.options.forEach { option ->

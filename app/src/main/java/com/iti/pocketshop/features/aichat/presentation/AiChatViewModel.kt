@@ -1,8 +1,10 @@
 package com.iti.pocketshop.features.aichat.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.features.aichat.data.ChatSessionStore
 import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
@@ -11,24 +13,41 @@ import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.productdetails.domain.usecase.GetProductDetailsUseCase
 import com.iti.pocketshop.features.search.domain.model.SearchResultItem
 import com.iti.pocketshop.features.search.domain.usecase.GetSearchResultsUseCase
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.json.JSONObject
 
-@HiltViewModel
-class AiChatViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = AiChatViewModel.Factory::class)
+class AiChatViewModel @AssistedInject constructor(
     private val aiRepository: AiRepository,
     private val addToCartUseCase: AddToCartUseCase,
     private val getSearchResultsUseCase: GetSearchResultsUseCase,
     private val getProductDetailsUseCase: GetProductDetailsUseCase,
     private val getLocalCartUseCase: GetLocalCartUseCase,
+    private val sessionStore: ChatSessionStore,
+    @Assisted private val initialPrompt: String?,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AiChatState())
+    @AssistedFactory
+    interface Factory {
+        fun create(initialPrompt: String?): AiChatViewModel
+    }
+
+    private companion object {
+        const val TAG = "AiChatViewModel"
+    }
+
+    // Restore any in-session conversation so the chat survives navigation / recreation.
+    private val _state = MutableStateFlow(AiChatState(messages = sessionStore.messages.value))
     val state = _state.asStateFlow()
 
     private var currentCart: ShopifyCart? = null
@@ -55,6 +74,23 @@ class AiChatViewModel @Inject constructor(
             name = "get_cart",
             description = "Get the current contents of the user's shopping cart.",
             parameters = emptyList()
+        ),
+        AiTool(
+            name = "search_outfit_item",
+            description = "Search for ONE outfit slot (top, bottom, shoes, accessory). " +
+                    "Returns the single best-matching real purchasable product filtered by product type and an optional style tag.",
+            parameters = listOf(
+                AiParameter("query", "string", "Short search keywords, e.g. 'white sneakers'"),
+                AiParameter(
+                    "category", "string",
+                    "Exact store product type, e.g. T-Shirts, Shirts, Hoodies, Jackets, Pants, Jeans, Shorts, Dresses, Shoes, Bags, Accessories"
+                ),
+                AiParameter(
+                    "tag", "string",
+                    "Optional single tag like style:casual, occasion:work, season:summer, gender:men, color:black",
+                    isRequired = false
+                ),
+            )
         )
     )
 
@@ -63,6 +99,28 @@ class AiChatViewModel @Inject constructor(
             getLocalCartUseCase().collect { cart ->
                 currentCart = cart
             }
+        }
+        // Keep the app-wide session in sync with this screen's messages.
+        viewModelScope.launch {
+            _state.map { it.messages }
+                .distinctUntilChanged()
+                .collect { sessionStore.setMessages(it) }
+        }
+        // Seed the outfit prompt only once per distinct prompt: returning from product details
+        // recreates this VM with the same initialPrompt, so we skip re-seeding and keep history.
+        initialPrompt?.takeIf { it.isNotBlank() && it != sessionStore.lastSeededPrompt }?.let { prompt ->
+            sessionStore.markSeeded(prompt)
+            val parsed = parseHiddenContext(prompt)
+            _state.update {
+                it.copy(
+                    messages = it.messages + ChatMessage(
+                        content = parsed.visibleText,
+                        hiddenContext = parsed.hiddenContext,
+                        sender = MessageSender.USER,
+                    )
+                )
+            }
+            runAgentLoop()
         }
     }
 
@@ -74,21 +132,44 @@ class AiChatViewModel @Inject constructor(
             is AiChatAction.OnImageSelected -> {
                 _state.update { it.copy(selectedImageUri = action.uri) }
             }
-            AiChatAction.OnSendMessage,
-            AiChatAction.OnRetry -> sendMessage()
+            AiChatAction.OnSendMessage -> sendMessage()
+            AiChatAction.OnRetry -> retry()
             AiChatAction.OnDismissError -> {
                 _state.update { it.copy(error = null) }
             }
+            AiChatAction.OnNewChat -> newChat()
+            is AiChatAction.OnQuickReplySelected -> sendQuickReply(action.text)
         }
     }
 
-    private fun sendMessage() {
-        val userText = _state.value.inputText.trim()
-        val imageUri = _state.value.selectedImageUri
-        if (userText.isEmpty() && imageUri == null) return
+    private fun newChat() {
+        sessionStore.clear()
+        _state.update {
+            it.copy(messages = emptyList(), inputText = "", selectedImageUri = null, error = null)
+        }
+    }
 
+    private fun sendQuickReply(text: String) {
+        val choice = text.trim()
+        if (choice.isEmpty()) return
+        _state.update {
+            it.copy(
+                messages = it.messages + ChatMessage(content = choice, sender = MessageSender.USER),
+                error = null
+            )
+        }
+        runAgentLoop()
+    }
+
+    private fun sendMessage() {
+        val rawText = _state.value.inputText.trim()
+        val imageUri = _state.value.selectedImageUri
+        if (rawText.isEmpty() && imageUri == null) return
+
+        val parsed = parseHiddenContext(rawText)
         val userMessage = ChatMessage(
-            content = userText,
+            content = parsed.visibleText,
+            hiddenContext = parsed.hiddenContext,
             sender = MessageSender.USER,
             imageUri = imageUri
         )
@@ -101,6 +182,15 @@ class AiChatViewModel @Inject constructor(
             )
         }
 
+        runAgentLoop()
+    }
+
+    private fun retry() {
+        // A failed turn drops only the AI placeholder in runAgentLoop's catch block, so the
+        // last user (or tool) message is still present. Clear the error and re-run the turn
+        // instead of appending a new message (the input field is already empty here).
+        if (_state.value.messages.isEmpty()) return
+        _state.update { it.copy(error = null) }
         runAgentLoop()
     }
 
@@ -123,14 +213,15 @@ class AiChatViewModel @Inject constructor(
                 _state.update { it.copy(messages = it.messages + aiPlaceholder) }
 
                 var fullResponseText = ""
-                var toolCall: AiResponse.ToolCall? = null
+                val toolCalls = mutableListOf<AiResponse.ToolCall>()
 
                 aiRepository.streamChat(_state.value.messages.dropLast(1), systemPrompt, tools)
                     .catch { e ->
+                        Log.e(TAG, "AI chat turn failed", e)
                         _state.update { state ->
                             state.copy(
                                 messages = state.messages.dropLast(1),
-                                error = e.message ?: "Something went wrong"
+                                error = AiErrorType.GENERIC
                             )
                         }
                         isLooping = false
@@ -142,8 +233,17 @@ class AiChatViewModel @Inject constructor(
                                 updateLastMessage(fullResponseText, isTyping = true)
                             }
                             is AiResponse.ToolCall -> {
-                                toolCall = response
+                                toolCalls += response
                                 updateLastMessage(fullResponseText, isTyping = false, toolCall = response)
+                            }
+                            is AiResponse.Error -> {
+                                _state.update { state ->
+                                    state.copy(
+                                        messages = state.messages.dropLast(1),
+                                        error = response.type
+                                    )
+                                }
+                                isLooping = false
                             }
                             AiResponse.Finished -> {
                                 updateLastMessage(fullResponseText, isTyping = false)
@@ -151,15 +251,22 @@ class AiChatViewModel @Inject constructor(
                         }
                     }
 
-                if (toolCall != null) {
-                    val result = executeTool(toolCall)
-                    lastToolProducts = result.products
-                    val toolMessage = ChatMessage(
-                        content = result.summary,
-                        sender = MessageSender.TOOL,
-                        toolCallName = toolCall.name
-                    )
-                    
+                if (_state.value.error != null) {
+                    // The turn failed (error already set, placeholder dropped) — stop looping.
+                    isLooping = false
+                } else if (toolCalls.isNotEmpty()) {
+                    val collectedProducts = mutableListOf<SearchResultItem.ProductItem>()
+                    val toolMessages = toolCalls.map { call ->
+                        val result = executeTool(call)
+                        collectedProducts += result.products
+                        ChatMessage(
+                            content = result.summary,
+                            sender = MessageSender.TOOL,
+                            toolCallName = call.name
+                        )
+                    }
+                    lastToolProducts = collectedProducts
+
                     // Clear the status text if there was no real content
                     if (fullResponseText.isEmpty()) {
                         _state.update { state ->
@@ -168,12 +275,27 @@ class AiChatViewModel @Inject constructor(
                                 val last = updatedMessages.last()
                                 updatedMessages[updatedMessages.lastIndex] = last.copy(content = "")
                             }
-                            state.copy(messages = updatedMessages + toolMessage)
+                            state.copy(messages = updatedMessages + toolMessages)
                         }
                     } else {
-                        _state.update { it.copy(messages = it.messages + toolMessage) }
+                        _state.update { it.copy(messages = it.messages + toolMessages) }
                     }
                 } else {
+                    // Final assistant turn: pull any [[options]] block out into tappable chips.
+                    val parsed = parseQuickReplies(fullResponseText)
+                    if (parsed.options.isNotEmpty()) {
+                        _state.update { state ->
+                            val updatedMessages = state.messages.toMutableList()
+                            if (updatedMessages.isNotEmpty()) {
+                                val last = updatedMessages.last()
+                                updatedMessages[updatedMessages.lastIndex] = last.copy(
+                                    content = parsed.visibleText,
+                                    quickReplies = parsed.options,
+                                )
+                            }
+                            state.copy(messages = updatedMessages)
+                        }
+                    }
                     isLooping = false
                 }
             }
@@ -215,6 +337,7 @@ class AiChatViewModel @Inject constructor(
     private fun getToolStatusText(name: String, args: Map<String, String>): String {
         return when (name) {
             "search_products" -> "Searching for '${args["query"] ?: "products"}'..."
+            "search_outfit_item" -> "Finding ${args["category"] ?: "items"}..."
             "get_product_details" -> "Getting details..."
             "add_to_cart" -> "Adding to cart..."
             "get_cart" -> "Checking cart..."
@@ -269,6 +392,31 @@ class AiChatViewModel @Inject constructor(
             "get_cart" -> {
                 ToolExecutionResult(currentCart?.lines?.joinToString("\n") { "- ${it.title} (${it.quantity}x)" } ?: "Cart is empty")
             }
+            "search_outfit_item" -> {
+                val category = toolCall.arguments["category"] as? String ?: ""
+                val tag = (toolCall.arguments["tag"] as? String)?.takeIf { it.isNotBlank() }
+                val query = (toolCall.arguments["query"] as? String).orEmpty().ifBlank { category }
+                val filters = buildList {
+                    if (category.isNotBlank()) add(JSONObject().put("productType", category).toString())
+                    tag?.let { add(JSONObject().put("tag", it).toString()) }
+                }
+                when (val result = getSearchResultsUseCase(query, first = 1, filters = filters)) {
+                    is PocketResult.Success -> {
+                        val products = result.data.products.take(1)
+                        ToolExecutionResult(
+                            summary = if (products.isEmpty()) {
+                                "No products found for category '$category'${tag?.let { " with tag $it" } ?: ""}. Try again without the tag."
+                            } else {
+                                products.joinToString("\n") { p: SearchResultItem.ProductItem ->
+                                    "- ${p.title} (ID: ${p.id}): ${p.price} ${p.currencyCode}"
+                                }
+                            },
+                            products = products
+                        )
+                    }
+                    is PocketResult.Error -> ToolExecutionResult("Error searching: ${result.error}")
+                }
+            }
             else -> ToolExecutionResult("Unknown tool")
         }
     }
@@ -288,6 +436,18 @@ class AiChatViewModel @Inject constructor(
             - Answer politely and professionally.
             - Use Markdown formatting.
             - ONLY answer shopping-related questions.
+
+            OUTFIT BUILDING:
+            - When the user asks for an outfit, or to build an outfit around a product, plan 3-4 slots: top, bottom, shoes, accessory.
+            - If a product id is given, call get_product_details first and skip the slot that product already fills.
+            - Call search_outfit_item exactly once per slot, ONE call at a time. Each call returns ONE product for that slot.
+            - Use the tag parameter when style, occasion, season, gender, or color is known (e.g. style:casual, gender:men).
+            - If a slot returns no products, retry once without the tag; if still empty, skip the slot and say so.
+            - Present exactly one item per category: for each slot state the product title, price, and a one-line reason. NEVER invent products.
+
+            ASKING THE USER TO CHOOSE:
+            - When you need the user to pick among a few discrete options (occasion, gender, style, size, color), ask a short question and end that message with [[options]]Option A|Option B|Option C[[/options]] (max 4 options).
+            - Do NOT use options for free-form answers. The options block is stripped from the message and shown as tappable buttons.
         """.trimIndent()
     }
 }

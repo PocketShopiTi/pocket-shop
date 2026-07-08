@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 fun ProductDetailsRoot(
     productId: String,
     onBack: () -> Unit,
+    onGenerateOutfit: (title: String, productId: String) -> Unit = { _, _ -> },
     viewModel: ProductDetailsViewModel = hiltViewModel(
         key = productId,
         creationCallback = { factory: ProductDetailsViewModel.Factory ->
@@ -86,6 +87,9 @@ fun ProductDetailsRoot(
             }
             when (action) {
                 ProductDetailsAction.BackClicked -> onBack()
+                ProductDetailsAction.GenerateOutfitClicked -> {
+                    state.product?.let { product -> onGenerateOutfit(product.title, product.id) }
+                }
                 is ProductDetailsAction.EditReviewClicked -> {
                     if (action.review.customerId == user?.uid) viewModel.onAction(action)
                 }

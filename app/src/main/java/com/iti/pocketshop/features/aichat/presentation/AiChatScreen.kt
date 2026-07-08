@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.iti.pocketshop.R
+import com.iti.pocketshop.features.aichat.domain.model.AiErrorType
 import com.iti.pocketshop.features.aichat.domain.model.MessageSender
 import com.iti.pocketshop.features.aichat.presentation.components.ChatBubble
 import com.iti.pocketshop.features.aichat.presentation.components.ChatInput
@@ -62,7 +64,12 @@ import kotlinx.coroutines.launch
 fun AiChatRoot(
     onBack: () -> Unit,
     onProductClick: (String) -> Unit,
-    viewModel: AiChatViewModel = hiltViewModel(),
+    initialPrompt: String? = null,
+    viewModel: AiChatViewModel = hiltViewModel(
+        creationCallback = { factory: AiChatViewModel.Factory ->
+            factory.create(initialPrompt)
+        },
+    ),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -129,6 +136,16 @@ fun AiChatScreen(
                         )
                     }
                 },
+                actions = {
+                    if (state.messages.isNotEmpty()) {
+                        IconButton(onClick = { onAction(AiChatAction.OnNewChat) }) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = stringResource(R.string.ai_chat_new_chat)
+                            )
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                 )
@@ -161,10 +178,14 @@ fun AiChatScreen(
             Column(modifier = Modifier.fillMaxSize()) {
                 AnimatedContent (
                     targetState = state.error
-                ) { errorMessage ->
-                    errorMessage?.let {
+                ) { errorType ->
+                    errorType?.let {
+                        val message = when (it) {
+                            AiErrorType.QUOTA_EXCEEDED -> stringResource(R.string.ai_chat_error_quota)
+                            AiErrorType.GENERIC -> stringResource(R.string.ai_chat_error_message)
+                        }
                         ErrorBanner(
-                            message = it,
+                            message = message,
                             onRetry = { onAction(AiChatAction.OnRetry) },
                             onDismiss = { onAction(AiChatAction.OnDismissError) },
                             modifier = Modifier
@@ -185,6 +206,7 @@ fun AiChatScreen(
                         contentPadding = PaddingValues(vertical = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                        val lastMessageId = visibleMessages.lastOrNull()?.id
                         items(
                             items = visibleMessages,
                             key = { it.id }
@@ -192,6 +214,8 @@ fun AiChatScreen(
                             ChatBubble(
                                 message = message,
                                 onProductClick = onProductClick,
+                                isLastMessage = message.id == lastMessageId,
+                                onQuickReply = { onAction(AiChatAction.OnQuickReplySelected(it)) },
                                 modifier = Modifier
                                     .animateItem()
                             )
