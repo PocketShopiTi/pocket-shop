@@ -147,8 +147,6 @@
     <string name="filters_label">الفلاتر</string>
     <string-array name="suggested_keywords">
         <item>أحذية</item>
-        <item>أجهزة لابتوب</item>
-        <item>ساعات</item>
         <item>إكسسوارات</item>
         <item>قمصان</item>
     </string-array>

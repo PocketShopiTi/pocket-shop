@@ -145,8 +145,6 @@
     <string name="filters_label">Filters</string>
     <string-array name="suggested_keywords">
         <item>Shoes</item>
-        <item>Laptops</item>
-        <item>Watches</item>
         <item>Accessories</item>
         <item>T-Shirts</item>
     </string-array>
