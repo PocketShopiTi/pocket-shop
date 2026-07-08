@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,8 +52,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.LocalUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.address.domain.model.Address
 import com.iti.pocketshop.features.checkout.data.mappers.Order
 import com.iti.pocketshop.features.checkout.data.mappers.PaymentConfirmation
@@ -116,7 +119,10 @@ fun OrderCheckoutScreen(
                             contentDescription = stringResource(R.string.back)
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    navigationIconContentColor = MaterialTheme.colorScheme.primary,
+                )
             )
         },
         bottomBar = {
@@ -213,6 +219,8 @@ private fun OrderProcessingDialog() {
 private fun OrderSummaryCard(
     state: CheckoutState,
 ) {
+    val userSettings = LocalSettingsUser.current
+
     ElevatedCard(modifier = Modifier.fillMaxWidth()) {
         Column(
             modifier = Modifier
@@ -239,7 +247,9 @@ private fun OrderSummaryCard(
 
             SummaryRow(
                 label = stringResource(R.string.subtotal),
-                value = "${subtotal?.amount ?: 0.0} ${subtotal?.currencyCode ?: ""}",
+                value = subtotal?.let {
+                    PriceFormatter.format(it.amount, it.currencyCode.rawValue, userSettings)
+                }.orEmpty(),
                 labelStyle = MaterialTheme.typography.bodyLarge,
                 valueStyle = MaterialTheme.typography.titleMedium,
             )
@@ -252,7 +262,11 @@ private fun OrderSummaryCard(
                     ),
                     value = stringResource(
                         R.string.checkout_negative_amount,
-                        "$discountAmount ${total?.currencyCode ?: ""}"
+                        PriceFormatter.format(
+                            amount = discountAmount,
+                            sourceCurrencyCode = total?.currencyCode?.rawValue ?: "USD",
+                            userSettings = userSettings,
+                        )
                     ),
                     labelStyle = MaterialTheme.typography.bodyLarge,
                     valueStyle = MaterialTheme.typography.titleMedium,
@@ -262,7 +276,9 @@ private fun OrderSummaryCard(
 
             SummaryRow(
                 label = stringResource(R.string.total),
-                value = "${total?.amount ?: 0.0} ${total?.currencyCode ?: ""}",
+                value = total?.let {
+                    PriceFormatter.format(it.amount, it.currencyCode.rawValue, userSettings)
+                }.orEmpty(),
                 labelStyle = MaterialTheme.typography.titleMedium,
                 valueStyle = MaterialTheme.typography.titleLarge,
             )
@@ -496,9 +512,16 @@ private fun CheckoutBottomBar(
 
             if (total != null && selectedAddress != null) {
                 val user = selectedAddress.toUserData(user?.email)
+                val paymentAmount = PriceFormatter.toEgpMoney(
+                    amount = total.amount,
+                    sourceCurrencyCode = total.currencyCode.rawValue,
+                )
                 when (state.selectedPaymentMethod) {
                     PaymentMethod.CARD -> PaymentButton(
-                        amountMinor = (total.amount * 100).toLong(),
+                        amountMinor = PriceFormatter.toEgpPaymentMinorUnits(
+                            amount = total.amount,
+                            sourceCurrencyCode = total.currencyCode.rawValue,
+                        ),
                         currency = PaymentCurrency.EGP,
                         userData = user,
                         onSuccess = { transactionId ->
@@ -509,8 +532,8 @@ private fun CheckoutBottomBar(
                                         transactionId = transactionId,
                                         gateway = PaymentGateway.PayMob.gatewayName,
                                         amount = Money(
-                                            total.amount,
-                                            total.currencyCode.name
+                                            paymentAmount.amount,
+                                            paymentAmount.currencyCode,
                                         )
                                     )
                                 )

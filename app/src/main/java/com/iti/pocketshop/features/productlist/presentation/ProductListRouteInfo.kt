@@ -46,6 +46,16 @@ fun ProductListRouteInfo.query(): String? {
     }
 }
 
+// Routes backed by a Shopify collection (mirrors the home screen sections).
+fun ProductListRouteInfo.collectionHandle(): String? {
+    return when (this) {
+        ProductListRouteInfo.Featured -> "featured"
+        ProductListRouteInfo.Trending -> "trending"
+        ProductListRouteInfo.NewArrivals -> "new-arrivals"
+        else -> null
+    }
+}
+
 fun ProductListRouteInfo.isReverse(): Boolean {
     return this == ProductListRouteInfo.NewArrivals
 }

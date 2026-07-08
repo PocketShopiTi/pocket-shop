@@ -216,7 +216,7 @@ private fun AddressMapTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.address_content_description_back),
-                    tint = extendedColors.textPrimary,
+                    tint = extendedColors.primary,
                 )
             }
 

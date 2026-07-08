@@ -9,6 +9,7 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
 import com.iti.pocketshop.features.home.presentation.models.toUIProduct
+import com.iti.pocketshop.features.productlist.domain.GetCollectionProductsUseCase
 import com.iti.pocketshop.features.productlist.domain.GetProductListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductListViewModel @Inject constructor(
     private val getProductListUseCase: GetProductListUseCase,
+    private val getCollectionProductsUseCase: GetCollectionProductsUseCase,
     private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     getLocalFavoritesUseCase: GetLocalFavoritesUseCase,
 ) : ViewModel() {
@@ -36,7 +38,13 @@ class ProductListViewModel @Inject constructor(
             state.copy(
                 favoriteIds = favoriteIds,
                 products = state.products.map { it.copy(isFavorite = favoriteIds.contains(it.id)) },
-                filteredProducts = state.filteredProducts.map { it.copy(isFavorite = favoriteIds.contains(it.id)) }
+                filteredProducts = state.filteredProducts.map {
+                    it.copy(
+                        isFavorite = favoriteIds.contains(
+                            it.id
+                        )
+                    )
+                }
             )
         }
         .onStart {
@@ -70,6 +78,7 @@ class ProductListViewModel @Inject constructor(
                     )
                 }
             }
+
             is ProductListAction.ToggleFavorite -> toggleFavorite(action.product)
         }
     }
@@ -105,20 +114,45 @@ class ProductListViewModel @Inject constructor(
             }
 
             val currentStateRouteInfo = _state.value.productListRouteInfo
+            val collectionHandle = currentStateRouteInfo.collectionHandle()
+            val after = if (isRefresh) null else currentState.endCursor
 
-            getProductListUseCase(
-                first = 20,
-                after = if (isRefresh) null else currentState.endCursor,
-                sortKey = currentStateRouteInfo.sortKey(),
-                reverse = currentStateRouteInfo.isReverse(),
-                query =  currentStateRouteInfo.query()
-            )
+            val result = if (collectionHandle != null) {
+                // Featured / Trending / New Arrivals mirror the home collections
+                getCollectionProductsUseCase(
+                    handle = collectionHandle,
+                    first = 20,
+                    after = after,
+                )
+            } else {
+                getProductListUseCase(
+                    first = 20,
+                    after = after,
+                    sortKey = currentStateRouteInfo.sortKey(),
+                    reverse = currentStateRouteInfo.isReverse(),
+                    query = currentStateRouteInfo.query()
+                )
+            }
+
+            result
                 .onSuccess { page ->
                     _state.update { current ->
                         val newProducts =
-                            if (isRefresh) page.products.map { it.toUIProduct(current.favoriteIds.contains(it.id)) }
-                            else current.products + page.products.map { it.toUIProduct(current.favoriteIds.contains(it.id)) }
-                        
+                            if (isRefresh) page.products.map {
+                                it.toUIProduct(
+                                    current.favoriteIds.contains(
+                                        it.id
+                                    )
+                                )
+                            }
+                            else current.products + page.products.map {
+                                it.toUIProduct(
+                                    current.favoriteIds.contains(
+                                        it.id
+                                    )
+                                )
+                            }
+
                         current.copy(
                             products = newProducts,
                             filteredProducts = if (current.searchQuery.isEmpty()) newProducts else newProducts.filter { product ->

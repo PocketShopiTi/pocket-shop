@@ -24,24 +24,30 @@ query HomeQuery(
         }
     }
 
-    # 3. Featured Products
-    featuredProducts: products(first: $featuredCount) {
-        nodes {
-            ...ProductFields
+    # 3. Featured Products (Featured collection)
+    featured: collection(handle: "featured") {
+        products(first: $featuredCount) {
+            nodes {
+                ...ProductFields
+            }
         }
     }
 
-    # 4. Best Sellers
-    bestSellers: products(first: $bestSellerCount, sortKey: BEST_SELLING) {
-        nodes {
-            ...ProductFields
+    # 4. Trending (Trending collection)
+    bestSellers: collection(handle: "trending") {
+        products(first: $bestSellerCount) {
+            nodes {
+                ...ProductFields
+            }
         }
     }
 
-    # 5. New Arrivals
-    newArrivals: products(first: $newArrivalCount, sortKey: CREATED_AT, reverse: true) {
-        nodes {
-            ...ProductFields
+    # 5. New Arrivals (New Arrivals collection, newest first)
+    newArrivals: collection(handle: "new-arrivals") {
+        products(first: $newArrivalCount, sortKey: CREATED, reverse: true) {
+            nodes {
+                ...ProductFields
+            }
         }
     }
 }

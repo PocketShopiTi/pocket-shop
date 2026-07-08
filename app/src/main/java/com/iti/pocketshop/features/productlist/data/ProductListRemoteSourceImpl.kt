@@ -9,6 +9,7 @@ import com.iti.pocketshop.core.networkutils.map
 import com.iti.pocketshop.core.networkutils.safeCall
 import com.iti.pocketshop.features.productlist.domain.ProductListPage
 import com.iti.pocketshop.features.productlist.domain.ProductListRemoteSource
+import com.iti.pocketshop.shopify.GetCollectionProductsQuery
 import com.iti.pocketshop.shopify.GetProductListQuery
 import com.iti.pocketshop.shopify.type.ProductSortKeys
 import javax.inject.Inject
@@ -33,6 +34,25 @@ class ProductListRemoteSourceImpl @Inject constructor(
                     sortKey = ProductSortKeys.valueOf(sortKey),
                     reverse = reverse,
                     query = if (query != null) Optional.present(query) else Optional.absent(),
+                )
+            )
+            .safeCall()
+            .map { data ->
+                data.toDomain()
+            }
+    }
+
+    override suspend fun getCollectionProducts(
+        handle: String,
+        first: Int,
+        after: String?,
+    ): PocketResult<ProductListPage, PocketDataError.Remote> {
+        return apolloClient
+            .query(
+                GetCollectionProductsQuery(
+                    handle = handle,
+                    first = first,
+                    after = if (after != null) Optional.present(after) else Optional.absent(),
                 )
             )
             .safeCall()

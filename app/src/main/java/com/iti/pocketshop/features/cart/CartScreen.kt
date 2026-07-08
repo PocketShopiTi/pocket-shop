@@ -39,12 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.cart.components.CartEmptyState
 import com.iti.pocketshop.features.cart.components.CartItemCard
 import com.iti.pocketshop.features.cart.components.OrderSummaryCard
 import com.iti.pocketshop.features.cart.components.RemoveCartItemDialog
-import java.util.Locale
 
 @Composable
 fun CartRoot(
@@ -68,6 +69,9 @@ fun CartScreen(
     onCheckoutClick: () -> Unit,
     onAction: (CartAction) -> Unit,
 ) {
+    val userSettings = LocalSettingsUser.current
+    val sourceCurrencyCode = state.currencyCode.ifBlank { "USD" }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -141,7 +145,8 @@ fun CartScreen(
                         OrderSummaryCard(
                             subTotal = state.subTotal,
                             shipping = state.shipping,
-                            total = state.total
+                            total = state.total,
+                            currencyCode = sourceCurrencyCode,
                         )
                         Spacer(modifier = Modifier.height(24.dp))
                     }
@@ -182,7 +187,7 @@ fun CartScreen(
                         Text(
                             text = stringResource(
                                 id = R.string.checkout_total,
-                                String.format(Locale.US, "$%.2f", state.total)
+                                PriceFormatter.format(state.total, sourceCurrencyCode, userSettings)
                             ),
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp

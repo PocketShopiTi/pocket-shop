@@ -1,7 +1,6 @@
 package com.iti.pocketshop.features.home.presentation.models
 
 import com.iti.pocketshop.features.home.domain.models.Product
-import com.iti.pocketshop.features.home.presentation.formatPrice
 
 fun Product.toUIProduct(
     isFavorite: Boolean
@@ -18,8 +17,8 @@ fun Product.toUIProduct(
         vendor = vendor,
         imageUrl = imageUrl,
         imageAlt = imageAlt,
-        price = formatPrice(price),
-        compareAtPrice = compareAtPrice?.let { formatPrice(it) },
+        price = price,
+        compareAtPrice = compareAtPrice,
         discountPercentage = discountPercentage,
         isFavorite = isFavorite,
         availableForSale = availableForSale,

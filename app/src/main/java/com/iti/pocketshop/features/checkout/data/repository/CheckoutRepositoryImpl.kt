@@ -19,6 +19,7 @@ import com.iti.pocketshop.features.checkout.domain.repository.CheckoutRepository
 import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.iti.pocketshop.shopify.CartBuyerIdentityUpdateMutation
 import com.iti.pocketshop.shopify.admin.PaidOrderCreateMutation
+import com.iti.pocketshop.shopify.admin.type.OrderCreateOptionsInput
 import com.iti.pocketshop.shopify.type.CartBuyerIdentityInput
 import com.iti.pocketshop.shopify.type.DeliveryAddressInput
 import javax.inject.Inject
@@ -42,7 +43,8 @@ class CheckoutRepositoryImpl @Inject constructor(
         val identity = CartBuyerIdentityInput(
             deliveryAddressPreferences = Optional.present(listOf(deliveryPref))
         )
-        return storeApolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity)).safeCall()
+        return storeApolloClient.mutation(CartBuyerIdentityUpdateMutation(cartId, identity))
+            .safeCall()
             .map {
                 it.cartBuyerIdentityUpdate?.cart?.cartFields?.toDomain()
             }
@@ -61,6 +63,11 @@ class CheckoutRepositoryImpl @Inject constructor(
                     shippingAddress = shippingAddress,
                     customer = customer,
                     payment = payment
+                ),
+                options = Optional.present(
+                    OrderCreateOptionsInput(
+                        sendReceipt = Optional.present(true)
+                    )
                 )
             )
         )

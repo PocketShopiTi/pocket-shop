@@ -11,4 +11,10 @@ interface ProductListRemoteSource {
         reverse: Boolean,
         query: String? = null,
     ): PocketResult<ProductListPage, PocketDataError.Remote>
+
+    suspend fun getCollectionProducts(
+        handle: String,
+        first: Int,
+        after: String?,
+    ): PocketResult<ProductListPage, PocketDataError.Remote>
 }

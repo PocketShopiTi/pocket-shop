@@ -34,7 +34,9 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.home.presentation.models.UIProduct
 
 
@@ -45,6 +47,20 @@ fun ProductCard(
     onWishlistClick: (UIProduct) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val userSettings = LocalSettingsUser.current
+    val price = PriceFormatter.format(
+        amount = product.price.amount,
+        sourceCurrencyCode = product.price.currencyCode,
+        userSettings = userSettings,
+    )
+    val compareAtPrice = product.compareAtPrice?.let {
+        PriceFormatter.format(
+            amount = it.amount,
+            sourceCurrencyCode = it.currencyCode,
+            userSettings = userSettings,
+        )
+    }
+
     Card(
         onClick = {
             onClick(product.id)
@@ -161,16 +177,16 @@ fun ProductCard(
                     modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
                     Text(
-                        text = product.price,
+                        text = price,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = if (product.discountPercentage != null) MaterialTheme.colorScheme.primary
                         else MaterialTheme.colorScheme.onSurface
                     )
-                    if (product.compareAtPrice != null) {
+                    if (compareAtPrice != null) {
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            text = product.compareAtPrice,
+                            text = compareAtPrice,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textDecoration = TextDecoration.LineThrough

@@ -3,7 +3,10 @@ package com.iti.pocketshop.features.aichat.presentation
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.settings.domain.GetUserSettingsUseCase
+import com.iti.pocketshop.common.settings.domain.models.UserSettings
 import com.iti.pocketshop.core.networkutils.PocketResult
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.aichat.data.ChatSessionStore
 import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
@@ -33,6 +36,7 @@ class AiChatViewModel @AssistedInject constructor(
     private val getSearchResultsUseCase: GetSearchResultsUseCase,
     private val getProductDetailsUseCase: GetProductDetailsUseCase,
     private val getLocalCartUseCase: GetLocalCartUseCase,
+    private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val sessionStore: ChatSessionStore,
     @Assisted private val initialPrompt: String?,
 ) : ViewModel() {
@@ -51,6 +55,7 @@ class AiChatViewModel @AssistedInject constructor(
     val state = _state.asStateFlow()
 
     private var currentCart: ShopifyCart? = null
+    private var currentUserSettings = UserSettings()
     private val tools = listOf(
         AiTool(
             name = "search_products",
@@ -98,6 +103,11 @@ class AiChatViewModel @AssistedInject constructor(
         viewModelScope.launch {
             getLocalCartUseCase().collect { cart ->
                 currentCart = cart
+            }
+        }
+        viewModelScope.launch {
+            getUserSettingsUseCase().collect { settings ->
+                currentUserSettings = settings
             }
         }
         // Keep the app-wide session in sync with this screen's messages.
@@ -359,7 +369,7 @@ class AiChatViewModel @AssistedInject constructor(
                         val products = result.data.products
                         ToolExecutionResult(
                             summary = products.joinToString("\n") { p: SearchResultItem.ProductItem ->
-                                "- ${p.title} (ID: ${p.id}): ${p.price} ${p.currencyCode}"
+                                "- ${p.title} (ID: ${p.id}): ${formatToolPrice(p.price, p.currencyCode)}"
                             },
                             products = products
                         )
@@ -374,7 +384,7 @@ class AiChatViewModel @AssistedInject constructor(
                     is PocketResult.Success -> {
                         val data = result.data
                         ToolExecutionResult(
-                            "Product: ${data.title}\nDescription: ${data.description}\nVariants: ${data.variants.joinToString { v -> "${v.id} - ${v.price.amount} ${v.price.currencyCode}" }}"
+                            "Product: ${data.title}\nDescription: ${data.description}\nVariants: ${data.variants.joinToString { v -> "${v.id} - ${formatToolPrice(v.price.amount, v.price.currencyCode)}" }}"
                         )
                     }
                 }
@@ -408,7 +418,7 @@ class AiChatViewModel @AssistedInject constructor(
                                 "No products found for category '$category'${tag?.let { " with tag $it" } ?: ""}. Try again without the tag."
                             } else {
                                 products.joinToString("\n") { p: SearchResultItem.ProductItem ->
-                                    "- ${p.title} (ID: ${p.id}): ${p.price} ${p.currencyCode}"
+                                    "- ${p.title} (ID: ${p.id}): ${formatToolPrice(p.price, p.currencyCode)}"
                                 }
                             },
                             products = products
@@ -419,6 +429,14 @@ class AiChatViewModel @AssistedInject constructor(
             }
             else -> ToolExecutionResult("Unknown tool")
         }
+    }
+
+    private fun formatToolPrice(amount: Double, currencyCode: String): String {
+        return PriceFormatter.format(
+            amount = amount,
+            sourceCurrencyCode = currencyCode,
+            userSettings = currentUserSettings,
+        )
     }
 
     private fun buildSystemPrompt(): String {

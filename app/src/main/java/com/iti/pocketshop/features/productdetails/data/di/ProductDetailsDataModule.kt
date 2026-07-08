@@ -1,8 +1,12 @@
 package com.iti.pocketshop.features.productdetails.data.di
 
+import com.iti.pocketshop.features.productdetails.data.datasource.AiCompareDataSource
+import com.iti.pocketshop.features.productdetails.data.datasource.FirebaseAiCompareDataSource
 import com.iti.pocketshop.features.productdetails.data.datasource.ProductDetailsDataSource
 import com.iti.pocketshop.features.productdetails.data.datasource.ShopifyProductDetailsDataSource
+import com.iti.pocketshop.features.productdetails.data.repository.AiCompareRepositoryImpl
 import com.iti.pocketshop.features.productdetails.data.repository.ProductDetailsRepositoryImpl
+import com.iti.pocketshop.features.productdetails.domain.repository.AiCompareRepository
 import com.iti.pocketshop.features.productdetails.domain.repository.ProductDetailsRepository
 import dagger.Binds
 import dagger.Module
@@ -25,4 +29,15 @@ abstract class ProductDetailsDataModule {
     abstract fun bindProductDetailsRepository(
         implementation: ProductDetailsRepositoryImpl,
     ): ProductDetailsRepository
+    @Binds
+    @Singleton
+    abstract fun bindAiCompareDataSource(
+        implementation: FirebaseAiCompareDataSource,
+    ): AiCompareDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindAiCompareRepository(
+        implementation: AiCompareRepositoryImpl,
+    ): AiCompareRepository
 }

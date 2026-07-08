@@ -36,6 +36,7 @@ playServicesLocation = "21.4.0"
 googleServices = "4.5.0"
 materialIconsExtended = "1.7.8"
 paymobSdk = "1.9.2"
+firebaseVertexai = "16.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -125,6 +126,7 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 
 #paymob
 paymob-sdk = { module = "com.paymob.sdk:Paymob-SDK", version.ref = "paymobSdk" }
+firebase-vertexai = { group = "com.google.firebase", name = "firebase-vertexai", version.ref = "firebaseVertexai" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

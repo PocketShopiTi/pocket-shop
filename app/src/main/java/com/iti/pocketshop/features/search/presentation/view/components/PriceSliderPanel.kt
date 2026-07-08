@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 
 @Composable
 fun PriceSliderPanel(
@@ -28,9 +30,20 @@ fun PriceSliderPanel(
     onRangeChanged: (ClosedFloatingPointRange<Float>) -> Unit,
     onClear: () -> Unit,
 ) {
+    val userSettings = LocalSettingsUser.current
     val currentRange = activeRange ?: bounds
 
     var sliderPosition by remember(currentRange) { mutableStateOf(currentRange) }
+    val formattedStart = PriceFormatter.format(
+        amount = sliderPosition.start.toDouble(),
+        sourceCurrencyCode = "USD",
+        userSettings = userSettings,
+    )
+    val formattedEnd = PriceFormatter.format(
+        amount = sliderPosition.endInclusive.toDouble(),
+        sourceCurrencyCode = "USD",
+        userSettings = userSettings,
+    )
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Row(
@@ -51,7 +64,7 @@ fun PriceSliderPanel(
         }
 
         Text(
-            text = "${sliderPosition.start.toInt()} - ${sliderPosition.endInclusive.toInt()}",
+            text = "$formattedStart - $formattedEnd",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
