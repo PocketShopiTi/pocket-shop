@@ -4,6 +4,7 @@ import com.apollographql.apollo.api.Optional
 import com.iti.pocketshop.features.address.domain.model.Address
 import com.iti.pocketshop.features.cart.domain.entity.CartLineItem
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.home.domain.models.Money
 import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.iti.pocketshop.shopify.admin.PaidOrderCreateMutation
@@ -65,12 +66,12 @@ fun toOrderInput(
     payment: PaymentConfirmation,
 ): OrderCreateOrderInput {
     val currency =
-        CurrencyCode.entries.firstOrNull { cart.totalAmount.currencyCode.rawValue == it.rawValue }
+        CurrencyCode.entries.firstOrNull { payment.amount.currencyCode == it.rawValue }
             ?: CurrencyCode.EGP
     return OrderCreateOrderInput(
         currency = Optional.present(currency),
         email = Optional.present(customer.email),
-        lineItems = Optional.present(cart.lines.map { it.toLineItemInput() }),
+        lineItems = Optional.present(cart.lines.map { it.toLineItemInput(currency) }),
         shippingAddress = Optional.present(shippingAddress.toMailingAddressInput()),
         transactions = Optional.present(listOf(payment.toTransactionInput())),
         financialStatus = Optional.present(
@@ -86,6 +87,11 @@ private fun ShopifyCart.toDiscountCodeInput(currency: CurrencyCode): OrderCreate
     val code = appliedDiscountCodes.firstOrNull() ?: return null
     val discountAmount = ((subtotalAmount.amount - totalAmount.amount) * 100).roundToLong() / 100.0
     if (discountAmount <= 0.0) return null
+    val convertedDiscount = PriceFormatter.convert(
+        amount = discountAmount,
+        sourceCurrencyCode = totalAmount.currencyCode.rawValue,
+        targetCurrencyCode = currency.rawValue,
+    )
     return OrderCreateDiscountCodeInput(
         itemFixedDiscountCode = Optional.present(
             OrderCreateFixedDiscountCodeAttributesInput(
@@ -93,7 +99,7 @@ private fun ShopifyCart.toDiscountCodeInput(currency: CurrencyCode): OrderCreate
                 amountSet = Optional.present(
                     MoneyBagInput(
                         shopMoney = MoneyInput(
-                            amount = discountAmount,
+                            amount = convertedDiscount.amount,
                             currencyCode = currency,
                         ),
                     )
@@ -103,14 +109,28 @@ private fun ShopifyCart.toDiscountCodeInput(currency: CurrencyCode): OrderCreate
     )
 }
 
-fun CartLineItem.toLineItemInput(): OrderCreateLineItemInput =
-    OrderCreateLineItemInput(
+fun CartLineItem.toLineItemInput(currency: CurrencyCode): OrderCreateLineItemInput {
+    val convertedPrice = PriceFormatter.convert(
+        amount = price,
+        sourceCurrencyCode = currencyCode,
+        targetCurrencyCode = currency.rawValue,
+    )
+    return OrderCreateLineItemInput(
+        priceSet = Optional.present(
+            MoneyBagInput(
+                shopMoney = MoneyInput(
+                    amount = convertedPrice.amount,
+                    currencyCode = currency,
+                ),
+            )
+        ),
         productId = Optional.present(productId),
         title = Optional.present(title),
         variantId = Optional.present(variantId),
         variantTitle = Optional.present(variantTitle),
         quantity = quantity,
     )
+}
 
 fun Address.toMailingAddressInput(): MailingAddressInput =
     MailingAddressInput(

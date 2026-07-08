@@ -24,7 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.search.presentation.action.SearchAction
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,10 +38,21 @@ fun PriceRangeSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val userSettings = LocalSettingsUser.current
     val sheetState = rememberModalBottomSheetState()
     val currentRange = activeRange ?: bounds
 
     var sliderPosition by remember(currentRange) { mutableStateOf(currentRange) }
+    val formattedStart = PriceFormatter.format(
+        amount = sliderPosition.start.toDouble(),
+        sourceCurrencyCode = "USD",
+        userSettings = userSettings,
+    )
+    val formattedEnd = PriceFormatter.format(
+        amount = sliderPosition.endInclusive.toDouble(),
+        sourceCurrencyCode = "USD",
+        userSettings = userSettings,
+    )
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -60,7 +73,7 @@ fun PriceRangeSheet(
             }
 
             Text(
-                text = "${sliderPosition.start.toInt()} - ${sliderPosition.endInclusive.toInt()}",
+                text = "$formattedStart - $formattedEnd",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,

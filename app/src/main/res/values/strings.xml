@@ -61,6 +61,7 @@
     <string name="product_details_error">We couldn’t load this product.</string>
     <string name="product_details_retry">Retry</string>
     <string name="product_details_image">Product image %1$d of %2$d</string>
+    <string name="product_details_rating">Rating %1$.1f out of 5 from %2$d reviews</string>
     <string name="product_details_image_unavailable">Image unavailable</string>
     <string name="product_details_empty">This product is no longer available.</string>
     <string name="product_details_option_unavailable">%1$s is unavailable</string>
@@ -221,8 +222,10 @@
     <string name="profile_logout_title">Log out?</string>
     <string name="profile_logout_message">You will need to sign in again to access your account.</string>
     <string name="profile_order_image">Image for order %1$s</string>
+    <string name="profile_status_pending">Pending</string>
     <string name="profile_status_ordered">Ordered</string>
     <string name="profile_status_processing">Processing</string>
+    <string name="profile_status_fulfilled">Fulfilled</string>
     <string name="profile_status_delivered">Delivered</string>
     <string name="profile_status_cancelled">Cancelled</string>
 
@@ -313,11 +316,13 @@
     <string name="notification_onboarding_unavailable_body">This promotion has ended or is no longer active.</string>
      <string name="orders_title">My orders</string>
     <string name="orders_back">Back</string>
+    <string name="orders_track">Track</string>
     <string name="orders_view">View</string>
     <string name="orders_loading">Loading orders</string>
     <string name="orders_empty_title">No orders yet</string>
     <string name="orders_empty_description">Your completed orders will appear here.</string>
     <string name="orders_image_description">Image for order %1$s</string>
+    <string name="orders_status_pending">Pending</string>
     <string name="orders_status_ordered">Ordered</string>
     <string name="orders_status_processing">Processing</string>
     <string name="orders_status_delivered">Delivered</string>

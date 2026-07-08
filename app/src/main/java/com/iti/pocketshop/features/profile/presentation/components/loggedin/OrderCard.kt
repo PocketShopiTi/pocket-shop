@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -26,7 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.profile.domain.model.OrderEntity
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus.CANCELLED
@@ -34,8 +35,6 @@ import com.iti.pocketshop.features.profile.domain.model.OrderStatus.FULFILLED
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus.ORDERED
 import com.iti.pocketshop.features.profile.domain.model.OrderStatus.PROCESSING
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
-import java.text.NumberFormat
-import java.util.Currency
 
 
 @Composable
@@ -43,6 +42,8 @@ fun RecentOrderCard(
     order: OrderEntity,
     onClick: (String) -> Unit,
 ) {
+    val userSettings = LocalSettingsUser.current
+
     Surface(
         modifier = Modifier
             .width(148.dp)
@@ -84,11 +85,7 @@ fun RecentOrderCard(
                 )
                 OrderStatusChip(order.status, Modifier.padding(top = 6.dp))
                 Text(
-                    text = remember(order.total, order.currencyCode) {
-                        NumberFormat.getCurrencyInstance().apply {
-                            currency = Currency.getInstance(order.currencyCode)
-                        }.format(order.total)
-                    },
+                    text = PriceFormatter.format(order.total, order.currencyCode, userSettings),
                     modifier = Modifier.padding(top = 6.dp),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onSurface,

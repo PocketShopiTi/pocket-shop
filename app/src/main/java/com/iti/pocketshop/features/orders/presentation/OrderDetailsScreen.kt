@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,8 +41,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
 import com.iti.pocketshop.core.networkutils.toUserMessage
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.orders.domain.OrderTimeline
 import com.iti.pocketshop.core.utils.toFormattedDate
 import com.iti.pocketshop.features.orders.domain.model.OrderDetails
@@ -56,8 +57,6 @@ import com.iti.pocketshop.features.orders.presentation.components.OrdersLoadingC
 import com.iti.pocketshop.features.orders.presentation.components.OrdersTopBar
 import com.iti.pocketshop.features.profile.presentation.components.ProfileErrorCard
 import com.iti.pocketshop.ui.theme.LocalExtendedColors
-import java.text.NumberFormat
-import java.util.Currency
 
 @Composable
 fun OrderDetailsRoot(
@@ -575,13 +574,7 @@ private fun OrderDetailsLineItem.detailText(): String {
 
 @Composable
 private fun rememberMoney(amount: Double, currencyCode: String): String =
-    remember(amount, currencyCode) {
-        runCatching {
-            NumberFormat.getCurrencyInstance().apply {
-                currency = Currency.getInstance(currencyCode)
-            }.format(amount)
-        }.getOrNull()
-    } ?: stringResource(R.string.orders_detail_amount_fallback, amount, currencyCode)
+    PriceFormatter.format(amount, currencyCode, LocalSettingsUser.current)
 
 private val OrderStatus.progress: Float
     get() = when (this) {

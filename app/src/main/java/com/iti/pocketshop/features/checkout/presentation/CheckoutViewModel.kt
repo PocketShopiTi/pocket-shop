@@ -6,6 +6,7 @@ import com.iti.pocketshop.core.components.ErrorDialogController
 import com.iti.pocketshop.core.networkutils.PocketDataError
 import com.iti.pocketshop.core.networkutils.onError
 import com.iti.pocketshop.core.networkutils.onSuccess
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.address.domain.usecase.GetAddressesUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.RestoreOrCreateCartUseCase
@@ -110,14 +111,18 @@ class CheckoutViewModel @Inject constructor(
 
     private fun placeCodOrder(customer: UserData) {
         val total = state.value.cart?.totalAmount ?: return
+        val paymentAmount = PriceFormatter.toEgpMoney(
+            amount = total.amount,
+            sourceCurrencyCode = total.currencyCode.rawValue,
+        )
         placeOrder(
             customer = customer,
             payment = PaymentConfirmation(
                 transactionId = null,
                 gateway = COD_GATEWAY_NAME,
                 amount = Money(
-                    amount = total.amount,
-                    currencyCode = total.currencyCode.rawValue,
+                    amount = paymentAmount.amount,
+                    currencyCode = paymentAmount.currencyCode,
                 ),
                 isPaid = false,
             ),

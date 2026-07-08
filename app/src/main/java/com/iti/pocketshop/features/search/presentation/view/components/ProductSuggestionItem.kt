@@ -29,7 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
+import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.search.domain.model.PredictiveProduct
 
 @Composable
@@ -39,6 +41,8 @@ fun ProductSuggestionItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val userSettings = LocalSettingsUser.current
+
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -86,7 +90,7 @@ fun ProductSuggestionItem(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "${product.price} ${product.currencyCode}",
+                    text = PriceFormatter.format(product.price, product.currencyCode, userSettings),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     maxLines = 1,

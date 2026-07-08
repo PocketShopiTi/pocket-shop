@@ -32,10 +32,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.stringResource
 import coil3.compose.AsyncImage
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.R
-import com.iti.pocketshop.features.search.utils.formatSearchPrice
+import com.iti.pocketshop.core.pricing.PriceFormatter
 
 @Composable
 fun SearchProductCard(
@@ -47,6 +47,8 @@ fun SearchProductCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val userSettings = LocalSettingsUser.current
+
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -73,7 +75,7 @@ fun SearchProductCard(
                 )
 
                 Text(
-                    text = formatSearchPrice(price, currencyCode),
+                    text = PriceFormatter.format(price, currencyCode, userSettings),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
