@@ -15,11 +15,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.LoadingIndicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +35,7 @@ import com.iti.pocketshop.features.address.domain.model.Address
 import com.iti.pocketshop.features.address.presentation.action.AddressAction
 import com.iti.pocketshop.features.address.presentation.state.AddressState
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 internal fun AddressListContent(
     state: AddressState,
@@ -42,6 +45,7 @@ internal fun AddressListContent(
         LoadingPanel()
         return
     }
+    val pullToRefreshState = rememberPullToRefreshState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(
@@ -58,9 +62,17 @@ internal fun AddressListContent(
                 )
             } else {
                 PullToRefreshBox(
+                    state = pullToRefreshState,
                     isRefreshing = state.isLoading,
                     onRefresh = { onAction(AddressAction.Refresh) },
                     modifier = Modifier.fillMaxSize(),
+                    indicator = {
+                        LoadingIndicator(
+                            state = pullToRefreshState,
+                            isRefreshing = state.isLoading,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    },
                 ) {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),

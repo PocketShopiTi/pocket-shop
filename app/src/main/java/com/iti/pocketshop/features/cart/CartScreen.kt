@@ -21,16 +21,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ShoppingCartCheckout
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.LoadingIndicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -62,6 +65,7 @@ fun CartRoot(
     ) { viewModel.onAction(it) }
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun CartScreen(
     state: CartState,
@@ -71,6 +75,7 @@ fun CartScreen(
 ) {
     val userSettings = LocalSettingsUser.current
     val sourceCurrencyCode = state.currencyCode.ifBlank { "USD" }
+    val pullToRefreshState = rememberPullToRefreshState()
 
     Column(
         modifier = Modifier
@@ -110,10 +115,18 @@ fun CartScreen(
         )
 
         PullToRefreshBox(
+            state = pullToRefreshState,
             isRefreshing = state.isLoading,
             onRefresh = { onAction(CartAction.FetchCart) },
             modifier = Modifier
-                .weight(1f)
+                .weight(1f),
+            indicator = {
+                LoadingIndicator(
+                    state = pullToRefreshState,
+                    isRefreshing = state.isLoading,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            },
         ) {
             if (state.items.isEmpty() && !state.isLoading) {
                 CartEmptyState(

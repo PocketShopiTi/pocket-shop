@@ -1,9 +1,13 @@
 package com.iti.pocketshop.features.profile.presentation
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.LoadingIndicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -52,6 +56,7 @@ fun ProfileRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ProfileScreen(
     state: ProfileState,
@@ -64,10 +69,20 @@ fun ProfileScreen(
     openWishList: () -> Unit = {},
     openOrderDetails: (String) -> Unit = {},
 ) {
+
+    val pullToRefreshState = rememberPullToRefreshState()
     PullToRefreshBox(
+        state = pullToRefreshState,
         isRefreshing = state.isRefreshing && state.profile != null,
         onRefresh = { onAction(ProfileAction.Refresh) },
         modifier = Modifier.fillMaxSize(),
+        indicator = {
+            LoadingIndicator(
+                state = pullToRefreshState,
+                isRefreshing = state.isRefreshing && state.profile != null,
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        },
     ) {
         when (val profile = state.profile) {
             is ProfileData.Authenticated -> LoggedInProfileScreen(
