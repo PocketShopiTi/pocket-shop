@@ -8,4 +8,5 @@ plugins {
     alias(libs.plugins.dagger.hilt.android) apply false
     alias(libs.plugins.secrets) apply false
     alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.android.library) apply false
 }

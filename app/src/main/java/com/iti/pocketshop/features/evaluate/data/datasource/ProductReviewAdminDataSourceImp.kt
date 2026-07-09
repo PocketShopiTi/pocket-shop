@@ -106,11 +106,10 @@ class ProductReviewAdminDataSourceImpl @Inject constructor(
             .mutation(SetProductReviewsMutation(productId = productId, reviewIdsJson = idsJson))
             .safeCall()) {
             is PocketResult.Success -> {
-                val hasErrors = !result.data.metafieldsSet?.userErrors.isNullOrEmpty()
-                if (hasErrors) {
-                    val errorMsg = result.data.metafieldsSet.userErrors.joinToString { "Set Error: ${it.field.orEmpty().joinToString(".")}: ${it.message}" }
-                        ?: "Set Error: unknown"
-                    result.data.metafieldsSet.userErrors.forEach {
+                val userErrors = result.data.metafieldsSet?.userErrors.orEmpty()
+                if (userErrors.isNotEmpty()) {
+                    val errorMsg = userErrors.joinToString { "Set Error: ${it.field.orEmpty().joinToString(".")}: ${it.message}" }
+                    userErrors.forEach {
                         Log.e("ReviewSet", "userError: field=${it.field} msg=${it.message} code=${it.code}")
                     }
                     PocketResult.Error(PocketDataError.CustomServerMessage(errorMsg))

@@ -29,3 +29,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Pocket Shop"
 include(":app")
+include(":core:designsystem")
+include(":core:network")
+include(":features:payment")
+include(":core:networkk")
+include(":core:networkkk")
