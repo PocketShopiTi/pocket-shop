@@ -3,15 +3,18 @@ package com.iti.pocketshop.features.profile.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.pocketshop.common.favorites.domain.usecase.ClearFavoritesUseCase
+import com.iti.pocketshop.common.favorites.domain.usecase.GetLocalFavoritesUseCase
 import com.iti.pocketshop.common.sessionmanager.domain.usecase.SignOutUseCase
 import com.iti.pocketshop.features.profile.domain.model.ProfileData
 import com.iti.pocketshop.features.profile.domain.model.ProfileLoadUpdate
+import com.iti.pocketshop.features.profile.domain.model.ProfileStats
 import com.iti.pocketshop.features.profile.domain.usecase.GetProfileUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
@@ -24,12 +27,25 @@ class ProfileViewModel @Inject constructor(
     private val getProfile: GetProfileUseCase,
     private val signOutUseCase: SignOutUseCase,
     private val clearFavoritesUseCase: ClearFavoritesUseCase,
+    private val getLocalFavorites: GetLocalFavoritesUseCase,
 ) : ViewModel() {
 
     private var hasLoadedInitialData = false
     private var profileLoadJob: Job? = null
     private val _state = MutableStateFlow(ProfileState())
-    val state = _state
+    val state = combine(_state, getLocalFavorites()) { currentState, favorites ->
+        val profile = currentState.profile
+        if (profile is ProfileData.Authenticated) {
+            val currentStats = profile.stats ?: ProfileStats(0, 0, 0)
+            currentState.copy(
+                profile = profile.copy(
+                    stats = currentStats.copy(wishListCount = favorites.size)
+                )
+            )
+        } else {
+            currentState
+        }
+    }
         .onStart {
             if (!hasLoadedInitialData) {
                 loadProfile()

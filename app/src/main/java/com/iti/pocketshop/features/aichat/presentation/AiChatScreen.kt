@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
@@ -140,7 +141,7 @@ fun AiChatScreen(
                     if (state.messages.isNotEmpty()) {
                         IconButton(onClick = { onAction(AiChatAction.OnNewChat) }) {
                             Icon(
-                                imageVector = Icons.Default.Edit,
+                                imageVector = Icons.Default.Add,
                                 contentDescription = stringResource(R.string.ai_chat_new_chat)
                             )
                         }
