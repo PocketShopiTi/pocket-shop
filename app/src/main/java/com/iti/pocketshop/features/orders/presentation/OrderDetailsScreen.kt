@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -99,6 +100,8 @@ fun OrderDetailsScreen(
             title = order?.let { stringResource(R.string.orders_detail_title, it.name) }
                 ?: stringResource(R.string.orders_detail_fallback_title),
             onBack = onBack,
+            modifier = Modifier
+                .statusBarsPadding()
         )
 
         when {
