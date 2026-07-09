@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_pay_now">Pay now</string>
+    <string name="payment_canceled">Payment was canceled</string>
+    <string name="payment_failed">Unable to complete payment. Please try again.</string>
+    <string name="payment_no_funds">Insufficient funds. Please use another card.</string>
+    <string name="payment_rejected">Payment rejected. Please contact your bank.</string>
+    <string name="payment_expired">Card expired. Please use a different card.</string>
+    <string name="payment_invalid_card">Invalid card details. Please check and try again.</string>
+</resources>

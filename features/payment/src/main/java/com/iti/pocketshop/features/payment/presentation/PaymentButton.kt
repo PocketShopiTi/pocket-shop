@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.iti.pocketshop.R
+import com.iti.pocketshop.features.payment.R
 import com.iti.pocketshop.features.payment.domain.models.PaymentCurrency
 import com.iti.pocketshop.features.payment.domain.models.UserData
 import com.paymob.paymob_sdk.PaymobSdk

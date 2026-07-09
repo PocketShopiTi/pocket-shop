@@ -383,14 +383,6 @@
     <string name="back">رجوع</string>
     <string name="clear_search">مسح البحث</string>
 
-    <string name="payment_pay_now">ادفع الآن</string>
-    <string name="payment_completed">تم إكمال الدفع بنجاح</string>
-    <string name="payment_canceled">تم إلغاء الدفع</string>
-    <string name="payment_failed">تعذر إكمال الدفع. يرجى المحاولة مرة أخرى.</string>
-    <string name="payment_no_funds">رصيد غير كافٍ. يرجى استخدام بطاقة أخرى.</string>
-    <string name="payment_rejected">تم رفض الدفع. يرجى التواصل مع البنك الخاص بك.</string>
-    <string name="payment_expired">البطاقة منتهية الصلاحية. يرجى استخدام بطاقة أخرى.</string>
-    <string name="payment_invalid_card">تفاصيل البطاقة غير صالحة. يرجى التحقق والمحاولة مرة أخرى.</string>
     <string name="cart_currency_egp">ج.م</string>
     <string name="cart_currency_usd">دولار</string>
     <string name="all_categories">كل الفئات</string>

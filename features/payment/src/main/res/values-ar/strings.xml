@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="payment_pay_now">ادفع الآن</string>
+    <string name="payment_canceled">تم إلغاء الدفع</string>
+    <string name="payment_failed">تعذر إكمال الدفع. يرجى المحاولة مرة أخرى.</string>
+    <string name="payment_no_funds">رصيد غير كافٍ. يرجى استخدام بطاقة أخرى.</string>
+    <string name="payment_rejected">تم رفض الدفع. يرجى التواصل مع البنك الخاص بك.</string>
+    <string name="payment_expired">البطاقة منتهية الصلاحية. يرجى استخدام بطاقة أخرى.</string>
+    <string name="payment_invalid_card">تفاصيل البطاقة غير صالحة. يرجى التحقق والمحاولة مرة أخرى.</string>
+</resources>

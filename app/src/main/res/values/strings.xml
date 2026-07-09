@@ -383,14 +383,6 @@
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
 
-    <string name="payment_pay_now">Pay now</string>
-    <string name="payment_completed">Payment completed successfully</string>
-    <string name="payment_canceled">Payment was canceled</string>
-    <string name="payment_failed">Unable to complete payment. Please try again.</string>
-    <string name="payment_no_funds">Insufficient funds. Please use another card.</string>
-    <string name="payment_rejected">Payment rejected. Please contact your bank.</string>
-    <string name="payment_expired">Card expired. Please use a different card.</string>
-    <string name="payment_invalid_card">Invalid card details. Please check and try again.</string>
     <string name="cart_currency_egp">EGP</string>
     <string name="cart_currency_usd">USD</string>
     <string name="all_categories">All Categories</string>
