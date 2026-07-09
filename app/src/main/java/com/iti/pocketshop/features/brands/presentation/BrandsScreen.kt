@@ -26,6 +26,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.LoadingIndicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,6 +56,7 @@ fun BrandsRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun BrandsScreen(
     state: BrandsState,
@@ -61,6 +66,7 @@ fun BrandsScreen(
 ) {
     var isSearchActive by remember { mutableStateOf(false) }
 
+    val pullToRefreshState = rememberPullToRefreshState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -138,9 +144,17 @@ fun BrandsScreen(
             )
 
             PullToRefreshBox(
+                state = pullToRefreshState,
                 isRefreshing = state.isLoading,
                 onRefresh = { onAction(BrandsAction.FetchBrands) },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                indicator = {
+                    LoadingIndicator(
+                        state = pullToRefreshState,
+                        isRefreshing = state.isLoading,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
+                },
             ) {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),

@@ -44,7 +44,7 @@ fun ProfileActions(
         )
         ProfileMenuRow(
             label = stringResource(R.string.profile_settings),
-            icon = R.drawable.settings,
+            icon = R.drawable.ic_settings_filled,
             onClick = openSettings,
         )
         ProfileMenuRow(

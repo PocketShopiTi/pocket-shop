@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.LoadingIndicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -74,6 +77,7 @@ fun HomeRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun HomeScreen(
     openSearch: () -> Unit,
@@ -84,6 +88,7 @@ private fun HomeScreen(
     onAction: (HomeAction) -> Unit,
     onWishlistClick: (UIProduct) -> Unit,
 ) {
+    val pullToRefreshState = rememberPullToRefreshState()
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -93,10 +98,18 @@ private fun HomeScreen(
             onSearchClick = openSearch,
         )
         PullToRefreshBox(
+            state = pullToRefreshState,
             isRefreshing = state.isLoading && !state.isEmptyState,
             onRefresh = {
                 onAction(HomeAction.FetchData)
-            }
+            },
+            indicator = {
+                LoadingIndicator(
+                    state = pullToRefreshState,
+                    isRefreshing = state.isLoading && !state.isEmptyState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
+            },
         ) {
             if (state.isLoading && state.isEmptyState) {
                 HomeShimmer()

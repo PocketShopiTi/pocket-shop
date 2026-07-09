@@ -36,9 +36,9 @@ fun GuestProfileHeader(openSettings: () -> Unit) {
             shape = CircleShape,
             color = MaterialTheme.colorScheme.surfaceVariant,
         ) {
-            IconButton(onClick = openSettings, modifier = Modifier.size(40.dp)) {
+            IconButton(onClick = openSettings) {
                 Icon(
-                    painter = painterResource(id = R.drawable.settings),
+                    painter = painterResource(id = R.drawable.ic_settings_filled),
                     contentDescription = stringResource(R.string.profile_open_settings),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

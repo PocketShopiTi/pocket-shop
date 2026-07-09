@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -29,6 +30,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.LoadingIndicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -105,6 +108,7 @@ fun ProductListRoot(
     )
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ProductListScreen(
     state: ProductListState,
@@ -132,6 +136,7 @@ private fun ProductListScreen(
 
     var isSearchActive by remember { mutableStateOf(false) }
 
+    val pullToRefreshState = rememberPullToRefreshState()
     Scaffold(
         topBar = {
             TopAppBar(
@@ -204,9 +209,17 @@ private fun ProductListScreen(
             }
 
             PullToRefreshBox(
+                state = pullToRefreshState,
                 isRefreshing = state.isLoading,
                 onRefresh = { onAction(ProductListAction.Refresh) },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                indicator = {
+                    LoadingIndicator(
+                        state = pullToRefreshState,
+                        isRefreshing = state.isLoading,
+                        modifier = Modifier.align(Alignment.TopCenter)
+                    )
+                },
             ) {
                 if (state.filteredProducts.isEmpty() && !state.isLoading) {
                     EmptyProductList(
