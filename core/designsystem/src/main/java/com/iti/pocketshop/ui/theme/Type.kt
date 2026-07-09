@@ -4,7 +4,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import com.iti.pocketshop.R
+import com.iti.pocketshop.core.designsystem.R
 
 // Serif display font used for headings, names, stat values and prices.
 val FrauncesFontFamily = FontFamily(

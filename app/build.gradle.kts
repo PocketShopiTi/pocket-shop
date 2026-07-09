@@ -192,4 +192,7 @@ dependencies {
 
     // paymob
     implementation(libs.paymob.sdk)
+
+
+    implementation(project(":core:designsystem"))
 }
