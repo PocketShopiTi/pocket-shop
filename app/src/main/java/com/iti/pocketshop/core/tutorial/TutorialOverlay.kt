@@ -30,6 +30,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.iti.pocketshop.common.settings.domain.UserSettingsRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 fun Modifier.tutorialTarget(step: Int) = composed {
     this.onGloballyPositioned { coords ->
@@ -41,17 +48,18 @@ fun Modifier.tutorialTarget(step: Int) = composed {
 fun TutorialOverlay(
     modifier: Modifier = Modifier,
     isActive: Boolean,
-    onFinish: () -> Unit
+    onFinish: () -> Unit = {},
+    viewModel: TutorialViewModel = hiltViewModel()
 ) {
     val currentStep by TutorialManager.currentStep.collectAsState()
     val targetBounds by TutorialManager.targetBounds.collectAsState()
 
-    if (!isActive || currentStep < 0) return
-
     val targetRect = targetBounds[currentStep]
 
+    if (!isActive || currentStep < 0 || targetRect == null) return
+
     val alpha by animateFloatAsState(
-        targetValue = if (targetRect != null) 1f else 0f,
+        targetValue = 1f,
         animationSpec = tween(300),
         label = "overlayAlpha"
     )
@@ -73,12 +81,30 @@ fun TutorialOverlay(
             .pointerInput(currentStep) {
                 detectTapGestures(
                     onTap = {
-                        if (targetRect != null) {
-                            if (currentStep >= 6) {
-                                onFinish()
-                                TutorialManager.endTutorial()
-                            } else {
-                                TutorialManager.nextStep()
+                        if (currentStep >= 6) {
+                            onFinish()
+                            TutorialManager.endTutorial()
+                        } else {
+                            when (currentStep) {
+                                1 -> {
+                                    viewModel.markHomeTutorialAsSeen()
+                                    TutorialManager.endTutorial()
+                                }
+                                3 -> {
+                                    viewModel.markProductTutorialAsSeen()
+                                    TutorialManager.endTutorial()
+                                }
+                                4 -> {
+                                    viewModel.markWishlistTutorialAsSeen()
+                                    TutorialManager.endTutorial()
+                                }
+                                5 -> {
+                                    viewModel.markCartTutorialAsSeen()
+                                    TutorialManager.endTutorial()
+                                }
+                                else -> {
+                                    TutorialManager.nextStep()
+                                }
                             }
                         }
                     }
@@ -95,42 +121,67 @@ fun TutorialOverlay(
                 size = size
             )
 
-            if (targetRect != null) {
-                drawRoundRect(
-                    color = Color.Transparent,
-                    topLeft = targetRect.topLeft,
-                    size = targetRect.size,
-                    cornerRadius = CornerRadius(24f, 24f),
-                    blendMode = BlendMode.Clear
+            drawRoundRect(
+                color = Color.Transparent,
+                topLeft = targetRect.topLeft,
+                size = targetRect.size,
+                cornerRadius = CornerRadius(24f, 24f),
+                blendMode = BlendMode.Clear
+            )
+        }
+        
+        Box(modifier = Modifier.fillMaxSize()) {
+            val isTargetNearTop = targetRect.top < 1000f // Arbitrary point to decide text position
+            Column(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = instructionText,
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Tap anywhere to continue",
+                    color = Color.White.copy(alpha = 0.7f),
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
                 )
             }
         }
-        
-        if (targetRect != null) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                val isTargetNearTop = targetRect.top < 1000f // Arbitrary point to decide text position
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = instructionText,
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Tap anywhere to continue",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
+    }
+}
+
+@HiltViewModel
+class TutorialViewModel @Inject constructor(
+    private val settingsRepo: UserSettingsRepo,
+) : ViewModel() {
+    fun markHomeTutorialAsSeen() {
+        viewModelScope.launch {
+            settingsRepo.updateUserSettings { it.copy(hasSeenHomeTutorial = true) }
+        }
+    }
+
+    fun markProductTutorialAsSeen() {
+        viewModelScope.launch {
+            settingsRepo.updateUserSettings { it.copy(hasSeenProductTutorial = true) }
+        }
+    }
+
+    fun markWishlistTutorialAsSeen() {
+        viewModelScope.launch {
+            settingsRepo.updateUserSettings { it.copy(hasSeenWishlistTutorial = true) }
+        }
+    }
+
+    fun markCartTutorialAsSeen() {
+        viewModelScope.launch {
+            settingsRepo.updateUserSettings { it.copy(hasSeenCartTutorial = true) }
         }
     }
 }

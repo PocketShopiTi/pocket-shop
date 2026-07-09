@@ -8,4 +8,8 @@ data class UserSettings(
     val theme: ThemeSetting = ThemeSetting.FOLLOW_SYSTEM,
     val currency: CurrencySetting = CurrencySetting.EGP,
     val hasSeenTutorial: Boolean = false,
+    val hasSeenHomeTutorial: Boolean = false,
+    val hasSeenProductTutorial: Boolean = false,
+    val hasSeenWishlistTutorial: Boolean = false,
+    val hasSeenCartTutorial: Boolean = false,
 )

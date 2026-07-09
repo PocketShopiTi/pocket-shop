@@ -56,28 +56,23 @@ fun NestedNavDisplay(
     val currentUser = LocalUser.current
     val scope = rememberCoroutineScope()
 
-    val currentTutorialStep by TutorialManager.currentStep.collectAsState()
-    LaunchedEffect(currentTutorialStep) {
-        when (currentTutorialStep) {
-            4 -> {
-                nestedBackStack.apply {
-                    clear()
-                    navigateSingleTop(Route.NestedNav.Home)
-                    navigateSingleTop(Route.NestedNav.Wishlist)
+    val currentRoute = nestedBackStack.lastOrNull()
+    val userSettings = com.iti.pocketshop.LocalSettingsUser.current
+    LaunchedEffect(currentRoute) {
+        when (currentRoute) {
+            Route.NestedNav.Home -> {
+                if (!userSettings.hasSeenHomeTutorial) {
+                    TutorialManager.startStage(0)
                 }
             }
-            5 -> {
-                nestedBackStack.apply {
-                    clear()
-                    navigateSingleTop(Route.NestedNav.Home)
-                    navigateSingleTop(Route.NestedNav.Cart)
+            Route.NestedNav.Wishlist -> {
+                if (!userSettings.hasSeenWishlistTutorial) {
+                    TutorialManager.startStage(4)
                 }
             }
-            6 -> {
-                nestedBackStack.apply {
-                    clear()
-                    navigateSingleTop(Route.NestedNav.Home)
-                    navigateSingleTop(Route.NestedNav.Profile)
+            Route.NestedNav.Cart -> {
+                if (!userSettings.hasSeenCartTutorial) {
+                    TutorialManager.startStage(5)
                 }
             }
         }
@@ -87,7 +82,6 @@ fun NestedNavDisplay(
         bottomBar = {
             NavigationBar {
                 BottomBarDestination.entries.forEach { destination ->
-                    val currentRoute = nestedBackStack.lastOrNull()
                     val isSelected = currentRoute == destination.route ||
                             destination == BottomBarDestination.Profile &&
                             currentRoute == Route.NestedNav.Orders

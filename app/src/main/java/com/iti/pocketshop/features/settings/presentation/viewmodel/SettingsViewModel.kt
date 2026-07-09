@@ -51,7 +51,13 @@ class SettingsViewModel @Inject constructor(
 
             is SettingsAction.RestartTutorial -> {
                 updateSettings {
-                    it.copy(hasSeenTutorial = false)
+                    it.copy(
+                        hasSeenTutorial = false,
+                        hasSeenHomeTutorial = false,
+                        hasSeenProductTutorial = false,
+                        hasSeenWishlistTutorial = false,
+                        hasSeenCartTutorial = false
+                    )
                 }
                 com.iti.pocketshop.core.tutorial.TutorialManager.reset()
             }

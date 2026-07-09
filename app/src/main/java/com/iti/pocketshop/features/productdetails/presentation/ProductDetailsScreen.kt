@@ -49,18 +49,10 @@ fun ProductDetailsRoot(
     val user = LocalUser.current
     val scope = rememberCoroutineScope()
 
-    val currentTutorialStep by TutorialManager.currentStep.collectAsState()
-    LaunchedEffect(currentTutorialStep) {
-        if (currentTutorialStep == 3) {
-            // Reached step 3 (Cart button highlighted), so we just left step 2 (Favorite button)
-            // Wait, we need to make sure we only toggle it once. LaunchedEffect with currentTutorialStep as key runs once per step.
-            if (!state.isFavorite) {
-                viewModel.onAction(ProductDetailsAction.ToggleFavorite)
-            }
-        } else if (currentTutorialStep == 4) {
-            // Reached step 4 (Wishlist tab), so we left step 3 (Cart button)
-            viewModel.onAction(ProductDetailsAction.AddToCartClicked)
-            onBack()
+    val userSettings = com.iti.pocketshop.LocalSettingsUser.current
+    LaunchedEffect(Unit) {
+        if (!userSettings.hasSeenProductTutorial) {
+            TutorialManager.startStage(2)
         }
     }
 

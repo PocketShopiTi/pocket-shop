@@ -6,13 +6,18 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.iti.pocketshop.LocalSettingsUser
 import com.iti.pocketshop.core.components.SignInDialog
+import com.iti.pocketshop.core.tutorial.TutorialOverlay
 import com.iti.pocketshop.features.address.presentation.view.AddressRoot
 import com.iti.pocketshop.features.aichat.AiChatRoot
 import com.iti.pocketshop.features.auth.forgetpassword.presentation.ForgotPasswordRoot
@@ -308,8 +313,17 @@ fun RootNavDisplay(
 
     val userSettings = com.iti.pocketshop.LocalSettingsUser.current
     val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val currentStep by com.iti.pocketshop.core.tutorial.TutorialManager.currentStep.collectAsState()
+    
+    val isHomeTutorialActive = !userSettings.hasSeenHomeTutorial && (currentStep == 0 || currentStep == 1)
+    val isProductTutorialActive = !userSettings.hasSeenProductTutorial && (currentStep == 2 || currentStep == 3)
+    val isWishlistTutorialActive = !userSettings.hasSeenWishlistTutorial && (currentStep == 4)
+    val isCartTutorialActive = !userSettings.hasSeenCartTutorial && (currentStep == 5)
+    
+    val isTutorialActive = isHomeTutorialActive || isProductTutorialActive || isWishlistTutorialActive || isCartTutorialActive
+
     com.iti.pocketshop.core.tutorial.TutorialOverlay(
-        isActive = !userSettings.hasSeenTutorial,
+        isActive = isTutorialActive,
         onFinish = onTutorialFinished
     )
 }

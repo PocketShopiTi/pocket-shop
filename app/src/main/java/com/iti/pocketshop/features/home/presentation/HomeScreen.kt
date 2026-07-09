@@ -54,12 +54,7 @@ fun HomeRoot(
     val user = LocalUser.current
     val scope: CoroutineScope = rememberCoroutineScope()
 
-    val currentTutorialStep by TutorialManager.currentStep.collectAsState()
-    LaunchedEffect(currentTutorialStep, state.newArrivals) {
-        if (currentTutorialStep == 2 && state.newArrivals.isNotEmpty()) {
-            openProductDetails(state.newArrivals.first().id)
-        }
-    }
+
 
     HomeScreen(
         openSearch = openSearch,

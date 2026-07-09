@@ -25,6 +25,10 @@ object TutorialManager {
         _currentStep.value = -1 // Indicates finished
     }
 
+    fun startStage(startStep: Int) {
+        _currentStep.value = startStep
+    }
+
     fun reset() {
         _currentStep.value = 0
         _targetBounds.value = emptyMap()
