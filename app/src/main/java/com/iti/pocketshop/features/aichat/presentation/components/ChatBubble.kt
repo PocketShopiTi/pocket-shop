@@ -118,57 +118,61 @@ private fun AssistantChatBubble(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
-        MessageContent(
-            message = message,
-            bubbleColor = MaterialTheme.colorScheme.surfaceVariant,
-            textColor = MaterialTheme.colorScheme.onSurface,
-            shape = RoundedCornerShape(
-                topStart = BubbleCornerRadius,
-                topEnd = BubbleCornerRadius,
-                bottomEnd = BubbleCornerRadius,
-                bottomStart = 0.dp
-            ),
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(end = 40.dp)
-        )
+        if (message.content.isNotBlank() || message.isTyping || message.imageUri != null) {
+            MessageContent(
+                message = message,
+                bubbleColor = MaterialTheme.colorScheme.surfaceVariant,
+                textColor = MaterialTheme.colorScheme.onSurface,
+                shape = RoundedCornerShape(
+                    topStart = BubbleCornerRadius,
+                    topEnd = BubbleCornerRadius,
+                    bottomEnd = BubbleCornerRadius,
+                    bottomStart = 0.dp
+                ),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(end = 40.dp)
+            )
+        }
 
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 4.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val isSpeakingThis = state.isSpeaking && state.speakingMessage == message.content
-            IconButton(
-                onClick = {
-                    if (isSpeakingThis) {
-                        onAction(AiChatAction.OnStopSpeaking)
-                    } else {
-                        onAction(AiChatAction.OnSpeakMessage(message.content))
-                    }
-                },
+        if (message.content.isNotBlank() && !message.isTyping) {
+            Row(
                 modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                    .size(40.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = if (isSpeakingThis) Icons.Default.StopCircle else Icons.AutoMirrored.Filled.VolumeUp,
-                    contentDescription = if (isSpeakingThis) "Stop speaking" else "Read aloud",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-            IconButton(
-                onClick = { onAction(AiChatAction.OnCopyMessage(message.content)) },
-                modifier = Modifier
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                    .size(40.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ContentCopy,
-                    contentDescription = "Copy message",
-                    tint = MaterialTheme.colorScheme.primary
-                )
+                val isSpeakingThis = state.isSpeaking && state.speakingMessage == message.content
+                IconButton(
+                    onClick = {
+                        if (isSpeakingThis) {
+                            onAction(AiChatAction.OnStopSpeaking)
+                        } else {
+                            onAction(AiChatAction.OnSpeakMessage(message.content))
+                        }
+                    },
+                    modifier = Modifier
+                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = if (isSpeakingThis) Icons.Default.StopCircle else Icons.AutoMirrored.Filled.VolumeUp,
+                        contentDescription = if (isSpeakingThis) "Stop speaking" else "Read aloud",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+                IconButton(
+                    onClick = { onAction(AiChatAction.OnCopyMessage(message.content)) },
+                    modifier = Modifier
+                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ContentCopy,
+                        contentDescription = "Copy message",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
         }
 

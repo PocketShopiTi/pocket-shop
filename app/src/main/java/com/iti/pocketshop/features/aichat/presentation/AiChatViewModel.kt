@@ -322,7 +322,7 @@ class AiChatViewModel @AssistedInject constructor(
                             }
                             is AiResponse.ToolCall -> {
                                 toolCalls += response
-                                updateLastMessage(fullResponseText, isTyping = false, toolCall = response)
+                                updateLastMessage(fullResponseText, isTyping = true, toolCall = response)
                             }
                             is AiResponse.Error -> {
                                 _state.update { state ->
@@ -334,7 +334,7 @@ class AiChatViewModel @AssistedInject constructor(
                                 isLooping = false
                             }
                             AiResponse.Finished -> {
-                                updateLastMessage(fullResponseText, isTyping = false)
+                                updateLastMessage(fullResponseText, isTyping = toolCalls.isNotEmpty())
                             }
                         }
                     }
@@ -370,12 +370,22 @@ class AiChatViewModel @AssistedInject constructor(
                             val updatedMessages = state.messages.toMutableList()
                             if (updatedMessages.isNotEmpty()) {
                                 val last = updatedMessages.last()
-                                updatedMessages[updatedMessages.lastIndex] = last.copy(content = "")
+                                updatedMessages[updatedMessages.lastIndex] = last.copy(
+                                    content = "",
+                                    isTyping = false
+                                )
                             }
                             state.copy(messages = updatedMessages + toolMessages)
                         }
                     } else {
-                        _state.update { it.copy(messages = it.messages + toolMessages) }
+                        _state.update { state ->
+                            val updatedMessages = state.messages.toMutableList()
+                            if (updatedMessages.isNotEmpty()) {
+                                val last = updatedMessages.last()
+                                updatedMessages[updatedMessages.lastIndex] = last.copy(isTyping = false)
+                            }
+                            state.copy(messages = updatedMessages + toolMessages)
+                        }
                     }
                 } else {
                     // Final assistant turn: pull any [[options]] block out into tappable chips.
