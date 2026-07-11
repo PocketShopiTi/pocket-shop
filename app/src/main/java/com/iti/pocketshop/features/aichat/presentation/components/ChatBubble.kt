@@ -1,6 +1,7 @@
 package com.iti.pocketshop.features.aichat.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.StopCircle
@@ -118,7 +120,7 @@ private fun AssistantChatBubble(
 
         MessageContent(
             message = message,
-            bubbleColor = MaterialTheme.colorScheme.surface,
+            bubbleColor = MaterialTheme.colorScheme.surfaceVariant,
             textColor = MaterialTheme.colorScheme.onSurface,
             shape = RoundedCornerShape(
                 topStart = BubbleCornerRadius,
@@ -146,6 +148,9 @@ private fun AssistantChatBubble(
                         onAction(AiChatAction.OnSpeakMessage(message.content))
                     }
                 },
+                modifier = Modifier
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .size(40.dp)
             ) {
                 Icon(
                     imageVector = if (isSpeakingThis) Icons.Default.StopCircle else Icons.AutoMirrored.Filled.VolumeUp,
@@ -155,6 +160,9 @@ private fun AssistantChatBubble(
             }
             IconButton(
                 onClick = { onAction(AiChatAction.OnCopyMessage(message.content)) },
+                modifier = Modifier
+                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    .size(40.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.ContentCopy,
@@ -176,7 +184,8 @@ private fun AssistantChatBubble(
                         onClick = { onAction(AiChatAction.OnQuickReplySelected(option)) },
                         label = { Text(option) },
                         colors = SuggestionChipDefaults.suggestionChipColors(
-                            labelColor = MaterialTheme.colorScheme.primary
+                            labelColor = MaterialTheme.colorScheme.primary,
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         )
                     )
                 }
@@ -208,7 +217,8 @@ private fun ProductRecommendations(
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 tonalElevation = 2.dp,
-                modifier = Modifier.width(280.dp)
+                modifier = Modifier.width(280.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant
             ) {
                 SearchProductCard(
                     title = product.title,

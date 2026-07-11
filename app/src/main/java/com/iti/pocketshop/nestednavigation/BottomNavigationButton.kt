@@ -40,7 +40,7 @@ fun BottomNavigationButton(
         colors = ShortNavigationBarItemDefaults.colors(
             selectedIconColor = MaterialTheme.colorScheme.primary,
             selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            selectedIndicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+            selectedIndicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
             unselectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
             unselectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
