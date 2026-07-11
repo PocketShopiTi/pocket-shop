@@ -3,6 +3,8 @@ package com.iti.pocketshop.features.aichat.presentation
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -99,6 +101,15 @@ fun AiChatScreen(
         } }
     )
 
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            onAction(AiChatAction.StartSpeechRecognition)
+        }
+    }
+
     val visibleMessages = remember(state.messages) {
         state.messages.filter {
             (it.sender == MessageSender.USER || it.sender == MessageSender.AI) &&
@@ -164,6 +175,15 @@ fun AiChatScreen(
                     imagePicker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 },
                 onRemoveImage = { onAction(AiChatAction.OnImageSelected(null)) },
+                isSpeechRecognitionRunning = state.isSpeechRecognitionRunning,
+                onStartSpeechRecognition = {
+                    if (context.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                        onAction(AiChatAction.StartSpeechRecognition)
+                    } else {
+                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
+                },
+                onStopSpeechRecognition = { onAction(AiChatAction.StopSpeechRecognition) },
                 enabled = !state.isLoading,
                 modifier = Modifier
                     .padding(8.dp)

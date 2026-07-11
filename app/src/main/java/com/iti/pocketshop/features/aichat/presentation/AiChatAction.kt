@@ -10,4 +10,6 @@ sealed interface AiChatAction {
     data object OnDismissError : AiChatAction
     data object OnNewChat : AiChatAction
     data class OnQuickReplySelected(val text: String) : AiChatAction
+    data object StartSpeechRecognition : AiChatAction
+    data object StopSpeechRecognition : AiChatAction
 }

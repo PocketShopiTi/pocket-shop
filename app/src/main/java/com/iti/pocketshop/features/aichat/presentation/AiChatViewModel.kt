@@ -10,6 +10,7 @@ import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.aichat.data.ChatSessionStore
 import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
+import com.iti.pocketshop.features.aichat.util.SpeechToTextRecognizer
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
@@ -38,6 +39,7 @@ class AiChatViewModel @AssistedInject constructor(
     private val getLocalCartUseCase: GetLocalCartUseCase,
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val sessionStore: ChatSessionStore,
+    private val speechToTextRecognizer: SpeechToTextRecognizer,
     @Assisted private val initialPrompt: String?,
 ) : ViewModel() {
 
@@ -102,6 +104,11 @@ class AiChatViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
+            speechToTextRecognizer.isSpeechRecognitionRunning.collect { isRunning ->
+                _state.update { it.copy(isSpeechRecognitionRunning = isRunning) }
+            }
+        }
+        viewModelScope.launch {
             getLocalCartUseCase().collect { cart ->
                 currentCart = cart
             }
@@ -150,7 +157,29 @@ class AiChatViewModel @AssistedInject constructor(
             }
             AiChatAction.OnNewChat -> newChat()
             is AiChatAction.OnQuickReplySelected -> sendQuickReply(action.text)
+            AiChatAction.StartSpeechRecognition -> startSpeechRecognition()
+            AiChatAction.StopSpeechRecognition -> stopSpeechRecognition()
         }
+    }
+
+    private fun startSpeechRecognition() {
+        speechToTextRecognizer.startSpeechRecognition(
+            onResult = { result ->
+                _state.update { it.copy(inputText = result) }
+            },
+            onError = {
+                _state.update { it.copy(error = AiErrorType.GENERIC) }
+            }
+        )
+    }
+
+    private fun stopSpeechRecognition() {
+        speechToTextRecognizer.stopSpeechRecognition()
+    }
+
+    override fun onCleared() {
+        speechToTextRecognizer.destroy()
+        super.onCleared()
     }
 
     private fun newChat() {
