@@ -48,7 +48,7 @@ class AiChatViewModel @AssistedInject constructor(
 
     private companion object {
         const val TAG = "AiChatViewModel"
-        const val MAX_AGENT_ITERATIONS = 6
+        const val MAX_AGENT_ITERATIONS = 20
     }
 
     // Restore any in-session conversation so the chat survives navigation / recreation.
@@ -289,7 +289,8 @@ class AiChatViewModel @AssistedInject constructor(
                         ChatMessage(
                             content = result.summary,
                             sender = MessageSender.TOOL,
-                            toolCallName = call.name
+                            toolCallName = call.name,
+                            toolCallId = call.id
                         )
                     }
                     lastToolProducts = collectedProducts
@@ -335,7 +336,11 @@ class AiChatViewModel @AssistedInject constructor(
             if (updatedMessages.isNotEmpty()) {
                 val last = updatedMessages.last()
                 val newToolCalls = if (toolCall != null) {
-                    last.toolCalls + ChatCall(toolCall.name, toolCall.arguments.mapValues { it.value.toString() })
+                    last.toolCalls + ChatCall(
+                        name = toolCall.name,
+                        args = toolCall.arguments.mapValues { it.value.toString() },
+                        id = toolCall.id
+                    )
                 } else {
                     last.toolCalls
                 }

@@ -76,7 +76,19 @@ class OllamaAiRepository @Inject constructor(
             OllamaMessage(
                 role = role,
                 content = content,
-                images = images
+                images = images,
+                tool_calls = if (msg.sender == MessageSender.AI && msg.toolCalls.isNotEmpty()) {
+                    msg.toolCalls.map { call ->
+                        OllamaToolCall(
+                            id = call.id,
+                            function = OllamaFunctionCall(
+                                name = call.name,
+                                arguments = call.args.mapValues { JsonPrimitive(it.value) }
+                            )
+                        )
+                    }
+                } else null,
+                tool_call_id = if (msg.sender == MessageSender.TOOL) msg.toolCallId else null
             )
         }.toMutableList()
         
@@ -144,7 +156,7 @@ class OllamaAiRepository @Inject constructor(
                                     else -> value.toString()
                                 }
                             }
-                            emit(AiResponse.ToolCall(call.function.name, args))
+                            emit(AiResponse.ToolCall(call.function.name, args, call.id))
                         }
 
                         if (chatResponse.done == true) {
@@ -186,7 +198,8 @@ class OllamaAiRepository @Inject constructor(
         val role: String,
         val content: String,
         val images: List<String>? = null,
-        val tool_calls: List<OllamaToolCall>? = null
+        val tool_calls: List<OllamaToolCall>? = null,
+        val tool_call_id: String? = null
     )
 
     @Serializable
@@ -217,6 +230,8 @@ class OllamaAiRepository @Inject constructor(
 
     @Serializable
     private data class OllamaToolCall(
+        val id: String? = null,
+        val type: String = "function",
         val function: OllamaFunctionCall
     )
 
