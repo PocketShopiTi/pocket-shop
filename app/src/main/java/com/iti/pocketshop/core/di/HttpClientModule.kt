@@ -13,24 +13,28 @@ import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object HttpClientModule {
 
     @Provides
-    fun provideHttpClient(): HttpClient = HttpClient {
+    @Singleton
+    fun provideJson(): Json = Json {
+        ignoreUnknownKeys = true
+        isLenient = true
+        encodeDefaults = true
+        explicitNulls = false
+        coerceInputValues = true
+        prettyPrint = false
+    }
+
+    @Provides
+    @Singleton
+    fun provideHttpClient(json: Json): HttpClient = HttpClient {
         install(ContentNegotiation) {
-            json(
-                Json {
-                    ignoreUnknownKeys = true
-                    isLenient = true
-                    encodeDefaults = true
-                    explicitNulls = false
-                    coerceInputValues = true
-                    prettyPrint = false
-                }
-            )
+            json(json)
         }
         install(HttpTimeout) {
             requestTimeoutMillis = 25_000

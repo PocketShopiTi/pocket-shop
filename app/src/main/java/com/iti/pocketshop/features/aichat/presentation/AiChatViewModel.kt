@@ -48,6 +48,7 @@ class AiChatViewModel @AssistedInject constructor(
 
     private companion object {
         const val TAG = "AiChatViewModel"
+        const val MAX_AGENT_ITERATIONS = 6
     }
 
     // Restore any in-session conversation so the chat survives navigation / recreation.
@@ -209,8 +210,16 @@ class AiChatViewModel @AssistedInject constructor(
             val systemPrompt = buildSystemPrompt()
             var isLooping = true
             var lastToolProducts = emptyList<SearchResultItem.ProductItem>()
+            var iterations = 0
+            val seenToolCalls = mutableSetOf<String>()
 
             while (isLooping) {
+                iterations++
+                if (iterations > MAX_AGENT_ITERATIONS) {
+                    Log.w(TAG, "Agent loop exceeded $MAX_AGENT_ITERATIONS iterations, aborting")
+                    _state.update { it.copy(messages = it.messages.dropLast(1), error = AiErrorType.GENERIC) }
+                    break
+                }
                 val currentProducts = lastToolProducts
                 lastToolProducts = emptyList()
 
@@ -265,6 +274,14 @@ class AiChatViewModel @AssistedInject constructor(
                     // The turn failed (error already set, placeholder dropped) — stop looping.
                     isLooping = false
                 } else if (toolCalls.isNotEmpty()) {
+                    val signatures = toolCalls.map { "${it.name}:${it.arguments}" }
+                    if (signatures.all { it in seenToolCalls }) {
+                        Log.w(TAG, "Model repeated identical tool call(s), aborting loop")
+                        _state.update { it.copy(error = AiErrorType.GENERIC) }
+                        isLooping = false
+                        // still fall through to append tool results is optional; safest to just stop
+                    }
+                    seenToolCalls += signatures
                     val collectedProducts = mutableListOf<SearchResultItem.ProductItem>()
                     val toolMessages = toolCalls.map { call ->
                         val result = executeTool(call)
@@ -447,8 +464,8 @@ class AiChatViewModel @AssistedInject constructor(
             You have access to tools to search for products, get details, and add to cart.
             
             RULES:
-            - ALWAYS use the search_products tool if the user asks for something or provides an image.
-            - If an image is provided, describe it briefly and search for similar products in the store using search_products.
+            - ALWAYS use the search_products tool if the user asks for something.
+            - If the most recent user message includes an image and you haven't already searched for it, call search_products once, then proceed normally.
             - When recommending products, provide their titles and prices.
             - If the user wants to buy or add something, search for it first, then get details for the specific variants, then use add_to_cart with a variantId.
             - Answer politely and professionally.

@@ -1,6 +1,6 @@
 package com.iti.pocketshop.features.aichat.di
 
-import com.iti.pocketshop.features.aichat.data.repository.GeminiAiRepository
+import com.iti.pocketshop.features.aichat.data.repository.OllamaAiRepository
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
 import dagger.Binds
 import dagger.Module
@@ -14,6 +14,6 @@ abstract class AiChatModule {
 
     @Binds
     abstract fun bindAiRepository(
-        geminiAiRepository: GeminiAiRepository
+        ollamaAiRepository: OllamaAiRepository
     ): AiRepository
 }
