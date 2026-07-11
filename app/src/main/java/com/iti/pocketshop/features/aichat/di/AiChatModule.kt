@@ -4,6 +4,7 @@ import android.content.Context
 import com.iti.pocketshop.features.aichat.data.repository.OllamaAiRepository
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
 import com.iti.pocketshop.features.aichat.util.SpeechToTextRecognizer
+import com.iti.pocketshop.features.aichat.util.TextToSpeechManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,4 +27,10 @@ object AiChatModule {
     fun provideSpeechRecognizer(
         @ApplicationContext context: Context
     ): SpeechToTextRecognizer = SpeechToTextRecognizer(context)
+
+    @Provides
+    @Singleton
+    fun provideTextToSpeechManager(
+        @ApplicationContext context: Context
+    ): TextToSpeechManager = TextToSpeechManager(context)
 }

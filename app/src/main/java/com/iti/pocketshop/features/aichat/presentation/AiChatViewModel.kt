@@ -11,6 +11,7 @@ import com.iti.pocketshop.features.aichat.data.ChatSessionStore
 import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
 import com.iti.pocketshop.features.aichat.util.SpeechToTextRecognizer
+import com.iti.pocketshop.features.aichat.util.TextToSpeechManager
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
@@ -21,6 +22,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import android.content.Context
+import android.content.ClipData
+import android.content.ClipboardManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -40,6 +45,8 @@ class AiChatViewModel @AssistedInject constructor(
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val sessionStore: ChatSessionStore,
     private val speechToTextRecognizer: SpeechToTextRecognizer,
+    private val textToSpeechManager: TextToSpeechManager,
+    @ApplicationContext private val context: Context,
     @Assisted private val initialPrompt: String?,
 ) : ViewModel() {
 
@@ -109,6 +116,16 @@ class AiChatViewModel @AssistedInject constructor(
             }
         }
         viewModelScope.launch {
+            textToSpeechManager.isSpeaking.collect { isSpeaking ->
+                _state.update { state ->
+                    state.copy(
+                        isSpeaking = isSpeaking,
+                        speakingMessage = if (isSpeaking) state.speakingMessage else null
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
             getLocalCartUseCase().collect { cart ->
                 currentCart = cart
             }
@@ -159,7 +176,29 @@ class AiChatViewModel @AssistedInject constructor(
             is AiChatAction.OnQuickReplySelected -> sendQuickReply(action.text)
             AiChatAction.StartSpeechRecognition -> startSpeechRecognition()
             AiChatAction.StopSpeechRecognition -> stopSpeechRecognition()
+            is AiChatAction.OnSpeakMessage -> speakMessage(action.message)
+            AiChatAction.OnStopSpeaking -> stopSpeaking()
+            is AiChatAction.OnCopyMessage -> copyMessage(action.text)
         }
+    }
+
+    private fun speakMessage(message: String) {
+        _state.update { it.copy(speakingMessage = message) }
+        val chunks = message.split(Regex("(?<=[.!?])\\s+"))
+        textToSpeechManager.speakNewChunks(chunks) {
+            _state.update { it.copy(speakingMessage = null) }
+        }
+    }
+
+    private fun stopSpeaking() {
+        textToSpeechManager.stopSpeaking()
+        _state.update { it.copy(speakingMessage = null) }
+    }
+
+    private fun copyMessage(text: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Copied Text", text)
+        clipboard.setPrimaryClip(clip)
     }
 
     private fun startSpeechRecognition() {
@@ -179,6 +218,7 @@ class AiChatViewModel @AssistedInject constructor(
 
     override fun onCleared() {
         speechToTextRecognizer.destroy()
+        textToSpeechManager.shutdown()
         super.onCleared()
     }
 

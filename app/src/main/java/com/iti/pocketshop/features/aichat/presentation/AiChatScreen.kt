@@ -237,8 +237,9 @@ fun AiChatScreen(
                             ChatBubble(
                                 message = message,
                                 onProductClick = onProductClick,
+                                state = state,
+                                onAction = onAction,
                                 isLastMessage = message.id == lastMessageId,
-                                onQuickReply = { onAction(AiChatAction.OnQuickReplySelected(it)) },
                                 modifier = Modifier
                                     .animateItem()
                             )

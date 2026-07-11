@@ -16,11 +16,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.SuggestionChipDefaults
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.StopCircle
+import androidx.compose.material3.*
+import com.iti.pocketshop.features.aichat.presentation.AiChatAction
+import com.iti.pocketshop.features.aichat.presentation.AiChatState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,9 +46,10 @@ private val BubbleCornerRadius = 16.dp
 fun ChatBubble(
     message: ChatMessage,
     onProductClick: (String) -> Unit,
+    state: AiChatState,
+    onAction: (AiChatAction) -> Unit,
     modifier: Modifier = Modifier,
     isLastMessage: Boolean = false,
-    onQuickReply: (String) -> Unit = {},
 ) {
     if (message.sender == MessageSender.USER) {
         UserChatBubble(
@@ -58,7 +62,8 @@ fun ChatBubble(
             message = message,
             onProductClick = onProductClick,
             showQuickReplies = isLastMessage,
-            onQuickReply = onQuickReply,
+            state = state,
+            onAction = onAction,
             modifier = modifier
         )
     }
@@ -95,7 +100,8 @@ private fun AssistantChatBubble(
     message: ChatMessage,
     onProductClick: (String) -> Unit,
     showQuickReplies: Boolean,
-    onQuickReply: (String) -> Unit,
+    state: AiChatState,
+    onAction: (AiChatAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -112,8 +118,8 @@ private fun AssistantChatBubble(
 
         MessageContent(
             message = message,
-            bubbleColor = MaterialTheme.colorScheme.surfaceVariant,
-            textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            bubbleColor = MaterialTheme.colorScheme.surface,
+            textColor = MaterialTheme.colorScheme.onSurface,
             shape = RoundedCornerShape(
                 topStart = BubbleCornerRadius,
                 topEnd = BubbleCornerRadius,
@@ -125,6 +131,39 @@ private fun AssistantChatBubble(
                 .padding(end = 40.dp)
         )
 
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val isSpeakingThis = state.isSpeaking && state.speakingMessage == message.content
+            IconButton(
+                onClick = {
+                    if (isSpeakingThis) {
+                        onAction(AiChatAction.OnStopSpeaking)
+                    } else {
+                        onAction(AiChatAction.OnSpeakMessage(message.content))
+                    }
+                },
+            ) {
+                Icon(
+                    imageVector = if (isSpeakingThis) Icons.Default.StopCircle else Icons.AutoMirrored.Filled.VolumeUp,
+                    contentDescription = if (isSpeakingThis) "Stop speaking" else "Read aloud",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            IconButton(
+                onClick = { onAction(AiChatAction.OnCopyMessage(message.content)) },
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ContentCopy,
+                    contentDescription = "Copy message",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
         if (showQuickReplies && message.quickReplies.isNotEmpty()) {
             FlowRow(
                 modifier = Modifier
@@ -134,7 +173,7 @@ private fun AssistantChatBubble(
             ) {
                 message.quickReplies.forEach { option ->
                     SuggestionChip(
-                        onClick = { onQuickReply(option) },
+                        onClick = { onAction(AiChatAction.OnQuickReplySelected(option)) },
                         label = { Text(option) },
                         colors = SuggestionChipDefaults.suggestionChipColors(
                             labelColor = MaterialTheme.colorScheme.primary
