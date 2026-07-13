@@ -84,41 +84,38 @@ fun HeroBanner(
         }
     }
 
-    Column(modifier = modifier) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .padding(vertical = 8.dp),
-        ) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize(),
-            ) { page ->
-                val ad = ads[page]
-                val pageOffset =
-                    (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                PromotionAdContent(
-                    ad = ad,
-                    onClick = { onAdClick(ad) },
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxSize()
-                        .clip(MaterialTheme.shapes.large)
-                        .graphicsLayer {
-                            translationX = -pageOffset * size.width * 0.15f
-                            alpha = lerp(0.4f, 1f, 1f - abs(pageOffset).coerceIn(0f, 1f))
-                        },
-                )
-            }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(220.dp)
+            .padding(top = 8.dp),
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize(),
+        ) { page ->
+            val ad = ads[page]
+            val pageOffset =
+                (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
+            PromotionAdContent(
+                ad = ad,
+                onClick = { onAdClick(ad) },
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxSize()
+                    .clip(MaterialTheme.shapes.large)
+                    .graphicsLayer {
+                        translationX = -pageOffset * size.width * 0.15f
+                        alpha = lerp(0.4f, 1f, 1f - abs(pageOffset).coerceIn(0f, 1f))
+                    },
+            )
         }
-
         if (ads.size > 1) {
-            Spacer(Modifier.height(10.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
+                    .padding(horizontal = 20.dp, vertical = 8.dp)
+                    .align(Alignment.BottomCenter),
                 horizontalArrangement = Arrangement.Center,
             ) {
                 HeroBannerDots(
