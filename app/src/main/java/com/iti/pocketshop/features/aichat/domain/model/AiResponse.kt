@@ -2,7 +2,7 @@ package com.iti.pocketshop.features.aichat.domain.model
 
 sealed interface AiResponse {
     data class TextChunk(val text: String) : AiResponse
-    data class ToolCall(val name: String, val arguments: Map<String, Any?>) : AiResponse
+    data class ToolCall(val name: String, val arguments: Map<String, Any?>, val id: String? = null) : AiResponse
     data object Finished : AiResponse
     data class Error(val type: AiErrorType) : AiResponse
 }

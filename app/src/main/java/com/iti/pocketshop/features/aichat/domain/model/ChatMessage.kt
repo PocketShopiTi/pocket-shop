@@ -8,7 +8,7 @@ enum class MessageSender {
     USER, AI, SYSTEM, TOOL
 }
 
-data class ChatCall(val name: String, val args: Map<String, String>)
+data class ChatCall(val name: String, val args: Map<String, String>, val id: String? = null)
 
 data class ChatMessage(
     val id: String = UUID.randomUUID().toString(),
@@ -17,6 +17,7 @@ data class ChatMessage(
     val isTyping: Boolean = false,
     val isError: Boolean = false,
     val toolCalls: List<ChatCall> = emptyList(),
+    val toolCallId: String? = null,
     val toolCallName: String? = null, // Still used for TOOL sender to identify which result this is
     val imageUri: Uri? = null,
     val products: List<SearchResultItem.ProductItem> = emptyList(),

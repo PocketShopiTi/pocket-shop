@@ -10,6 +10,8 @@ import com.iti.pocketshop.core.pricing.PriceFormatter
 import com.iti.pocketshop.features.aichat.data.ChatSessionStore
 import com.iti.pocketshop.features.aichat.domain.model.*
 import com.iti.pocketshop.features.aichat.domain.repository.AiRepository
+import com.iti.pocketshop.features.aichat.util.SpeechToTextRecognizer
+import com.iti.pocketshop.features.aichat.util.TextToSpeechManager
 import com.iti.pocketshop.features.cart.domain.entity.ShopifyCart
 import com.iti.pocketshop.features.cart.domain.usecase.AddToCartUseCase
 import com.iti.pocketshop.features.cart.domain.usecase.GetLocalCartUseCase
@@ -20,6 +22,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import android.content.Context
+import android.content.ClipData
+import android.content.ClipboardManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
@@ -38,6 +44,9 @@ class AiChatViewModel @AssistedInject constructor(
     private val getLocalCartUseCase: GetLocalCartUseCase,
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val sessionStore: ChatSessionStore,
+    private val speechToTextRecognizer: SpeechToTextRecognizer,
+    private val textToSpeechManager: TextToSpeechManager,
+    @ApplicationContext private val context: Context,
     @Assisted private val initialPrompt: String?,
 ) : ViewModel() {
 
@@ -48,6 +57,7 @@ class AiChatViewModel @AssistedInject constructor(
 
     private companion object {
         const val TAG = "AiChatViewModel"
+        const val MAX_AGENT_ITERATIONS = 20
     }
 
     // Restore any in-session conversation so the chat survives navigation / recreation.
@@ -101,6 +111,21 @@ class AiChatViewModel @AssistedInject constructor(
 
     init {
         viewModelScope.launch {
+            speechToTextRecognizer.isSpeechRecognitionRunning.collect { isRunning ->
+                _state.update { it.copy(isSpeechRecognitionRunning = isRunning) }
+            }
+        }
+        viewModelScope.launch {
+            textToSpeechManager.isSpeaking.collect { isSpeaking ->
+                _state.update { state ->
+                    state.copy(
+                        isSpeaking = isSpeaking,
+                        speakingMessage = if (isSpeaking) state.speakingMessage else null
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
             getLocalCartUseCase().collect { cart ->
                 currentCart = cart
             }
@@ -149,7 +174,52 @@ class AiChatViewModel @AssistedInject constructor(
             }
             AiChatAction.OnNewChat -> newChat()
             is AiChatAction.OnQuickReplySelected -> sendQuickReply(action.text)
+            AiChatAction.StartSpeechRecognition -> startSpeechRecognition()
+            AiChatAction.StopSpeechRecognition -> stopSpeechRecognition()
+            is AiChatAction.OnSpeakMessage -> speakMessage(action.message)
+            AiChatAction.OnStopSpeaking -> stopSpeaking()
+            is AiChatAction.OnCopyMessage -> copyMessage(action.text)
         }
+    }
+
+    private fun speakMessage(message: String) {
+        _state.update { it.copy(speakingMessage = message) }
+        val chunks = message.split(Regex("(?<=[.!?])\\s+"))
+        textToSpeechManager.speakNewChunks(chunks) {
+            _state.update { it.copy(speakingMessage = null) }
+        }
+    }
+
+    private fun stopSpeaking() {
+        textToSpeechManager.stopSpeaking()
+        _state.update { it.copy(speakingMessage = null) }
+    }
+
+    private fun copyMessage(text: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Copied Text", text)
+        clipboard.setPrimaryClip(clip)
+    }
+
+    private fun startSpeechRecognition() {
+        speechToTextRecognizer.startSpeechRecognition(
+            onResult = { result ->
+                _state.update { it.copy(inputText = result) }
+            },
+            onError = {
+                _state.update { it.copy(error = AiErrorType.GENERIC) }
+            }
+        )
+    }
+
+    private fun stopSpeechRecognition() {
+        speechToTextRecognizer.stopSpeechRecognition()
+    }
+
+    override fun onCleared() {
+        speechToTextRecognizer.destroy()
+        textToSpeechManager.shutdown()
+        super.onCleared()
     }
 
     private fun newChat() {
@@ -209,8 +279,16 @@ class AiChatViewModel @AssistedInject constructor(
             val systemPrompt = buildSystemPrompt()
             var isLooping = true
             var lastToolProducts = emptyList<SearchResultItem.ProductItem>()
+            var iterations = 0
+            val seenToolCalls = mutableSetOf<String>()
 
             while (isLooping) {
+                iterations++
+                if (iterations > MAX_AGENT_ITERATIONS) {
+                    Log.w(TAG, "Agent loop exceeded $MAX_AGENT_ITERATIONS iterations, aborting")
+                    _state.update { it.copy(messages = it.messages.dropLast(1), error = AiErrorType.GENERIC) }
+                    break
+                }
                 val currentProducts = lastToolProducts
                 lastToolProducts = emptyList()
 
@@ -244,7 +322,7 @@ class AiChatViewModel @AssistedInject constructor(
                             }
                             is AiResponse.ToolCall -> {
                                 toolCalls += response
-                                updateLastMessage(fullResponseText, isTyping = false, toolCall = response)
+                                updateLastMessage(fullResponseText, isTyping = true, toolCall = response)
                             }
                             is AiResponse.Error -> {
                                 _state.update { state ->
@@ -256,7 +334,7 @@ class AiChatViewModel @AssistedInject constructor(
                                 isLooping = false
                             }
                             AiResponse.Finished -> {
-                                updateLastMessage(fullResponseText, isTyping = false)
+                                updateLastMessage(fullResponseText, isTyping = toolCalls.isNotEmpty())
                             }
                         }
                     }
@@ -265,6 +343,14 @@ class AiChatViewModel @AssistedInject constructor(
                     // The turn failed (error already set, placeholder dropped) — stop looping.
                     isLooping = false
                 } else if (toolCalls.isNotEmpty()) {
+                    val signatures = toolCalls.map { "${it.name}:${it.arguments}" }
+                    if (signatures.all { it in seenToolCalls }) {
+                        Log.w(TAG, "Model repeated identical tool call(s), aborting loop")
+                        _state.update { it.copy(error = AiErrorType.GENERIC) }
+                        isLooping = false
+                        // still fall through to append tool results is optional; safest to just stop
+                    }
+                    seenToolCalls += signatures
                     val collectedProducts = mutableListOf<SearchResultItem.ProductItem>()
                     val toolMessages = toolCalls.map { call ->
                         val result = executeTool(call)
@@ -272,7 +358,8 @@ class AiChatViewModel @AssistedInject constructor(
                         ChatMessage(
                             content = result.summary,
                             sender = MessageSender.TOOL,
-                            toolCallName = call.name
+                            toolCallName = call.name,
+                            toolCallId = call.id
                         )
                     }
                     lastToolProducts = collectedProducts
@@ -283,12 +370,22 @@ class AiChatViewModel @AssistedInject constructor(
                             val updatedMessages = state.messages.toMutableList()
                             if (updatedMessages.isNotEmpty()) {
                                 val last = updatedMessages.last()
-                                updatedMessages[updatedMessages.lastIndex] = last.copy(content = "")
+                                updatedMessages[updatedMessages.lastIndex] = last.copy(
+                                    content = "",
+                                    isTyping = false
+                                )
                             }
                             state.copy(messages = updatedMessages + toolMessages)
                         }
                     } else {
-                        _state.update { it.copy(messages = it.messages + toolMessages) }
+                        _state.update { state ->
+                            val updatedMessages = state.messages.toMutableList()
+                            if (updatedMessages.isNotEmpty()) {
+                                val last = updatedMessages.last()
+                                updatedMessages[updatedMessages.lastIndex] = last.copy(isTyping = false)
+                            }
+                            state.copy(messages = updatedMessages + toolMessages)
+                        }
                     }
                 } else {
                     // Final assistant turn: pull any [[options]] block out into tappable chips.
@@ -318,7 +415,11 @@ class AiChatViewModel @AssistedInject constructor(
             if (updatedMessages.isNotEmpty()) {
                 val last = updatedMessages.last()
                 val newToolCalls = if (toolCall != null) {
-                    last.toolCalls + ChatCall(toolCall.name, toolCall.arguments.mapValues { it.value.toString() })
+                    last.toolCalls + ChatCall(
+                        name = toolCall.name,
+                        args = toolCall.arguments.mapValues { it.value.toString() },
+                        id = toolCall.id
+                    )
                 } else {
                     last.toolCalls
                 }
@@ -447,8 +548,8 @@ class AiChatViewModel @AssistedInject constructor(
             You have access to tools to search for products, get details, and add to cart.
             
             RULES:
-            - ALWAYS use the search_products tool if the user asks for something or provides an image.
-            - If an image is provided, describe it briefly and search for similar products in the store using search_products.
+            - ALWAYS use the search_products tool if the user asks for something.
+            - If the most recent user message includes an image and you haven't already searched for it, call search_products once, then proceed normally.
             - When recommending products, provide their titles and prices.
             - If the user wants to buy or add something, search for it first, then get details for the specific variants, then use add_to_cart with a variantId.
             - Answer politely and professionally.

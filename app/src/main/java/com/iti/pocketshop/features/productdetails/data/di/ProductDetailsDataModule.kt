@@ -1,7 +1,7 @@
 package com.iti.pocketshop.features.productdetails.data.di
 
 import com.iti.pocketshop.features.productdetails.data.datasource.AiCompareDataSource
-import com.iti.pocketshop.features.productdetails.data.datasource.FirebaseAiCompareDataSource
+import com.iti.pocketshop.features.productdetails.data.datasource.OllamaAiCompareDataSource
 import com.iti.pocketshop.features.productdetails.data.datasource.ProductDetailsDataSource
 import com.iti.pocketshop.features.productdetails.data.datasource.ShopifyProductDetailsDataSource
 import com.iti.pocketshop.features.productdetails.data.repository.AiCompareRepositoryImpl
@@ -32,7 +32,7 @@ abstract class ProductDetailsDataModule {
     @Binds
     @Singleton
     abstract fun bindAiCompareDataSource(
-        implementation: FirebaseAiCompareDataSource,
+        implementation: OllamaAiCompareDataSource,
     ): AiCompareDataSource
 
     @Binds
