@@ -521,7 +521,7 @@ pocket-shop/
 
 <table align="center" width="100%">
   <tr>
-    <td align="center" valign="top" width="50%">
+    <td align="center" valign="top" width="25%">
       <br/>
       <a href="https://github.com/ELDemy">
         <img
@@ -543,7 +543,7 @@ pocket-shop/
       </a>
       <br/><br/>
     </td>
-    <td align="center" valign="top" width="50%">
+    <td align="center" valign="top" width="25%">
       <br/>
       <a href="https://github.com/Amrabedalrehem">
         <img
@@ -564,11 +564,8 @@ pocket-shop/
         />
       </a>
       <br/><br/>
-    </td>
-  </tr>
-
-  <tr>
-    <td align="center" valign="top" width="50%">
+    </td>  
+    <td align="center" valign="top" width="25%">
       <br/>
       <a href="https://github.com/Hossam-Elgmmal">
         <img
@@ -590,7 +587,7 @@ pocket-shop/
       </a>
       <br/><br/>
     </td>
-    <td align="center" valign="top" width="50%">
+    <td align="center" valign="top" width="25%">
       <br/>
       <a href="https://github.com/Abdelhamed-Zyada">
         <img
