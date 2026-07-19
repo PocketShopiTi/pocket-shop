@@ -86,60 +86,210 @@ The storefront is powered by Shopify GraphQL, identity and cloud features are ha
 
 ## 📱 App Showcase
 
-The galleries below are ready for the final application screenshots. Each Light Mode screen has a matching Dark Mode position.
+Explore the available Pocket Shop screens in both themes. The Dark Mode gallery includes only the screens currently captured in Dark Mode.
+
+<p align="center">
+  <img
+    src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=600&amp;size=16&amp;pause=1100&amp;color=C85E2E&amp;center=true&amp;vCenter=true&amp;repeat=true&amp;width=540&amp;lines=Explore+the+Light+Experience.;Discover+the+Dark+Experience.;Shop+Smarter+with+AI."
+    alt="Animated Pocket Shop showcase highlights"
+  />
+</p>
 
 ### ☀️ Light Mode
 
 <table>
   <tr>
-    <td align="center" width="33%">
-      <h3>🔐</h3>
-      <strong>Onboarding &amp; Authentication</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+    <td align="center" valign="top" width="33%">
+      <h3>✨</h3>
+      <strong>Splash</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop splash screen in Light Mode"
+          src="https://github.com/user-attachments/assets/9e1c25c2-8850-407c-90ea-b4d853e62c4e"
+        />
+      </kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
+      <h3>👋</h3>
+      <strong>Onboarding</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop onboarding screen in Light Mode"
+          src="https://github.com/user-attachments/assets/b8db4d80-8665-455d-9e5d-6c0d588b3330"
+        />
+      </kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
       <h3>🏠</h3>
-      <strong>Home &amp; Discovery</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+      <strong>Home</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop home and product discovery screen in Light Mode"
+          src="https://github.com/user-attachments/assets/89748b9a-38d6-4622-93be-833c7416bd2c"
+        />
+      </kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+  </tr>
+
+  <tr>
+    <td align="center" valign="top" width="33%">
       <h3>👕</h3>
       <strong>Product Details</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+      <kbd>
+        <img
+          width="270"
+          height="1035"
+          alt="Pocket Shop product details screen in Light Mode"
+          src="https://github.com/user-attachments/assets/6cc95a11-2292-4f42-8cf0-fbc5d03088e8"
+        />
+      </kbd><br/><br/>
     </td>
-  </tr>
-  <tr>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <h3>🤖</h3>
       <strong>AI Shopping Assistant</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop AI shopping assistant screen in Light Mode"
+          src="https://github.com/user-attachments/assets/b6d12b28-0d6b-40c2-81f0-06cf1090e569"
+        />
+      </kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <h3>⚖️</h3>
       <strong>AI Product Comparison</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
-    </td>
-    <td align="center" width="33%">
-      <h3>🛒</h3>
-      <strong>Cart &amp; Checkout</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop AI product comparison screen in Light Mode"
+          src="https://github.com/user-attachments/assets/3139b532-a37f-4a23-bbd4-7647492db90a"
+        />
+      </kbd><br/><br/>
     </td>
   </tr>
+
   <tr>
-    <td align="center" width="33%">
-      <h3>🔎</h3>
-      <strong>Search &amp; Filters</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+    <td align="center" valign="top" width="33%">
+      <h3>🛒</h3>
+      <strong>Cart</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop shopping cart screen in Light Mode"
+          src="https://github.com/user-attachments/assets/701eb9ac-f1cc-4bf1-b054-97aedabf0628"
+        />
+      </kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
-      <h3>👤</h3>
-      <strong>Profile</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+    <td align="center" valign="top" width="33%">
+      <h3>💳</h3>
+      <strong>Checkout</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop checkout screen in Light Mode"
+          src="https://github.com/user-attachments/assets/78f53439-cc08-4e75-93a1-78712d489192"
+        />
+      </kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <h3>📦</h3>
       <strong>Order Details</strong><br/><br/>
-      <kbd>Add light screenshot</kbd><br/><br/>
+      <kbd>
+        <img
+          width="374"
+          height="1280"
+          alt="Pocket Shop order details screen in Light Mode"
+          src="https://github.com/user-attachments/assets/d084de13-df1d-40cd-8da0-50b91f8ca2a6"
+        />
+      </kbd><br/><br/>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <h3>🔎</h3>
+      <strong>Search</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop product search screen in Light Mode"
+          src="https://github.com/user-attachments/assets/84185d5f-475f-44ab-a9c4-e55660824a8a"
+        />
+      </kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>🎛️</h3>
+      <strong>Filters</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop product filters screen in Light Mode"
+          src="https://github.com/user-attachments/assets/6c32fb27-ccac-406f-94c5-4d67fa8d3a03"
+        />
+      </kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>👤</h3>
+      <strong>Profile</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop user profile screen in Light Mode"
+          src="https://github.com/user-attachments/assets/b35882a8-489d-4983-a108-86729bac6cb4"
+        />
+      </kbd><br/><br/>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <h3>🔐</h3>
+      <strong>Sign In</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop sign-in screen in Light Mode"
+          src="https://github.com/user-attachments/assets/dca4e7ed-c11e-4df5-9c42-9f57b7469783"
+        />
+      </kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>📝</h3>
+      <strong>Sign Up</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop sign-up screen in Light Mode"
+          src="https://github.com/user-attachments/assets/5eabdcef-063c-4e78-b910-813865e547af"
+        />
+      </kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>⚙️</h3>
+      <strong>Settings</strong><br/><br/>
+      <kbd>
+        <img
+          width="716"
+          height="1600"
+          alt="Pocket Shop application settings screen in Light Mode"
+          src="https://github.com/user-attachments/assets/b83e8cf7-4941-4a01-89bb-aad1e1c285f0"
+        />
+      </kbd><br/><br/>
     </td>
   </tr>
 </table>
@@ -149,59 +299,87 @@ The galleries below are ready for the final application screenshots. Each Light 
 
 <table>
   <tr>
-    <td align="center" width="33%">
-      <h3>🔐</h3>
-      <strong>Onboarding &amp; Authentication</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
+    <td align="center" valign="top" width="33%">
+      <h3>✨</h3>
+      <strong>Splash</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop splash screen in Dark Mode" src="https://github.com/user-attachments/assets/51b38f5a-33a9-4eb2-8597-9e438ff5b7e2" />
+</kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
+      <h3>👋</h3>
+      <strong>Onboarding</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop onboarding screen in Dark Mode" src="https://github.com/user-attachments/assets/a18426c8-b404-4127-ad9e-ff2f7f2d76d7" />
+</kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
       <h3>🏠</h3>
-      <strong>Home &amp; Discovery</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
+      <strong>Home</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop home and product discovery screen in Dark Mode" src="https://github.com/user-attachments/assets/1e074a2d-1172-4128-a6b0-e393b6a95b35" />
+</kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+  </tr>
+
+  <tr>
+    <td align="center" valign="top" width="33%">
       <h3>👕</h3>
       <strong>Product Details</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
+      <kbd><img width="395" height="1280" alt="Pocket Shop product details screen in Dark Mode" src="https://github.com/user-attachments/assets/34dfdb94-7409-4fb0-93dc-142a35b8e904" />
+</kbd><br/><br/>
     </td>
-  </tr>
-  <tr>
-    <td align="center" width="33%">
-      <h3>🤖</h3>
-      <strong>AI Shopping Assistant</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
-    </td>
-    <td align="center" width="33%">
-      <h3>⚖️</h3>
-      <strong>AI Product Comparison</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
-    </td>
-    <td align="center" width="33%">
-      <h3>🛒</h3>
-      <strong>Cart &amp; Checkout</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <h3>🔎</h3>
-      <strong>Search &amp; Filters</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
+      <strong>Search</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop product search screen in Dark Mode" src="https://github.com/user-attachments/assets/1cc834c6-cfad-41bf-95ff-26aa4f49f3a8" />
+</kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+    <td align="center" valign="top" width="33%">
       <h3>👤</h3>
       <strong>Profile</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop user profile screen in Dark Mode" src="https://github.com/user-attachments/assets/bcc01c3b-1631-4fde-b5b2-64b9baee18f4" />
+</kbd><br/><br/>
     </td>
-    <td align="center" width="33%">
+  </tr>
+
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <h3>🛒</h3>
+      <strong>Cart</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop shopping cart screen in Dark Mode" src="https://github.com/user-attachments/assets/5f994cf8-41a8-43e1-86aa-06189ed3ceff" /></kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>💳</h3>
+      <strong>Checkout</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop checkout screen in Dark Mode" src="https://github.com/user-attachments/assets/907e9941-472b-4114-b008-624d91b9fc9b" />
+</kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
       <h3>📦</h3>
       <strong>Order Details</strong><br/><br/>
-      <kbd>Add dark screenshot</kbd><br/><br/>
+      <kbd><img width="407" height="1280" alt="Pocket Shop order details screen in Dark Mode" src="https://github.com/user-attachments/assets/7bc46129-21db-44da-ae36-951cd754562a" />
+</kbd><br/><br/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <h3>🔐</h3>
+      <strong>Sign In</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop sign-in screen in Dark Mode" src="https://github.com/user-attachments/assets/f5091442-e574-4584-92a0-be5460734135" />
+</kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>📝</h3>
+      <strong>Sign Up</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop sign-up screen in Dark Mode" src="https://github.com/user-attachments/assets/a1630b5e-cc84-49d0-8167-6b2050b61785" />
+</kbd><br/><br/>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h3>⚙️</h3>
+      <strong>Settings</strong><br/><br/>
+      <kbd><img width="716" height="1600" alt="Pocket Shop application settings screen in Dark Mode" src="https://github.com/user-attachments/assets/84c1364f-c33d-4303-947d-d23889d702cd" />
+</kbd><br/><br/>
     </td>
   </tr>
 </table>
-
-
 
 ---
 
@@ -333,41 +511,122 @@ pocket-shop/
 
 <a id="team"></a>
 
-## 👥 Team
+<h2 align="center">👥 Meet the Team</h2>
 
-<table>
+<p align="center">
+  The developers behind Pocket Shop
+</p>
+
+<br/>
+
+<table align="center" width="100%">
   <tr>
-    <td align="center" width="25%">
-      <h3>👨‍💻</h3>
-      <strong>Mahmoud ELDemerdash</strong><br/>
+    <td align="center" valign="top" width="50%">
+      <br/>
+      <a href="https://github.com/ELDemy">
+        <img
+          src="https://github.com/ELDemy.png?size=120"
+          width="110"
+          alt="Mahmoud ELDemerdash GitHub profile"
+        />
+      </a>
+      <br/><br/>
+      <strong>Mahmoud ELDemerdash</strong>
+      <br/>
       <sub>Team Member</sub>
+      <br/><br/>
+      <a href="https://github.com/ELDemy">
+        <img
+          src="https://img.shields.io/static/v1?label=GitHub&amp;message=%40ELDemy&amp;color=181717&amp;style=for-the-badge&amp;logo=github&amp;logoColor=white"
+          alt="@ELDemy on GitHub"
+        />
+      </a>
+      <br/><br/>
     </td>
-    <td align="center" width="25%">
-      <h3>👨‍💻</h3>
-      <strong>Amr Abdulrehim elhammamy</strong><br/>
+    <td align="center" valign="top" width="50%">
+      <br/>
+      <a href="https://github.com/Amrabedalrehem">
+        <img
+          src="https://github.com/Amrabedalrehem.png?size=120"
+          width="110"
+          alt="Amr Abdulrehim Elhammamy GitHub profile"
+        />
+      </a>
+      <br/><br/>
+      <strong>Amr Abdulrehim Elhammamy</strong>
+      <br/>
       <sub>Team Member</sub>
+      <br/><br/>
+      <a href="https://github.com/Amrabedalrehem">
+        <img
+          src="https://img.shields.io/static/v1?label=GitHub&amp;message=%40Amrabedalrehem&amp;color=181717&amp;style=for-the-badge&amp;logo=github&amp;logoColor=white"
+          alt="@Amrabedalrehem on GitHub"
+        />
+      </a>
+      <br/><br/>
     </td>
-    <td align="center" width="25%">
-      <h3>👨‍💻</h3>
-      <strong>Hossam Elgmmal</strong><br/>
+  </tr>
+
+  <tr>
+    <td align="center" valign="top" width="50%">
+      <br/>
+      <a href="https://github.com/Hossam-Elgmmal">
+        <img
+          src="https://github.com/Hossam-Elgmmal.png?size=120"
+          width="110"
+          alt="Hossam Elgmmal GitHub profile"
+        />
+      </a>
+      <br/><br/>
+      <strong>Hossam Elgmmal</strong>
+      <br/>
       <sub>Team Member</sub>
+      <br/><br/>
+      <a href="https://github.com/Hossam-Elgmmal">
+        <img
+          src="https://img.shields.io/static/v1?label=GitHub&amp;message=%40Hossam-Elgmmal&amp;color=181717&amp;style=for-the-badge&amp;logo=github&amp;logoColor=white"
+          alt="@Hossam-Elgmmal on GitHub"
+        />
+      </a>
+      <br/><br/>
     </td>
-    <td align="center" width="25%">
-      <h3>👨‍💻</h3>
-      <strong>Abdelhamed zyada</strong><br/>
+    <td align="center" valign="top" width="50%">
+      <br/>
+      <a href="https://github.com/Abdelhamed-Zyada">
+        <img
+          src="https://github.com/Abdelhamed-Zyada.png?size=120"
+          width="110"
+          alt="Abdelhamed Zyada GitHub profile"
+        />
+      </a>
+      <br/><br/>
+      <strong>Abdelhamed Zyada</strong>
+      <br/>
       <sub>Team Member</sub>
+      <br/><br/>
+      <a href="https://github.com/Abdelhamed-Zyada">
+        <img
+          src="https://img.shields.io/static/v1?label=GitHub&amp;message=%40Abdelhamed-Zyada&amp;color=181717&amp;style=for-the-badge&amp;logo=github&amp;logoColor=white"
+          alt="@Abdelhamed-Zyada on GitHub"
+        />
+      </a>
+      <br/><br/>
     </td>
   </tr>
 </table>
 
+<br/>
+
 <p align="center">
-  🎓 Mentored by <strong>Omar metwallly</strong>
+  🎓 Mentored by <strong>Omar Metwally</strong>
 </p>
 
 <br/>
 
 <p align="center">
-  <strong>Built with passion by the Pocket Shop team.</strong>
+  <strong>Built with ❤️ by the Pocket Shop team.</strong>
 </p>
 
-<p align="center"><a href="#top">⬆ Back to top</a></p>
+<p align="center">
+  <a href="#top">⬆ Back to top</a>
+</p>
